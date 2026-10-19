@@ -1,12 +1,16 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos";
 import PhotoAlbum from "../components/PhotoAlbum";
 import Calendar from "../hooks/calender";
+import PersonalizedGreeting from "../components/PersonalizedGreeting";
+import RsvpSection from "../components/RsvpSection";
+import GuestbookSection from "../components/GuestbookSection";
 import weddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
+  const [isQrOpen, setIsQrOpen] = useState(false);
   const nhaGaiData = weddingData.nhaGai;
   const commonData = weddingData;
 
@@ -78,6 +82,9 @@ export default function NhaGaiPage() {
           </div>
         </div>
       </div>
+
+      {/* Personalized Greeting for Guests (from ?to=...) */}
+      <PersonalizedGreeting defaultSide="nha-gai" />
 
       {/* Quote Section */}
       <div data-aos="fade-down" className="text-center px-3 sm:px-4 py-1 md:py-6 lg:py-8 xl:py-10 text-2xl lg:text-4xl">
@@ -326,6 +333,10 @@ export default function NhaGaiPage() {
         </div>
       </div>
 
+      {/* RSVP Section */}
+      <RsvpSection defaultSide="nha-gai" />
+
+      {/* Photo Album */}
       <div className="px-3 sm:px-4 py-3 sm:py-4 md:py-6 text-2xl sm:text-3xl md:text-3xl">
         <p data-aos="fade-down" className=" lg:text-4xl xl:text-5xl font-imperial-script text-center mb-3 sm:mb-4 md:mb-6">
           Album ảnh cưới
@@ -333,8 +344,11 @@ export default function NhaGaiPage() {
         <PhotoAlbum />
       </div>
 
+      {/* Guestbook Wishes Section */}
+      <GuestbookSection currentSide="nha-gai" />
+
       {/* QR Code Section */}
-      <div className="relative w-full lg:h-[65vh] h-[50vh] overflow-hidden ">
+      <div className="relative w-full lg:h-[65vh] h-[50vh] overflow-hidden rounded-3xl mt-8">
         {/* Background Image */}
         <div className="absolute inset-0 w-full h-full">
           <Image src="/album/anh-cuoi.JPG" alt="anh-cuoi" fill className="object-cover object-top opacity-20" />
@@ -350,13 +364,8 @@ export default function NhaGaiPage() {
             </h1>
           </div>
           <button
-            onClick={() => {
-              const qrModal = document.getElementById("qr-modal");
-              if (qrModal) {
-                qrModal.classList.remove("hidden");
-              }
-            }}
-            className="bg-red-400 bg-opacity-90 hover:bg-opacity-100 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl"
+            onClick={() => setIsQrOpen(true)}
+            className="bg-red-400 bg-opacity-90 hover:bg-opacity-100 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
           >
             Mừng cưới
           </button>
@@ -364,42 +373,31 @@ export default function NhaGaiPage() {
       </div>
 
       {/* QR Code Modal */}
-      <div
-        id="qr-modal"
-        className="fixed inset-0 bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            const qrModal = document.getElementById("qr-modal");
-            if (qrModal) {
-              qrModal.classList.add("hidden");
-            }
-          }
-        }}
-      >
-        <div className="flex items-center justify-center h-full">
-          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-sm mx-4 transform transition-all duration-300 scale-100">
+      {isQrOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsQrOpen(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">QR Code Mừng Cưới Nhà Gái</h3>
+              <h3 className="text-lg font-semibold text-gray-800">QR Code Mừng Cưới Nhà Gái</h3>
               <button
-                onClick={() => {
-                  const qrModal = document.getElementById("qr-modal");
-                  if (qrModal) {
-                    qrModal.classList.add("hidden");
-                  }
-                }}
-                className="text-gray-500 hover:text-gray-700 text-xl transition-colors duration-200"
+                onClick={() => setIsQrOpen(false)}
+                className="text-gray-400 hover:text-gray-700 text-xl cursor-pointer"
               >
                 ✕
               </button>
             </div>
             <div className="text-center">
-              <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                <div className="w-48 h-48 bg-gray-200 rounded flex items-center justify-center text-gray-600 no-scrollbar mx-auto overflow-hidden relative">
+              <div className="bg-gray-50 p-4 rounded-xl mb-4 border border-gray-100">
+                <div className="w-48 h-48 mx-auto relative overflow-hidden rounded-lg">
                   <Image
                     src={bankAccount?.qrCodeUrl || "/qr.jpeg"}
                     alt="qr"
-                    width={200}
-                    height={200}
+                    fill
                     className="object-contain"
                   />
                 </div>
@@ -419,10 +417,18 @@ export default function NhaGaiPage() {
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Footer spacing */}
-      <div className="h-2"></div>
+      {/* Footer */}
+      <footer className="text-center py-8 text-xs text-gray-400 space-y-2">
+        <p>Hôn lễ của {commonData.bride.shortName} & {commonData.groom.shortName} • 2026</p>
+        <p>
+          <a href="/admin" className="text-gray-400 hover:text-rose-500 underline transition">
+            Quản trị Platform (Admin)
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
+

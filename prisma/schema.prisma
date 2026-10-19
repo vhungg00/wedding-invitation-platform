@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Guest {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String?  @unique
+  side      String   @default("nha-trai") // "nha-trai" | "nha-gai"
+  phone     String?
+  note      String?
+  createdAt DateTime @default(now())
+  rsvps     Rsvp[]
+}
+
+model Rsvp {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  phone      String?
+  attending  Boolean  @default(true) // true: có tham dự, false: không thể đến
+  guestCount Int      @default(1)    // số lượng người đi cùng (gồm cả khách)
+  side       String   @default("nha-trai") // "nha-trai" | "nha-gai"
+  note       String?
+  guestId    String?  @db.ObjectId
+  guest      Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+}
+
+model Wish {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  relationship String?  // Ví dụ: Bạn chú rể, Bạn cô dâu, Đồng nghiệp, Người thân
+  content      String
+  hearts       Int      @default(0)
+  side         String   @default("both") // "nha-trai" | "nha-gai" | "both"
+  isApproved   Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}

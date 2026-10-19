@@ -43,7 +43,7 @@ export default function FallingHearts() {
       {hearts.map((heart) => (
         <div
           key={heart.id}
-          className="absolute animate-falling-heart"
+          className="absolute animate-falling-heart opacity-40 select-none"
           style={{
             left: `${heart.left}%`,
             animationDuration: `${heart.animationDuration}s`,
