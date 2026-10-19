@@ -159,7 +159,7 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         sortable: true,
         width: 170,
         render: (_, r) => (
-          <span className="font-semibold text-gray-900 truncate block">
+          <span style={{ fontWeight: 500, color: "#262626", fontSize: 14 }}>
             {r.name}
           </span>
         ),
@@ -170,7 +170,9 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         key: "phone",
         width: 130,
         render: (_, r) => (
-          <span className="text-gray-600">{r.phone || "-"}</span>
+          <span style={{ color: "#595959", fontSize: 14 }}>
+            {r.phone || "-"}
+          </span>
         ),
       },
       {
@@ -181,14 +183,54 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         width: 140,
         render: (_, r) =>
           r.attending ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <CheckCircle className="w-3 h-3 shrink-0" />
-              <span>Tham dự</span>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                padding: "2px 8px",
+                fontSize: 12,
+                borderRadius: 4,
+                background: "#f6ffed",
+                border: "1px solid #b7eb8f",
+                color: "#52c41a",
+                fontWeight: 400,
+              }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "#52c41a",
+                }}
+              />
+              Tham dự
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-              <XCircle className="w-3 h-3 shrink-0" />
-              <span>Không thể đến</span>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                padding: "2px 8px",
+                fontSize: 12,
+                borderRadius: 4,
+                background: "#fff1f0",
+                border: "1px solid #ffa39e",
+                color: "#cf1322",
+                fontWeight: 400,
+              }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "#cf1322",
+                }}
+              />
+              Không tham dự
             </span>
           ),
       },
@@ -199,7 +241,7 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         sortable: true,
         width: 100,
         render: (_, r) => (
-          <span className="font-bold text-gray-800">
+          <span style={{ fontWeight: 500, color: "#262626", fontSize: 14 }}>
             {r.attending ? `${r.guestCount} người` : "0"}
           </span>
         ),
@@ -212,11 +254,19 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         width: 110,
         render: (_, r) => (
           <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-              r.side === "nha-trai"
-                ? "bg-blue-50 text-blue-700 border border-blue-200"
-                : "bg-rose-50 text-rose-700 border border-rose-200"
-            }`}
+            style={{
+              display: "inline-block",
+              padding: "2px 8px",
+              fontSize: 12,
+              borderRadius: 4,
+              background: r.side === "nha-trai" ? "#e6f4ff" : "#fff0f6",
+              border:
+                r.side === "nha-trai"
+                  ? "1px solid #91caff"
+                  : "1px solid #ffadd2",
+              color: r.side === "nha-trai" ? "#0958d9" : "#c41d7f",
+              fontWeight: 400,
+            }}
           >
             {r.side === "nha-trai" ? "Nhà Trai" : "Nhà Gái"}
           </span>
@@ -228,7 +278,17 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         key: "note",
         width: 240,
         render: (_, r) => (
-          <span className="text-gray-600 truncate block" title={r.note || ""}>
+          <span
+            title={r.note || ""}
+            style={{
+              color: "#595959",
+              fontSize: 14,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              display: "block",
+            }}
+          >
             {r.note || "-"}
           </span>
         ),
@@ -240,7 +300,7 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         sortable: true,
         width: 130,
         render: (_, r) => (
-          <span className="text-xs text-gray-400">
+          <span style={{ color: "#8c8c8c", fontSize: 13 }}>
             {new Date(r.createdAt).toLocaleString("vi-VN", {
               day: "2-digit",
               month: "2-digit",
@@ -253,19 +313,35 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
       {
         title: "Hành động",
         key: "actions",
-        width: 90,
+        width: 140,
         align: "center",
         resizable: false,
         render: (_, r) => (
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               handleDelete(r.id);
             }}
-            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#ff4d4f",
+              cursor: "pointer",
+              padding: "4px 8px",
+              borderRadius: 4,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#fff1f0")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
             title="Xóa phản hồi"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 style={{ width: 15, height: 15 }} />
           </button>
         ),
       },
@@ -330,6 +406,8 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         sortKey={sortKey}
         sortType={sortType}
         onSort={handleSort}
+        bordered
+        resizable
         keyExtractor={(item) => item.id}
         empty="Chưa có dữ liệu phản hồi nào phù hợp với bộ lọc"
       />

@@ -109,12 +109,26 @@ export default function GuestsTab({
         sortable: true,
         width: 220,
         render: (_, g) => (
-          <div className="truncate">
-            <span className="font-bold text-gray-900 block truncate">
+          <div>
+            <span
+              style={{
+                fontWeight: 500,
+                color: "#262626",
+                fontSize: 14,
+                display: "block",
+              }}
+            >
               {g.name}
             </span>
             {g.phone && (
-              <span className="block text-xs font-normal text-gray-500 truncate">
+              <span
+                style={{
+                  fontSize: 12,
+                  color: "#8c8c8c",
+                  display: "block",
+                  marginTop: 2,
+                }}
+              >
                 {g.phone}
               </span>
             )}
@@ -126,14 +140,22 @@ export default function GuestsTab({
         dataIndex: "side",
         key: "side",
         sortable: true,
-        width: 130,
+        width: 120,
         render: (_, g) => (
           <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-              g.side === "nha-trai"
-                ? "bg-blue-50 text-blue-700 border border-blue-200"
-                : "bg-rose-50 text-rose-700 border border-rose-200"
-            }`}
+            style={{
+              display: "inline-block",
+              padding: "2px 8px",
+              fontSize: 12,
+              borderRadius: 4,
+              background: g.side === "nha-trai" ? "#e6f4ff" : "#fff0f6",
+              border:
+                g.side === "nha-trai"
+                  ? "1px solid #91caff"
+                  : "1px solid #ffadd2",
+              color: g.side === "nha-trai" ? "#0958d9" : "#c41d7f",
+              fontWeight: 400,
+            }}
           >
             {g.side === "nha-trai" ? "Nhà Trai" : "Nhà Gái"}
           </span>
@@ -142,13 +164,23 @@ export default function GuestsTab({
       {
         title: "Link thiệp cá nhân hóa",
         key: "link",
-        width: 380,
+        width: 320,
         render: (_, g) => {
           const guestUrl = getPersonalizedUrl(g);
           return (
             <span
-              className="font-mono text-xs text-rose-600 truncate block select-all cursor-text"
               title={guestUrl}
+              style={{
+                color: "#FF5100",
+                fontFamily: "monospace",
+                fontSize: 13,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                display: "block",
+                cursor: "pointer",
+                userSelect: "all",
+              }}
             >
               {guestUrl}
             </span>
@@ -158,7 +190,7 @@ export default function GuestsTab({
       {
         title: "Hành động",
         key: "action",
-        width: 140,
+        width: 130,
         align: "center",
         resizable: false,
         render: (_, g) => {
@@ -166,19 +198,37 @@ export default function GuestsTab({
           const isCopied = copiedLink === g.id;
 
           return (
-            <div className="inline-flex items-center gap-2">
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCopy(guestUrl, g.id);
                 }}
-                className="p-1.5 rounded-lg bg-gray-100 hover:bg-rose-100 text-gray-700 hover:text-rose-600 transition cursor-pointer"
+                style={{
+                  border: "1px solid #d9d9d9",
+                  background: "#ffffff",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  color: isCopied ? "#52c41a" : "#595959",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
                 title="Sao chép link"
               >
                 {isCopied ? (
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check style={{ width: 14, height: 14 }} />
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <Copy style={{ width: 14, height: 14 }} />
                 )}
               </button>
               <a
@@ -186,20 +236,43 @@ export default function GuestsTab({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 rounded-lg bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-600 transition"
+                style={{
+                  border: "1px solid #d9d9d9",
+                  background: "#ffffff",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  color: "#1677ff",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
                 title="Mở xem thiệp"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink style={{ width: 14, height: 14 }} />
               </a>
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDeleteGuest(g.id);
                 }}
-                className="p-1.5 rounded-lg bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 transition cursor-pointer"
+                style={{
+                  border: "1px solid #ffccc7",
+                  background: "#ffffff",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  color: "#ff4d4f",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
                 title="Xóa khách"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 style={{ width: 14, height: 14 }} />
               </button>
             </div>
           );
@@ -293,6 +366,8 @@ export default function GuestsTab({
           sortKey={sortKey}
           sortType={sortType}
           onSort={handleSort}
+          bordered
+          resizable
           keyExtractor={(g) => g.id}
           empty="Chưa có khách mời nào trong danh sách. Hãy tạo link đầu tiên ở trên!"
         />
