@@ -17,12 +17,68 @@ export async function GET(request: Request) {
       where.OR = [{ side }, { side: "both" }];
     }
 
-    const wishes = await prisma.wish.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const pageParam = searchParams.get("page");
+    const limitParam = searchParams.get("limit") || searchParams.get("pageSize");
+    const fetchAll = searchParams.get("fetchAll") === "true";
+    const sortKey = searchParams.get("sortKey") || "createdAt";
+    const sortType =
+      (searchParams.get("sortType") || "desc").toLowerCase() === "asc"
+        ? "asc"
+        : "desc";
 
-    return NextResponse.json({ success: true, data: wishes });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orderBy: any = {};
+    if (["name", "createdAt", "hearts"].includes(sortKey)) {
+      orderBy[sortKey] = sortType;
+    } else {
+      orderBy.createdAt = "desc";
+    }
+
+    if (pageParam && !fetchAll) {
+      const page = Math.max(1, parseInt(pageParam, 10) || 1);
+      const limit = Math.max(1, parseInt(limitParam || "9", 10) || 9);
+      const skip = (page - 1) * limit;
+
+      const [total, wishes] = await Promise.all([
+        prisma.wish.count({ where }),
+        prisma.wish.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit,
+        }),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return NextResponse.json({
+        success: true,
+        data: wishes,
+        total,
+        page,
+        limit,
+        totalPages,
+        pagination: { total, page, limit, totalPages },
+      });
+    }
+
+    const [total, wishes] = await Promise.all([
+      prisma.wish.count({ where }),
+      prisma.wish.findMany({
+        where,
+        orderBy,
+      }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: wishes,
+      total,
+      page: 1,
+      limit: wishes.length,
+      totalPages: 1,
+      pagination: { total, page: 1, limit: wishes.length, totalPages: 1 },
+    });
   } catch (error) {
     console.error("Error fetching wishes:", error);
     return NextResponse.json(

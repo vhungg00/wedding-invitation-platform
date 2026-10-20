@@ -15,10 +15,14 @@ model Guest {
   name      String
   slug      String?  @unique
   side      String   @default("nha-trai") // "nha-trai" | "nha-gai"
+  group     String?  @default("Bạn bè")   // "Họ hàng", "Bạn Cấp 3", "Đồng nghiệp",...
+  table     String?                       // "Bàn 01", "Bàn VIP",...
+  isSent    Boolean  @default(false)      // Trạng thái đã gửi link cho khách
   phone     String?
   note      String?
   createdAt DateTime @default(now())
   rsvps     Rsvp[]
+  gifts     Gift[]
 }
 
 model Rsvp {
@@ -44,3 +48,18 @@ model Wish {
   isApproved   Boolean  @default(true)
   createdAt    DateTime @default(now())
 }
+
+model Gift {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  guestName String
+  amount    Float    @default(0)
+  side      String   @default("nha-trai") // "nha-trai" | "nha-gai"
+  method    String   @default("QR")       // "QR" | "CASH"
+  status    String   @default("RECEIVED") // "RECEIVED" | "PENDING"
+  phone     String?
+  note      String?
+  guestId   String?  @db.ObjectId
+  guest     Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
+

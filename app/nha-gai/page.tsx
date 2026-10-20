@@ -7,10 +7,10 @@ import Calendar from "../hooks/calender";
 import PersonalizedGreeting from "../components/PersonalizedGreeting";
 import RsvpSection from "../components/RsvpSection";
 import GuestbookSection from "../components/GuestbookSection";
+import GiftBoxSection from "../components/GiftBoxSection";
 import weddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
-  const [isQrOpen, setIsQrOpen] = useState(false);
   const nhaGaiData = weddingData.nhaGai;
   const commonData = weddingData;
 
@@ -347,77 +347,27 @@ export default function NhaGaiPage() {
       {/* Guestbook Wishes Section */}
       <GuestbookSection currentSide="nha-gai" />
 
-      {/* QR Code Section */}
-      <div className="relative w-full lg:h-[65vh] h-[50vh] overflow-hidden rounded-3xl mt-8">
-        {/* Background Image */}
+      {/* Gift Box Section */}
+      <GiftBoxSection defaultSide="nha-gai" />
+
+      {/* Thank You Banner */}
+      <div className="relative w-full lg:h-[50vh] h-[40vh] overflow-hidden rounded-3xl my-8">
         <div className="absolute inset-0 w-full h-full">
           <Image src="/album/anh-cuoi.JPG" alt="anh-cuoi" fill className="object-cover object-top opacity-20" />
         </div>
-
-        {/* QR Code Button */}
-        <div data-aos="fade-up" className="relative z-10 flex flex-col items-center justify-center h-full ">
-          <div className="text-center text-2xl md:text-3xl font-imperial-script drop-shadow-md mb-1 sm:mb-2 md:mb-3 lg:w-1/2 text-black/80 px-3 sm:px-4 md:px-6 lg:px-8">
-            <h1 className="text-center text-2xl md:text-5xl drop-shadow-md">
+        <div data-aos="fade-up" className="relative z-10 flex flex-col items-center justify-center h-full px-4">
+          <div className="text-center max-w-2xl text-black/85">
+            <p className="text-xl sm:text-2xl md:text-3xl font-imperial-script mb-2 text-rose-600">
+              Trân trọng cảm ơn
+            </p>
+            <h1 className="text-xl sm:text-3xl md:text-4xl font-serif font-medium leading-relaxed drop-shadow-xs">
               {nhaGaiData?.donation?.thankYouMessage ||
                 commonData.donation?.thankYouMessage ||
                 "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi."}
             </h1>
           </div>
-          <button
-            onClick={() => setIsQrOpen(true)}
-            className="bg-red-400 bg-opacity-90 hover:bg-opacity-100 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
-          >
-            Mừng cưới
-          </button>
         </div>
       </div>
-
-      {/* QR Code Modal */}
-      {isQrOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
-          onClick={() => setIsQrOpen(false)}
-        >
-          <div
-            className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">QR Code Mừng Cưới Nhà Gái</h3>
-              <button
-                onClick={() => setIsQrOpen(false)}
-                className="text-gray-400 hover:text-gray-700 text-xl cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="text-center">
-              <div className="bg-gray-50 p-4 rounded-xl mb-4 border border-gray-100">
-                <div className="w-48 h-48 mx-auto relative overflow-hidden rounded-lg">
-                  <Image
-                    src={bankAccount?.qrCodeUrl || "/qr.jpeg"}
-                    alt="qr"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-              {bankAccount?.owner && (
-                <p className="font-semibold text-sm text-gray-800 mb-1">{bankAccount.owner}</p>
-              )}
-              {bankAccount?.accountName && (
-                <p className="font-semibold text-sm text-gray-800">{bankAccount.accountName}</p>
-              )}
-              {bankAccount?.bankName && (
-                <p className="text-xs text-gray-600">
-                  {bankAccount.bankName} - {bankAccount.accountNumber}
-                </p>
-              )}
-              <p className="text-xs text-gray-500 mt-2">Quét mã QR để mừng cưới online</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <footer className="text-center py-8 text-xs text-gray-400 space-y-2">

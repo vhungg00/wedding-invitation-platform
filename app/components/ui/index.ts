@@ -12,3 +12,6 @@ export type { DropdownCustomProps, TOption } from "./DropdownCustom";
 
 export { TableResize, ESortType } from "./TableResize";
 export type { TableResizeProps, TColumn } from "./TableResize";
+
+export { PaginationCustom } from "./PaginationCustom";
+export type { PaginationCustomProps } from "./PaginationCustom";

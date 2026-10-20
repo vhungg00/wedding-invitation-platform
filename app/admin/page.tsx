@@ -2,46 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Users, MessageSquareHeart, Share2 } from "lucide-react";
-import { RsvpItem, WishItem, GuestItem, StatsData } from "./types";
+import Link from "next/link";
+import { Users, MessageSquareHeart, Share2, Gift, Sparkles } from "lucide-react";
+import { RsvpItem, WishItem, GuestItem, GiftItem, StatsData } from "./types";
 import AdminHeader from "./components/AdminHeader";
 import AdminStats from "./components/AdminStats";
 import RsvpTab from "./components/RsvpTab";
 import WishesTab from "./components/WishesTab";
 import GuestsTab from "./components/GuestsTab";
+import GiftsTab from "./components/GiftsTab";
 
 export default function AdminPage() {
   const router = useRouter();
   const [authChecking, setAuthChecking] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState<"rsvp" | "wishes" | "guests">("rsvp");
+  const [activeTab, setActiveTab] = useState<"rsvp" | "wishes" | "guests" | "gifts">("rsvp");
   const [stats, setStats] = useState<StatsData | null>(null);
   const [rsvps, setRsvps] = useState<RsvpItem[]>([]);
   const [wishes, setWishes] = useState<WishItem[]>([]);
   const [guests, setGuests] = useState<GuestItem[]>([]);
+  const [gifts, setGifts] = useState<GiftItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, rsvpRes, wishesRes, guestsRes] = await Promise.all([
+      const [statsRes, rsvpRes, wishesRes, guestsRes, giftsRes] = await Promise.all([
         fetch("/api/stats"),
         fetch("/api/rsvp"),
         fetch("/api/wishes?all=true"),
         fetch("/api/guests"),
+        fetch("/api/gifts"),
       ]);
 
-      const [statsData, rsvpData, wishesData, guestsData] = await Promise.all([
+      const [statsData, rsvpData, wishesData, guestsData, giftsData] = await Promise.all([
         statsRes.json(),
         rsvpRes.json(),
         wishesRes.json(),
         guestsRes.json(),
+        giftsRes.json(),
       ]);
 
       if (statsData.success) setStats(statsData.data);
       if (rsvpData.success) setRsvps(rsvpData.data);
       if (wishesData.success) setWishes(wishesData.data);
       if (guestsData.success) setGuests(guestsData.data);
+      if (giftsData.success) setGifts(giftsData.data);
     } catch (err) {
       console.error("Error fetching admin data:", err);
     } finally {
@@ -146,6 +152,67 @@ export default function AdminPage() {
     }
   };
 
+  const handleCreateGift = async (data: Partial<GiftItem>): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/gifts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const resData = await res.json();
+      if (res.ok && resData.success) {
+        setGifts((prev) => [resData.data, ...prev]);
+        fetchData();
+        return true;
+      } else {
+        alert(resData.message || "Không thể tạo mừng cưới!");
+        return false;
+      }
+    } catch {
+      alert("Lỗi khi tạo mừng cưới!");
+      return false;
+    }
+  };
+
+  const handleUpdateGift = async (id: string, data: Partial<GiftItem>): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/gifts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...data }),
+      });
+      const resData = await res.json();
+      if (res.ok && resData.success) {
+        setGifts((prev) => prev.map((g) => (g.id === id ? { ...g, ...resData.data } : g)));
+        fetchData();
+        return true;
+      } else {
+        alert(resData.message || "Không thể cập nhật mừng cưới!");
+        return false;
+      }
+    } catch {
+      alert("Lỗi khi cập nhật mừng cưới!");
+      return false;
+    }
+  };
+
+  const handleDeleteGift = async (id: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`/api/gifts?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setGifts((prev) => prev.filter((g) => g.id !== id));
+        fetchData();
+        return true;
+      } else {
+        alert("Không thể xóa mừng cưới!");
+        return false;
+      }
+    } catch {
+      alert("Lỗi khi xóa mừng cưới!");
+      return false;
+    }
+  };
+
   if (authChecking || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 flex items-center justify-center p-4">
@@ -171,10 +238,10 @@ export default function AdminPage() {
         <AdminStats stats={stats} />
 
         {/* Tab switcher */}
-        <div className="flex items-center gap-2 border-b border-gray-200 pb-3">
+        <div className="flex items-center gap-2 border-b border-gray-200 pb-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab("rsvp")}
-            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === "rsvp"
                 ? "bg-rose-500 text-white shadow-md shadow-rose-200"
                 : "bg-white text-gray-600 hover:bg-gray-100"
@@ -186,7 +253,7 @@ export default function AdminPage() {
 
           <button
             onClick={() => setActiveTab("wishes")}
-            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === "wishes"
                 ? "bg-rose-500 text-white shadow-md shadow-rose-200"
                 : "bg-white text-gray-600 hover:bg-gray-100"
@@ -198,7 +265,7 @@ export default function AdminPage() {
 
           <button
             onClick={() => setActiveTab("guests")}
-            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === "guests"
                 ? "bg-rose-500 text-white shadow-md shadow-rose-200"
                 : "bg-white text-gray-600 hover:bg-gray-100"
@@ -207,6 +274,26 @@ export default function AdminPage() {
             <Share2 className="w-4 h-4" />
             <span>Tạo Link Mời Khách ({guests.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab("gifts")}
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 shrink-0 cursor-pointer ${
+              activeTab === "gifts"
+                ? "bg-rose-500 text-white shadow-md shadow-rose-200"
+                : "bg-white text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Gift className="w-4 h-4" />
+            <span>Mừng Cưới ({gifts.length})</span>
+          </button>
+
+          <Link
+            href="/admin/guests"
+            className="ml-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-rose-200 transition shrink-0"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Màn Hình Điều Phối Khách Mời & Xếp Bàn (Ngồi 8) →</span>
+          </Link>
         </div>
 
         {/* Active Tab Content */}
@@ -223,6 +310,16 @@ export default function AdminPage() {
             guests={guests}
             onCreateGuest={handleCreateGuest}
             onDeleteGuest={handleDeleteGuest}
+          />
+        )}
+
+        {activeTab === "gifts" && (
+          <GiftsTab
+            gifts={gifts}
+            onRefresh={fetchData}
+            onCreateGift={handleCreateGift}
+            onUpdateGift={handleUpdateGift}
+            onDeleteGift={handleDeleteGift}
           />
         )}
       </div>

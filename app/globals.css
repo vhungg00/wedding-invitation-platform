@@ -417,10 +417,14 @@ html {
   box-sizing: border-box;
 }
 
-*,
-*::before,
-*::after {
+/* Responsive media defaults */
+img,
+video,
+iframe,
+canvas,
+svg {
   max-width: 100%;
+  height: auto;
 }
 
 .no-overflow {
@@ -432,15 +436,6 @@ html {
   flex-wrap: nowrap;
   overflow-x: hidden;
   max-width: 100%;
-}
-
-/* Force all containers to not exceed viewport width */
-.container,
-.container > *,
-div[class*="flex"],
-div[class*="grid"] {
-  max-width: 100vw;
-  overflow-x: hidden;
 }
 
 @media (max-width: 640px) {
@@ -455,36 +450,20 @@ div[class*="grid"] {
     max-width: 100%;
   }
 
-  /* Force mobile containers to be full width */
   .container {
-    width: 100vw;
+    width: 100%;
     max-width: 100vw;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
 }
 
-/* Ultimate horizontal scroll prevention */
-@media (max-width: 768px) {
-  * {
-    max-width: 100vw !important;
-  }
-
-  img,
-  video,
-  iframe,
-  canvas,
-  svg {
-    max-width: 100% !important;
-    height: auto !important;
-  }
-
-  .container {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-  }
+/* Allow horizontal scroll containers to work cleanly */
+.table-scroll-container,
+[data-scroll="true"] {
+  overflow-x: auto !important;
+  max-width: 100% !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Blur edges effect for background image */
