@@ -24,9 +24,33 @@ export interface GuestItem {
   id: string;
   name: string;
   slug: string | null;
-  side: string;
+  side: "nha-trai" | "nha-gai" | string;
+  group?: string | null;
+  table?: string | null;
+  isSent?: boolean;
   phone: string | null;
   note: string | null;
+  createdAt: string;
+  rsvps?: RsvpItem[];
+  gifts?: GiftItem[];
+}
+
+export interface GiftItem {
+  id: string;
+  guestName: string;
+  amount: number;
+  side: "nha-trai" | "nha-gai" | string;
+  method: "QR" | "CASH" | string;
+  status: "RECEIVED" | "PENDING" | string;
+  phone?: string | null;
+  note?: string | null;
+  guestId?: string | null;
+  guest?: {
+    id: string;
+    name: string;
+    slug?: string | null;
+    phone?: string | null;
+  } | null;
   createdAt: string;
 }
 
@@ -38,4 +62,7 @@ export interface StatsData {
   nhaGaiGuestsCount: number;
   totalWishes: number;
   totalGuests: number;
+  totalGiftAmount?: number;
+  totalGiftsCount?: number;
 }
+

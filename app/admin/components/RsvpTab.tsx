@@ -6,6 +6,8 @@ import { RsvpItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
+import { exportRsvpsToExcel } from "@/lib/exportExcel";
+import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
 
 interface RsvpTabProps {
   rsvps: RsvpItem[];
@@ -14,6 +16,7 @@ interface RsvpTabProps {
 
 export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
   const [items, setItems] = useState<RsvpItem[]>(rsvps);
+  const [totalCount, setTotalCount] = useState<number>(rsvps.length);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSide, setFilterSide] = useState<string>("all");
   const [filterAttending, setFilterAttending] = useState<string>("all");
@@ -21,34 +24,37 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
   const [sortKey, setSortKey] = useState<string | undefined>("createdAt");
   const [sortType, setSortType] = useState<ESortType>(ESortType.DESC);
 
-  // Cờ theo dõi lần render đầu tiên
-  const isInitialMount = useRef(true);
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  // Đồng bộ khi danh sách cha thay đổi (chỉ khi đang ở filter mặc định)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      setItems(rsvps);
-      return;
-    }
-    if (searchTerm === "" && filterSide === "all" && filterAttending === "all") {
-      setItems(rsvps);
-    }
-  }, [rsvps]);
-
-  // Hàm gọi API lọc từ Server
+  // Hàm gọi API lọc & phân trang từ Server
   const fetchFilteredRsvps = useCallback(
-    async (search: string, side: string, attending: string) => {
+    async (
+      search: string,
+      side: string,
+      attending: string,
+      page: number,
+      limit: number,
+      sort: string | undefined,
+      type: ESortType
+    ) => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("limit", String(limit));
         if (side !== "all") params.set("side", side);
         if (attending !== "all") params.set("attending", attending);
         if (search.trim()) params.set("search", search.trim());
+        if (sort) params.set("sortKey", sort);
+        params.set("sortType", type);
 
         const res = await fetch(`/api/rsvp?${params.toString()}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setItems(data.data);
+          setTotalCount(data.total ?? data.data.length);
         }
       } catch (err) {
         console.error("Lỗi khi lọc RSVP từ server:", err);
@@ -59,60 +65,60 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
     []
   );
 
-  // Debounce tìm kiếm và gọi server khi filter thay đổi
+  // Reset trang về 1 khi lọc hoặc tìm kiếm
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
+    setCurrentPage(1);
+  }, [searchTerm, filterSide, filterAttending]);
 
+  // Debounce tìm kiếm và gọi server khi filter, page, sort thay đổi
+  useEffect(() => {
     const timer = setTimeout(() => {
-      fetchFilteredRsvps(searchTerm, filterSide, filterAttending);
-    }, 300);
+      fetchFilteredRsvps(
+        searchTerm,
+        filterSide,
+        filterAttending,
+        currentPage,
+        pageSize,
+        sortKey,
+        sortType
+      );
+    }, 250);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, filterSide, filterAttending, fetchFilteredRsvps]);
+  }, [
+    searchTerm,
+    filterSide,
+    filterAttending,
+    currentPage,
+    pageSize,
+    sortKey,
+    sortType,
+    fetchFilteredRsvps,
+  ]);
 
   const handleDelete = async (id: string) => {
     onDeleteRsvp(id);
     setItems((prev) => prev.filter((item) => item.id !== id));
+    setTotalCount((prev) => Math.max(0, prev - 1));
   };
 
-  const handleExportCsv = () => {
-    const headers = [
-      "STT",
-      "Họ và tên",
-      "Số điện thoại",
-      "Tham dự",
-      "Số người",
-      "Bên",
-      "Lời nhắn",
-      "Thời gian",
-    ];
-    const rows = sortedItems.map((r, i) => [
-      i + 1,
-      `"${r.name.replace(/"/g, '""')}"`,
-      `"${r.phone || ""}"`,
-      r.attending ? "Có" : "Không",
-      r.guestCount,
-      r.side === "nha-trai" ? "Nhà Trai" : "Nhà Gái",
-      `"${(r.note || "").replace(/"/g, '""')}"`,
-      new Date(r.createdAt).toLocaleString("vi-VN"),
-    ]);
+  // Xuất file Excel (.xlsx) chuẩn chỉnh, cột rộng rãi, có thống kê & tiêu đề
+  const handleExportExcel = async () => {
+    try {
+      const params = new URLSearchParams();
+      params.set("all", "true");
+      if (filterSide !== "all") params.set("side", filterSide);
+      if (filterAttending !== "all") params.set("attending", filterAttending);
+      if (searchTerm.trim()) params.set("search", searchTerm.trim());
 
-    const csvContent =
-      "\uFEFF" + [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute(
-      "download",
-      `danh-sach-rsvp-${new Date().toISOString().slice(0, 10)}.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const res = await fetch(`/api/rsvp?${params.toString()}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        exportRsvpsToExcel(data.data);
+      }
+    } catch {
+      exportRsvpsToExcel(items);
+    }
   };
 
   const handleSort = (column: TColumn<RsvpItem>, type: ESortType) => {
@@ -120,35 +126,6 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
     setSortKey(key);
     setSortType(type);
   };
-
-  // Client-side sort on loaded items
-  const sortedItems = useMemo(() => {
-    if (!sortKey) return items;
-    return [...items].sort((a, b) => {
-      const aVal = a[sortKey as keyof RsvpItem];
-      const bVal = b[sortKey as keyof RsvpItem];
-      if (aVal === undefined || aVal === null) return 1;
-      if (bVal === undefined || bVal === null) return -1;
-      if (sortKey === "createdAt") {
-        const aTime = new Date(aVal as string).getTime();
-        const bTime = new Date(bVal as string).getTime();
-        return sortType === ESortType.ASC ? aTime - bTime : bTime - aTime;
-      }
-      if (typeof aVal === "number" && typeof bVal === "number") {
-        return sortType === ESortType.ASC ? aVal - bVal : bVal - aVal;
-      }
-      if (typeof aVal === "boolean" && typeof bVal === "boolean") {
-        return sortType === ESortType.ASC
-          ? Number(aVal) - Number(bVal)
-          : Number(bVal) - Number(aVal);
-      }
-      const aStr = String(aVal).toLowerCase();
-      const bStr = String(bVal).toLowerCase();
-      return sortType === ESortType.ASC
-        ? aStr.localeCompare(bStr, "vi")
-        : bStr.localeCompare(aStr, "vi");
-    });
-  }, [items, sortKey, sortType]);
 
   const columns = useMemo<TColumn<RsvpItem>[]>(
     () => [
@@ -389,18 +366,18 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
           </div>
 
           <button
-            onClick={handleExportCsv}
+            onClick={handleExportExcel}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer shadow-sm"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Xuất Excel/CSV ({items.length})</span>
+            <span>Xuất Excel (.xlsx) ({totalCount})</span>
           </button>
         </div>
       </div>
 
       {/* Table with horizontal scroll on mobile, resizable columns, and sorting */}
       <TableResize
-        data={sortedItems}
+        data={items}
         columns={columns}
         loading={loading}
         sortKey={sortKey}
@@ -410,6 +387,16 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
         resizable
         keyExtractor={(item) => item.id}
         empty="Chưa có dữ liệu phản hồi nào phù hợp với bộ lọc"
+      />
+
+      <PaginationCustom
+        totalItems={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        pageSizeOptions={[10, 20, 50, 100]}
+        itemUnitName="phản hồi"
       />
     </div>
   );

@@ -27,12 +27,68 @@ export async function GET(request: Request) {
       ];
     }
 
-    const rsvps = await prisma.rsvp.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const pageParam = searchParams.get("page");
+    const limitParam = searchParams.get("limit") || searchParams.get("pageSize");
+    const all = searchParams.get("all") === "true";
+    const sortKey = searchParams.get("sortKey") || "createdAt";
+    const sortType =
+      (searchParams.get("sortType") || "desc").toLowerCase() === "asc"
+        ? "asc"
+        : "desc";
 
-    return NextResponse.json({ success: true, data: rsvps });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orderBy: any = {};
+    if (["name", "createdAt", "side", "attending", "guestCount"].includes(sortKey)) {
+      orderBy[sortKey] = sortType;
+    } else {
+      orderBy.createdAt = "desc";
+    }
+
+    if (pageParam && !all) {
+      const page = Math.max(1, parseInt(pageParam, 10) || 1);
+      const limit = Math.max(1, parseInt(limitParam || "10", 10) || 10);
+      const skip = (page - 1) * limit;
+
+      const [total, rsvps] = await Promise.all([
+        prisma.rsvp.count({ where }),
+        prisma.rsvp.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit,
+        }),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return NextResponse.json({
+        success: true,
+        data: rsvps,
+        total,
+        page,
+        limit,
+        totalPages,
+        pagination: { total, page, limit, totalPages },
+      });
+    }
+
+    const [total, rsvps] = await Promise.all([
+      prisma.rsvp.count({ where }),
+      prisma.rsvp.findMany({
+        where,
+        orderBy,
+      }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: rsvps,
+      total,
+      page: 1,
+      limit: rsvps.length,
+      totalPages: 1,
+      pagination: { total, page: 1, limit: rsvps.length, totalPages: 1 },
+    });
   } catch (error) {
     console.error("Error fetching RSVPs:", error);
     return NextResponse.json(

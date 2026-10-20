@@ -12,6 +12,7 @@ export async function GET() {
       nhaGaiRsvps,
       totalWishes,
       totalGuests,
+      receivedGifts,
       recentRsvps,
     ] = await Promise.all([
       prisma.rsvp.count(),
@@ -21,6 +22,7 @@ export async function GET() {
       prisma.rsvp.findMany({ where: { side: "nha-gai", attending: true } }),
       prisma.wish.count(),
       prisma.guest.count(),
+      prisma.gift.findMany({ where: { status: "RECEIVED" } }),
       prisma.rsvp.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
@@ -42,6 +44,11 @@ export async function GET() {
       0
     );
 
+    const totalGiftAmount = receivedGifts.reduce(
+      (sum, g) => sum + (g.amount || 0),
+      0
+    );
+
     return NextResponse.json({
       success: true,
       data: {
@@ -52,6 +59,8 @@ export async function GET() {
         nhaGaiGuestsCount,
         totalWishes,
         totalGuests,
+        totalGiftAmount,
+        totalGiftsCount: receivedGifts.length,
         recentRsvps,
       },
     });

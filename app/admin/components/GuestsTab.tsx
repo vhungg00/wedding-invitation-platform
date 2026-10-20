@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Plus, Copy, Check, ExternalLink, Trash2, Search } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download } from "lucide-react";
 import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
 import { AppButton } from "@/app/components/ui/AppButton";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
+import { exportGuestsToExcel } from "@/lib/exportExcel";
+import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
 
 interface GuestsTabProps {
   guests: GuestItem[];
@@ -31,6 +33,10 @@ export default function GuestsTab({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortKey, setSortKey] = useState<string | undefined>("name");
   const [sortType, setSortType] = useState<ESortType>(ESortType.ASC);
+
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const getPersonalizedUrl = (guest: GuestItem) => {
     if (typeof window === "undefined") return "";
@@ -68,37 +74,63 @@ export default function GuestsTab({
     setSortType(type);
   };
 
-  // Filter & sort guests
-  const filteredAndSortedGuests = useMemo(() => {
-    let list = guests;
-    if (searchTerm.trim()) {
-      const q = searchTerm.trim().toLowerCase();
-      list = list.filter(
-        (g) =>
-          g.name.toLowerCase().includes(q) ||
-          (g.phone && g.phone.toLowerCase().includes(q))
-      );
-    }
+  const [items, setItems] = useState<GuestItem[]>(guests);
+  const [totalCount, setTotalCount] = useState<number>(guests.length);
+  const [loading, setLoading] = useState(false);
 
-    if (!sortKey) return list;
-
-    return [...list].sort((a, b) => {
-      const aVal = a[sortKey as keyof GuestItem];
-      const bVal = b[sortKey as keyof GuestItem];
-      if (aVal === undefined || aVal === null) return 1;
-      if (bVal === undefined || bVal === null) return -1;
-      if (sortKey === "createdAt") {
-        const aTime = new Date(aVal as string).getTime();
-        const bTime = new Date(bVal as string).getTime();
-        return sortType === ESortType.ASC ? aTime - bTime : bTime - aTime;
+  // Fetch danh sách khách mời từ server có phân trang
+  const fetchServerGuests = useCallback(
+    async (
+      page: number,
+      limit: number,
+      search: string,
+      sort: string | undefined,
+      type: ESortType
+    ) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(limit),
+          search: search.trim(),
+          sortKey: sort || "name",
+          sortType: type || "asc",
+        });
+        const res = await fetch(`/api/guests?${params.toString()}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          setItems(data.data);
+          setTotalCount(data.total ?? data.data.length);
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải khách mời:", err);
+      } finally {
+        setLoading(false);
       }
-      const aStr = String(aVal).toLowerCase();
-      const bStr = String(bVal).toLowerCase();
-      return sortType === ESortType.ASC
-        ? aStr.localeCompare(bStr, "vi")
-        : bStr.localeCompare(aStr, "vi");
-    });
-  }, [guests, searchTerm, sortKey, sortType]);
+    },
+    []
+  );
+
+  // Reset trang về 1 khi tìm kiếm thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Gọi API phân trang server khi thay đổi trang, kích thước, tìm kiếm, sắp xếp hoặc khi cha update
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchServerGuests(currentPage, pageSize, searchTerm, sortKey, sortType);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [
+    currentPage,
+    pageSize,
+    searchTerm,
+    sortKey,
+    sortType,
+    guests,
+    fetchServerGuests,
+  ]);
 
   const columns = useMemo<TColumn<GuestItem>[]>(
     () => [
@@ -284,6 +316,31 @@ export default function GuestsTab({
 
   return (
     <div className="space-y-6">
+      {/* Banner mở Màn Chuyên Sâu */}
+      <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 rounded-3xl p-0.5 shadow-md">
+        <div className="bg-white rounded-[23px] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">
+                Màn Hình Điều Phối Khách Mời & Xếp Bàn Tiệc Chuyên Sâu
+              </h3>
+              <p className="text-xs text-gray-500">
+                Thước đo mâm cỗ (chuẩn ngồi 8), Dán danh sách nhanh 200 khách, Gửi Zalo 1-chạm & Sơ đồ bàn tiệc.
+              </p>
+            </div>
+          </div>
+          <a
+            href="/admin/guests"
+            className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-200 transition shrink-0"
+          >
+            Mở Toàn Màn Hình →
+          </a>
+        </div>
+      </div>
+
       {/* Form tạo link */}
       <div className="bg-white/90 backdrop-blur-md rounded-3xl border border-rose-100 shadow-sm p-6">
         <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
@@ -349,19 +406,41 @@ export default function GuestsTab({
           <h3 className="text-base font-bold text-gray-800">
             Danh Sách Khách & Link Đã Tạo ({guests.length})
           </h3>
-          <div className="w-full sm:w-64">
-            <InputCustom
-              icon={<Search className="w-4 h-4" />}
-              placeholder="Tìm kiếm khách mời..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="w-full sm:w-64">
+              <InputCustom
+                icon={<Search className="w-4 h-4" />}
+                placeholder="Tìm kiếm khách mời..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/guests?all=true");
+                  const data = await res.json();
+                  if (data.success && Array.isArray(data.data)) {
+                    exportGuestsToExcel(data.data);
+                  }
+                } catch {
+                  exportGuestsToExcel(guests);
+                }
+              }}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold shadow-xs transition cursor-pointer shrink-0"
+              title="Xuất file Excel (.xlsx)"
+            >
+              <Download className="w-4 h-4 text-gray-500" />
+              <span>Xuất Excel (.xlsx)</span>
+            </button>
           </div>
         </div>
 
         {/* Table with horizontal scroll on mobile, resizable columns, and sorting */}
         <TableResize
-          data={filteredAndSortedGuests}
+          data={items}
+          loading={loading}
           columns={columns}
           sortKey={sortKey}
           sortType={sortType}
@@ -370,6 +449,16 @@ export default function GuestsTab({
           resizable
           keyExtractor={(g) => g.id}
           empty="Chưa có khách mời nào trong danh sách. Hãy tạo link đầu tiên ở trên!"
+        />
+
+        <PaginationCustom
+          totalItems={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[10, 20, 50, 100]}
+          itemUnitName="khách"
         />
       </div>
     </div>
