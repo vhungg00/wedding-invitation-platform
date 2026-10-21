@@ -78,12 +78,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-  overflow-x: clip;
+  overflow-x: hidden;
   max-width: 100vw;
 }
 
 html {
-  overflow-x: clip;
+  overflow-x: hidden;
   max-width: 100vw;
 }
 .container {
@@ -765,18 +765,6 @@ svg {
 /* Smooth AOS animation support on mobile & webviews */
 [data-aos] {
   pointer-events: auto;
-}
-
-/* Fallback: if AOS fails to add .aos-animate or is delayed in webviews (Zalo, etc.), automatically reveal elements smoothly after 0.8s */
-@keyframes aosAutoReveal {
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-[data-aos]:not(.aos-animate) {
-  animation: aosAutoReveal 0.5s ease-out 0.8s forwards;
 }
 
 

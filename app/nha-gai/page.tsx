@@ -20,6 +20,11 @@ export default function NhaGaiPage() {
       .then((json) => {
         if (json?.data) {
           setData((prev: any) => ({ ...prev, ...json.data }));
+          setTimeout(() => {
+            try {
+              AOS.refresh();
+            } catch {}
+          }, 100);
         }
       })
       .catch(() => {});
@@ -31,10 +36,8 @@ export default function NhaGaiPage() {
   useEffect(() => {
     try {
       AOS.init({
-        duration: 800,
-        once: true,
-        offset: 40,
-        easing: "ease-out-cubic",
+        duration: 2000, // thời gian animation (ms)
+        once: false,
       });
       const timer = setTimeout(() => {
         try {
@@ -84,24 +87,31 @@ export default function NhaGaiPage() {
 
         {/* Content nằm trên */}
         <div className="relative z-10 flex items-end justify-center md:h-full h-[70vh]">
+          {/* Content */}
           <div className="relative z-10 flex items-end justify-center full">
-            <div className="text-center px-3 sm:px-4 pb-4 sm:pb-6 md:pb-8 lg:pb-12 xl:pb-16 animate-fade-in">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 md:mb-3 lg:mb-4 drop-shadow-lg">
+            <div className="text-center px-3 sm:px-4 pb-4 sm:pb-6 md:pb-8 lg:pb-12 xl:pb-16">
+              <h1 data-aos="zoom-in" className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 md:mb-3 lg:mb-4 drop-shadow-lg">
                 <span className="font-imperial-script">{commonData.bride.name}</span>
                 <span className="mx-1 sm:mx-2 md:mx-3">-</span>
                 <span className="font-imperial-script">{commonData.groom.name}</span>
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3">
+              <p
+                data-aos="fade-left"
+                className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3"
+              >
                 {nhaGaiData?.hero?.title || "THƯ MỜI TIỆC CƯỚI"}
               </p>
-              <hr className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
-              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2">
+              <hr data-aos="fade-right" className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
+              <p data-aos="fade-left" className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2">
                 {heroDateText}
               </p>
-              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3">
+              <p
+                data-aos="fade-right"
+                className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3"
+              >
                 {formattedDate}
               </p>
-              <hr className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
+              <hr data-aos="fade-left" className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
             </div>
           </div>
         </div>
@@ -392,8 +402,8 @@ export default function NhaGaiPage() {
         <PhotoAlbum photos={commonData.album} />
       </div>
 
-      {/* Guestbook Wishes Section */}
-      <GuestbookSection currentSide="nha-gai" />
+      {/* Guestbook Wishes Section - Tạm ẩn theo yêu cầu */}
+      {/* <GuestbookSection currentSide="nha-gai" /> */}
 
       {/* Gift Box Section */}
       <GiftBoxSection defaultSide="nha-gai" />
