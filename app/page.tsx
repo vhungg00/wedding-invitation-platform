@@ -17,10 +17,17 @@ export default function Home() {
   useEffect(() => {
     try {
       AOS.init({
-        duration: 1000,
+        duration: 800,
         once: true,
-        disable: "mobile",
+        offset: 40,
+        easing: "ease-out-cubic",
       });
+      const timer = setTimeout(() => {
+        try {
+          AOS.refresh();
+        } catch {}
+      }, 500);
+      return () => clearTimeout(timer);
     } catch {
       // Ignore AOS errors in webview environments
     }
