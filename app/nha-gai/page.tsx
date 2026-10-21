@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { ImageWithFallback, ImgWithFallback } from "../components/ui/ImageWithFallback";
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import PhotoAlbum from "../components/PhotoAlbum";
@@ -11,8 +12,21 @@ import GiftBoxSection from "../components/GiftBoxSection";
 import weddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
-  const nhaGaiData = weddingData.nhaGai;
-  const commonData = weddingData;
+  const [data, setData] = useState<any>(weddingData);
+
+  useEffect(() => {
+    fetch("/api/invitation")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setData((prev: any) => ({ ...prev, ...json.data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const nhaGaiData = data.nhaGai;
+  const commonData = data;
 
   useEffect(() => {
     AOS.init({
@@ -23,16 +37,19 @@ export default function NhaGaiPage() {
   }, [nhaGaiData?.title]);
 
   const tiecVuQuy = nhaGaiData?.events?.[0];
+  // Tạm ẩn/comment sự kiện thứ 2 vì tổ chức đám cưới ở quê (chỉ để 1 mốc thời gian chung)
   const leVuQuy = nhaGaiData?.events?.[1];
 
   const heroDateText =
     nhaGaiData?.hero?.weddingDateText ||
-    (leVuQuy ? `${leVuQuy.dayOfWeek.toUpperCase()} - ${leVuQuy.time}` : "CHỦ NHẬT - 7H00");
+    (tiecVuQuy
+      ? `${tiecVuQuy.dayOfWeek.toUpperCase()} - ${tiecVuQuy.time}`
+      : "THỨ BẢY - 10H00");
 
   const formattedDate =
     nhaGaiData?.hero?.dateFormatted ||
-    (leVuQuy
-      ? `${leVuQuy.solarDate.day} . ${leVuQuy.solarDate.month} . ${leVuQuy.solarDate.year}`
+    (tiecVuQuy
+      ? `${tiecVuQuy.solarDate.day} . ${tiecVuQuy.solarDate.month} . ${tiecVuQuy.solarDate.year}`
       : "05 . 12 . 2026");
 
   const bankAccount = nhaGaiData?.donation?.bankAccount;
@@ -43,8 +60,9 @@ export default function NhaGaiPage() {
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[55%] w-[90%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
-          <img
+          <ImgWithFallback
             src={nhaGaiData?.hero?.backgroundImage || commonData.hero?.backgroundImage || "/tach-nen.png"}
+            fallbackSrc="/tach-nen.png"
             alt="Background"
             className="block w-full max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
       [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
@@ -143,10 +161,22 @@ export default function NhaGaiPage() {
         </div>
         <div className="flex justify-between items-center gap-2 sm:gap-2 md:gap-3 lg:gap-4 py-2 sm:py-2 md:py-3 lg:py-4 overflow-hidden">
           <div data-aos="fade-right" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <Image src={commonData.bride.avatar || "/co-dau.JPG"} alt="co-dau" fill className="object-contain" />
+            <ImageWithFallback
+              src={commonData.bride.avatar || "/co-dau.JPG"}
+              fallbackSrc="/co-dau.JPG"
+              alt="co-dau"
+              fill
+              className="object-contain"
+            />
           </div>
           <div data-aos="fade-left" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <Image src={commonData.groom.avatar || "/chu-re.JPG"} alt="chu-re" fill className="object-contain" />
+            <ImageWithFallback
+              src={commonData.groom.avatar || "/chu-re.JPG"}
+              fallbackSrc="/chu-re.JPG"
+              alt="chu-re"
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
       </div>
@@ -164,8 +194,9 @@ export default function NhaGaiPage() {
       </div>
       <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 p-1 sm:p-2 overflow-hidden">
         <div data-aos="fade-right" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={commonData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
+            fallbackSrc="/album/anh-phu-2.JPG"
             alt="thu-moi"
             width={200}
             height={400}
@@ -175,8 +206,9 @@ export default function NhaGaiPage() {
         </div>
 
         <div data-aos="zoom-in" className="basis-[50%] sm:basis-[30%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={commonData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
+            fallbackSrc="/album/anh-phu.JPG"
             alt="thu-moi"
             width={200}
             height={450}
@@ -186,8 +218,9 @@ export default function NhaGaiPage() {
         </div>
 
         <div data-aos="fade-left" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={commonData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
+            fallbackSrc="/album/anhphu-3.JPG"
             alt="thu-moi"
             width={200}
             height={400}
@@ -341,7 +374,7 @@ export default function NhaGaiPage() {
         <p data-aos="fade-down" className=" lg:text-4xl xl:text-5xl font-imperial-script text-center mb-3 sm:mb-4 md:mb-6">
           Album ảnh cưới
         </p>
-        <PhotoAlbum />
+        <PhotoAlbum photos={commonData.album} />
       </div>
 
       {/* Guestbook Wishes Section */}

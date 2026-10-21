@@ -9,7 +9,7 @@
     "avatar": "/chu-re.JPG",
     "fatherName": "ÔNG TẠ VĂN VƯỢNG",
     "motherName": "BÀ ĐẶNG THỊ XUÂN",
-    "address": "Xóm Trại 4, số nhà 33, ngõ 482, khu phố Đa Hội, P.Phù Khê, Bắc Ninh"
+    "address": "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai"
   },
   "bride": {
     "name": "Xuân Ly",
@@ -17,16 +17,25 @@
     "avatar": "/co-dau.JPG",
     "fatherName": "ÔNG NGUYỄN VĂN HƯNG",
     "motherName": "BÀ PHẠM THỊ KHUYÊN",
-    "address": "Số 9 Huỳnh Thúc Kháng, Hà Đông, Hà Nội"
+    "address": "1003, Lê Thanh, Nam Cường"
   },
   "quotes": {
     "line1": "Hôn nhân là chuyện cả đời",
     "line2": "Yêu người vừa ý, cưới người mình thương"
   },
   "invitationImages": [
-    { "url": "/album/anh-phu-2.JPG", "alt": "thu-moi-1" },
-    { "url": "/album/anh-phu.JPG", "alt": "thu-moi-2" },
-    { "url": "/album/anhphu-3.JPG", "alt": "thu-moi-3" }
+    {
+      "url": "/album/anh-phu-2.JPG",
+      "alt": "thu-moi-1"
+    },
+    {
+      "url": "/album/anh-phu.JPG",
+      "alt": "thu-moi-2"
+    },
+    {
+      "url": "/album/anhphu-3.JPG",
+      "alt": "thu-moi-3"
+    }
   ],
   "calendar": {
     "month": 12,
@@ -34,14 +43,46 @@
     "weddingDay": 6
   },
   "album": [
-    { "src": "/album/anh-chinh.JPG", "alt": "Ảnh chính", "aos": "zoom-in" },
-    { "src": "/album/anh-cuoi.JPG", "alt": "Ảnh cưới", "aos": "fade-left" },
-    { "src": "/album/anh-phu-2.JPG", "alt": "Ảnh phụ 2", "aos": "fade-up" },
-    { "src": "/album/anh-phu.JPG", "alt": "Ảnh phụ", "aos": "fade-right" },
-    { "src": "/album/anhphu-3.JPG", "alt": "Ảnh phụ 3", "aos": "zoom-out" },
-    { "src": "/album/anhphu-4.JPG", "alt": "Ảnh phụ 4", "aos": "slide-up" },
-    { "src": "/album/anhphu-5.JPG", "alt": "Ảnh phụ 5", "aos": "flip-left" },
-    { "src": "/album/anhphu-6.JPG", "alt": "Ảnh phụ 6", "aos": "fade-down" }
+    {
+      "src": "/album/anh-chinh.JPG",
+      "alt": "Ảnh chính",
+      "aos": "zoom-in"
+    },
+    {
+      "src": "/album/anh-cuoi.JPG",
+      "alt": "Ảnh cưới",
+      "aos": "fade-left"
+    },
+    {
+      "src": "/album/anh-phu-2.JPG",
+      "alt": "Ảnh phụ 2",
+      "aos": "fade-up"
+    },
+    {
+      "src": "/album/anh-phu.JPG",
+      "alt": "Ảnh phụ",
+      "aos": "fade-right"
+    },
+    {
+      "src": "/album/anhphu-3.JPG",
+      "alt": "Ảnh phụ 3",
+      "aos": "zoom-out"
+    },
+    {
+      "src": "/album/anhphu-4.JPG",
+      "alt": "Ảnh phụ 4",
+      "aos": "slide-up"
+    },
+    {
+      "src": "/album/anhphu-5.JPG",
+      "alt": "Ảnh phụ 5",
+      "aos": "flip-left"
+    },
+    {
+      "src": "/album/anhphu-6.JPG",
+      "alt": "Ảnh phụ 6",
+      "aos": "fade-down"
+    }
   ],
   "music": {
     "songTitle": "Xứng đôi",
@@ -54,30 +95,24 @@
     "hero": {
       "title": "THƯ MỜI TIỆC CƯỚI",
       "weddingDateText": "CHỦ NHẬT - 10H00",
-      "dateFormatted": "06 . 12 . 2026",
-      "backgroundImage": "/tach-nen.png"
+      "dateFormatted": "06 . 12 . 2026"
     },
     "events": [
       {
-        "title": "LỄ THÀNH HÔN",
+        "title": "LỄ THÀNH HÔN & TIỆC CƯỚI",
         "subtitle": "Tại gia đình nhà trai",
         "time": "10h00",
         "dayOfWeek": "Chủ Nhật",
-        "solarDate": { "day": 6, "month": 12, "year": 2026 },
+        "solarDate": {
+          "day": 6,
+          "month": 12,
+          "year": 2026
+        },
         "lunarDate": "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
-        "venueName": "Lễ thành hôn tại gia đình nhà trai",
+        "venueName": "Tại gia đình nhà trai",
         "timeRange": "10H00",
-        "address": "Xóm Trại 4, số nhà 33, ngõ 482, khu phố Đa Hội, P.Phù Khê, Bắc Ninh"
-      },
-      {
-        "title": "TIỆC MỪNG LỄ THÀNH HÔN",
-        "time": "11h30",
-        "dayOfWeek": "Chủ Nhật",
-        "solarDate": { "day": 6, "month": 12, "year": 2026 },
-        "lunarDate": "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
-        "venueName": "NHÀ HÀNG NGỌC ANH",
-        "address": "SN 547 - Đường Lý Thường Kiệt Khu Phố Đa Hội - P.Phù Khê - Bắc Ninh",
-        "mapUrl": "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d8306.05881960179!2d105.9139244!3d21.123143!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31350709554912d7%3A0x4f560b309cfa846e!2zTmjDoCBow6BuZyBOZ-G7jWMgQW5o!5e1!3m2!1svi!2s!4v1761116364936!5m2!1svi!2s"
+        "address": "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai",
+        "mapUrl": "https://maps.google.com/maps?q=Thôn+Na+Phả,+Xã+Bản+Lầu,+Lào+Cai&output=embed"
       }
     ],
     "donation": {
@@ -86,8 +121,7 @@
         "owner": "Chú rể Việt Hùng",
         "bankName": "MB Bank",
         "accountNumber": "Đang cập nhật",
-        "accountName": "TẠ VIỆT HÙNG",
-        "qrCodeUrl": "/qr.jpeg"
+        "accountName": "TẠ VIỆT HÙNG"
       }
     }
   },
@@ -97,39 +131,30 @@
     "hero": {
       "title": "THƯ MỜI TIỆC CƯỚI",
       "weddingDateText": "THỨ BẢY - 10H00",
-      "dateFormatted": "05 . 12 . 2026",
-      "backgroundImage": "/tach-nen.png"
+      "dateFormatted": "05 . 12 . 2026"
     },
     "events": [
       {
-        "title": "TIỆC MỪNG LỄ VU QUY",
+        "title": "LỄ VU QUY & TIỆC CƯỚI",
         "subtitle": "Tại gia đình nhà gái",
         "time": "10h00",
         "dayOfWeek": "Thứ Bảy",
-        "solarDate": { "day": 5, "month": 12, "year": 2026 },
+        "solarDate": {
+          "day": 5,
+          "month": 12,
+          "year": 2026
+        },
         "lunarDate": "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
         "venueName": "Tại gia đình nhà gái",
         "timeRange": "10H00",
-        "address": "Số 9 Huỳnh Thúc Kháng, Hà Đông, Hà Nội",
-        "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2074.033295573681!2d105.77317625117148!3d20.972210263868007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313453295c419a7d%3A0x28a5cb5649472704!2zOSBQLiBIdeG7s25oIFRow7pjIEtow6FuZywgUC4gUXVhbmcgVHJ1bmcsIEjDoCDEkMO0bmcsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1761073798742!5m2!1svi!2s"
-      },
-      {
-        "title": "LỄ VU QUY",
-        "subtitle": "Tại gia đình nhà gái",
-        "time": "07h00",
-        "dayOfWeek": "Chủ Nhật",
-        "solarDate": { "day": 6, "month": 12, "year": 2026 },
-        "lunarDate": "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
-        "venueName": "Tại gia đình nhà gái",
-        "timeRange": "07H00 - 08H",
-        "address": "Số 9 Huỳnh Thúc Kháng, Hà Đông, Hà Nội",
-        "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2074.033295573681!2d105.77317625117148!3d20.972210263868007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313453295c419a7d%3A0x28a5cb5649472704!2zOSBQLiBIdeG7s25oIFRow7pjIEtow6FuZywgUC4gUXVhbmcgVHJ1bmcsIEjDoCDEkMO0bmcsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1761073798742!5m2!1svi!2s"
+        "address": "1003, Lê Thanh, Nam Cường",
+        "mapUrl": "https://maps.google.com/maps?q=1003+Lê+Thanh,+Nam+Cường,+Lào+Cai&output=embed"
       }
     ],
     "donation": {
       "thankYouMessage": "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi.",
       "bankAccount": {
-        "owner": "Cô dâu Nguyễn Xuân Ly",
+        "owner": "Cô dâu Xuân Ly",
         "bankName": "Ngân hàng",
         "accountNumber": "Đang cập nhật",
         "accountName": "NGUYỄN XUÂN LY",
@@ -146,45 +171,33 @@
   "events": [
     {
       "side": "nha-trai",
-      "title": "Lễ thành hôn tại gia đình nhà trai",
+      "title": "Lễ thành hôn & Tiệc cưới",
       "time": "10h00",
       "dayOfWeek": "Chủ Nhật",
-      "solarDate": { "day": 6, "month": 12, "year": 2026 },
+      "solarDate": {
+        "day": 6,
+        "month": 12,
+        "year": 2026
+      },
       "lunarDate": "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
-      "venueName": "Lễ thành hôn tại gia đình nhà trai",
-      "address": "Xóm Trại 4, số nhà 33, ngõ 482, khu phố Đa Hội, P.Phù Khê, Bắc Ninh"
-    },
-    {
-      "side": "nha-trai",
-      "title": "Tiệc mừng lễ thành hôn",
-      "time": "11h30",
-      "dayOfWeek": "Chủ Nhật",
-      "solarDate": { "day": 6, "month": 12, "year": 2026 },
-      "lunarDate": "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
-      "venueName": "NHÀ HÀNG NGỌC ANH",
-      "address": "SN 547 - Đường Lý Thường Kiệt Khu Phố Đa Hội - P.Phù Khê - Bắc Ninh",
-      "mapUrl": "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d8306.05881960179!2d105.9139244!3d21.123143!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31350709554912d7%3A0x4f560b309cfa846e!2zTmjDoCBow6BuZyBOZ-G7jWMgQW5o!5e1!3m2!1svi!2s!4v1761116364936!5m2!1svi!2s"
+      "venueName": "Tại gia đình nhà trai",
+      "address": "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai",
+      "mapUrl": "https://maps.google.com/maps?q=Thôn+Na+Phả,+Xã+Bản+Lầu,+Lào+Cai&output=embed"
     },
     {
       "side": "nha-gai",
-      "title": "Tiệc mừng lễ Vu Quy",
+      "title": "Lễ vu quy & Tiệc cưới",
       "time": "10h00",
       "dayOfWeek": "Thứ Bảy",
-      "solarDate": { "day": 5, "month": 12, "year": 2026 },
+      "solarDate": {
+        "day": 5,
+        "month": 12,
+        "year": 2026
+      },
       "lunarDate": "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
       "venueName": "Tại gia đình nhà gái",
-      "address": "Số 9 Huỳnh Thúc Kháng, Hà Đông, Hà Nội",
-      "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2074.033295573681!2d105.77317625117148!3d20.972210263868007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313453295c419a7d%3A0x28a5cb5649472704!2zOSBQLiBIdeG7s25oIFRow7pjIEtow6FuZywgUC4gUXVhbmcgVHJ1bmcsIEjDoCDEkMO0bmcsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1761073798742!5m2!1svi!2s"
-    },
-    {
-      "side": "nha-gai",
-      "title": "Lễ Vu Quy",
-      "time": "10h00",
-      "dayOfWeek": "Thứ Bảy",
-      "solarDate": { "day": 5, "month": 12, "year": 2026 },
-      "lunarDate": "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
-      "venueName": "Tại gia đình nhà gái",
-      "address": "Số 9 Huỳnh Thúc Kháng, Hà Đông, Hà Nội"
+      "address": "1003, Lê Thanh, Nam Cường",
+      "mapUrl": "https://maps.google.com/maps?q=1003+Lê+Thanh,+Nam+Cường,+Lào+Cai&output=embed"
     }
   ],
   "donation": {

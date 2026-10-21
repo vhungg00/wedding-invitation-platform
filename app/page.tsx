@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { ImageWithFallback, ImgWithFallback } from "./components/ui/ImageWithFallback";
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import Calendar from "./hooks/calender";
@@ -8,23 +9,38 @@ import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
 import GuestbookSection from "./components/GuestbookSection";
 import GiftBoxSection from "./components/GiftBoxSection";
-import weddingData from "@/data/wedding-data.json";
+import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function Home() {
-
+  const [weddingData, setWeddingData] = useState<any>(defaultWeddingData);
 
   useEffect(() => {
     AOS.init({
       duration: 2000,
       once: false,
     });
-    document.title = weddingData.nhaTrai?.title || weddingData.title;
   }, []);
+
+  useEffect(() => {
+    fetch("/api/invitation")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setWeddingData((prev: any) => ({ ...prev, ...json.data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    document.title = weddingData.nhaTrai?.title || weddingData.title;
+  }, [weddingData.nhaTrai?.title, weddingData.title]);
 
   // Events for Nhà Trai
   const nhaTraiData = weddingData.nhaTrai;
   const leThanhHon = nhaTraiData?.events?.[0] || weddingData.events?.[0];
-  const tiecMung = nhaTraiData?.events?.[1] || weddingData.events?.[1];
+  // Tạm ẩn/comment giờ ăn riêng biệt vì tổ chức đám cưới ở quê (chỉ để 1 mốc thời gian chung)
+  const tiecMung = nhaTraiData?.events?.[1];
 
   const heroDateText =
     nhaTraiData?.hero?.weddingDateText ||
@@ -46,8 +62,9 @@ export default function Home() {
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[55%] w-[90%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
-          <img
+          <ImgWithFallback
             src={weddingData.hero?.backgroundImage || "/tach-nen.png"}
+            fallbackSrc="/tach-nen.png"
             alt="Background"
             className="block w-full max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
       [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
@@ -146,10 +163,22 @@ export default function Home() {
         </div>
         <div className="flex justify-between items-center gap-2 sm:gap-2 md:gap-3 lg:gap-4 py-2 sm:py-2 md:py-3 lg:py-4 overflow-hidden">
           <div data-aos="fade-right" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <Image src={weddingData.groom.avatar || "/chu-re.JPG"} alt="chu-re" fill className="object-contain" />
+            <ImageWithFallback
+              src={weddingData.groom.avatar || "/chu-re.JPG"}
+              fallbackSrc="/chu-re.JPG"
+              alt="chu-re"
+              fill
+              className="object-contain"
+            />
           </div>
           <div data-aos="fade-left" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <Image src={weddingData.bride.avatar || "/co-dau.JPG"} alt="co-dau" fill className="object-contain" />
+            <ImageWithFallback
+              src={weddingData.bride.avatar || "/co-dau.JPG"}
+              fallbackSrc="/co-dau.JPG"
+              alt="co-dau"
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
       </div>
@@ -167,8 +196,9 @@ export default function Home() {
       </div>
       <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 p-1 sm:p-2 overflow-hidden">
         <div data-aos="fade-right" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={weddingData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
+            fallbackSrc="/album/anh-phu-2.JPG"
             alt="thu-moi"
             width={200}
             height={400}
@@ -178,8 +208,9 @@ export default function Home() {
         </div>
 
         <div data-aos="zoom-in" className="basis-[50%] sm:basis-[30%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={weddingData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
+            fallbackSrc="/album/anh-phu.JPG"
             alt="thu-moi"
             width={200}
             height={450}
@@ -189,8 +220,9 @@ export default function Home() {
         </div>
 
         <div data-aos="fade-left" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={weddingData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
+            fallbackSrc="/album/anhphu-3.JPG"
             alt="thu-moi"
             width={200}
             height={400}
@@ -322,9 +354,9 @@ export default function Home() {
         )}
 
         <div data-aos="fade-up" className="w-full max-w-full overflow-hidden mt-2">
-          {(tiecMung?.mapUrl || leThanhHon?.mapUrl) && (
+          {(leThanhHon?.mapUrl || tiecMung?.mapUrl) && (
             <iframe
-              src={tiecMung?.mapUrl || leThanhHon?.mapUrl}
+              src={leThanhHon?.mapUrl || tiecMung?.mapUrl}
               width="100%"
               height="300"
               style={{ border: 0 }}
@@ -344,7 +376,7 @@ export default function Home() {
         <p data-aos="fade-down" className=" lg:text-4xl xl:text-5xl font-imperial-script text-center mb-3 sm:mb-4 md:mb-6">
           Album ảnh cưới
         </p>
-        <PhotoAlbum />
+        <PhotoAlbum photos={weddingData.album} />
       </div>
 
       {/* Guestbook Wishes Section */}
