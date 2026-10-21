@@ -17,6 +17,7 @@ export function ImageWithFallback({
   alt,
   className,
   onError,
+  unoptimized,
   ...rest
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState<any>(src || fallbackSrc);
@@ -27,10 +28,16 @@ export function ImageWithFallback({
     setHasError(false);
   }, [src, fallbackSrc]);
 
+  const current = hasError ? fallbackSrc : imgSrc;
+  const isRemote =
+    typeof current === "string" &&
+    (current.startsWith("http://") || current.startsWith("https://"));
+
   return (
     <Image
       {...rest}
-      src={hasError ? fallbackSrc : imgSrc}
+      unoptimized={unoptimized !== undefined ? unoptimized : isRemote}
+      src={current}
       alt={alt}
       className={className}
       onError={(e) => {

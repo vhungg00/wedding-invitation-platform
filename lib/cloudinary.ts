@@ -69,12 +69,26 @@ export function getCloudinaryPublicId(url: string): string | null {
   try {
     const parts = url.split("/upload/");
     if (parts.length < 2) return null;
-    let pathAfterUpload = parts[1].replace(/^v\d+\//, "");
-    const lastDotIndex = pathAfterUpload.lastIndexOf(".");
-    if (lastDotIndex !== -1) {
-      pathAfterUpload = pathAfterUpload.substring(0, lastDotIndex);
+    let afterUpload = parts[1];
+    // Xóa query parameters nếu có (?_a=...)
+    afterUpload = afterUpload.split("?")[0];
+    // Loại bỏ version (v1234567890/) hoặc các chuỗi transformation (c_scale,w_500/v123/...)
+    const vMatch = afterUpload.match(/(?:^|\/)v\d+\/(.+)$/);
+    if (vMatch && vMatch[1]) {
+      afterUpload = vMatch[1];
+    } else {
+      const segments = afterUpload.split("/");
+      if (segments.length > 1 && (segments[0].includes(",") || segments[0].includes("_"))) {
+        segments.shift();
+        afterUpload = segments.join("/");
+      }
     }
-    return pathAfterUpload;
+    // Bỏ phần đuôi mở rộng file (.png, .jpg, .webp...)
+    const lastDotIndex = afterUpload.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+      afterUpload = afterUpload.substring(0, lastDotIndex);
+    }
+    return decodeURIComponent(afterUpload);
   } catch {
     return null;
   }
@@ -102,8 +116,11 @@ export async function deleteImageFromStorage(url: string): Promise<boolean> {
     const publicId = getCloudinaryPublicId(url);
     if (publicId) {
       try {
-        const result = await cloudinary.uploader.destroy(publicId);
-        console.log(`>>> Đã xóa ảnh trên Cloudinary (${publicId}):`, result);
+        const result = await cloudinary.uploader.destroy(publicId, {
+          invalidate: true,
+          resource_type: "image",
+        });
+        console.log(`>>> Đã xóa vĩnh viễn trên Cloudinary (${publicId}):`, result);
         return result.result === "ok" || result.result === "not found";
       } catch (err) {
         console.error("Lỗi xóa ảnh Cloudinary:", err);

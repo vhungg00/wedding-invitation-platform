@@ -164,8 +164,17 @@ export default function MediaStudioPage() {
     }
   };
 
-  // Khôi phục 1 ảnh thiệp mời về mặc định
-  const handleResetInvitationImage = (index: number) => {
+  // Khôi phục 1 ảnh thiệp mời về mặc định (đồng thời xóa ảnh Cloudinary cũ nếu có)
+  const handleResetInvitationImage = async (index: number) => {
+    const oldUrl = invitationImages[index]?.url;
+    if (oldUrl && oldUrl.includes("res.cloudinary.com")) {
+      fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: oldUrl }),
+      }).catch(console.error);
+    }
+
     const defaultUrls = ["/album/anh-phu-2.JPG", "/album/anh-phu.JPG", "/album/anhphu-3.JPG"];
     setInvitationImages((prev) => {
       const next = [...prev];
@@ -177,6 +186,34 @@ export default function MediaStudioPage() {
       type: "success",
       text: `Đã đưa ảnh thiệp mời #${index + 1} về ảnh mặc định. Hãy bấm 'Lưu Thay Đổi' để cập nhật Database!`,
     });
+  };
+
+  // Khôi phục 1 trường ảnh đơn lẻ về mặc định (đồng thời xóa ảnh Cloudinary cũ)
+  const handleResetSingleField = (
+    field: "groomAvatar" | "brideAvatar" | "heroBg" | "qrCodeNhaTrai" | "qrCodeNhaGai",
+    defaultUrl: string
+  ) => {
+    const oldUrl =
+      field === "groomAvatar" ? groomAvatar :
+      field === "brideAvatar" ? brideAvatar :
+      field === "heroBg" ? heroBg :
+      field === "qrCodeNhaTrai" ? qrCodeNhaTrai :
+      field === "qrCodeNhaGai" ? qrCodeNhaGai : null;
+
+    if (oldUrl && oldUrl.includes("res.cloudinary.com")) {
+      fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: oldUrl }),
+      }).catch(console.error);
+    }
+
+    if (field === "groomAvatar") setGroomAvatar(defaultUrl);
+    if (field === "brideAvatar") setBrideAvatar(defaultUrl);
+    if (field === "heroBg") setHeroBg(defaultUrl);
+    if (field === "qrCodeNhaTrai") setQrCodeNhaTrai(defaultUrl);
+    if (field === "qrCodeNhaGai") setQrCodeNhaGai(defaultUrl);
+    setHasUnsavedChanges(true);
   };
 
   // Upload 1 ảnh đơn lẻ (Avatar, Hero, QR Nhà Trai, QR Nhà Gái)
@@ -199,6 +236,22 @@ export default function MediaStudioPage() {
 
       const json = await res.json();
       if (json.success && json.url) {
+        // Dọn dẹp ảnh cũ trên Cloudinary nếu đang ghi đè ảnh đã upload trước đó
+        const oldUrl =
+          field === "groomAvatar" ? groomAvatar :
+          field === "brideAvatar" ? brideAvatar :
+          field === "heroBg" ? heroBg :
+          field === "qrCodeNhaTrai" ? qrCodeNhaTrai :
+          field === "qrCodeNhaGai" ? qrCodeNhaGai : null;
+
+        if (oldUrl && oldUrl.includes("res.cloudinary.com") && oldUrl !== json.url) {
+          fetch("/api/upload", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: oldUrl }),
+          }).catch(console.error);
+        }
+
         if (field === "groomAvatar") setGroomAvatar(json.url);
         if (field === "brideAvatar") setBrideAvatar(json.url);
         if (field === "heroBg") setHeroBg(json.url);
@@ -557,10 +610,7 @@ export default function MediaStudioPage() {
                 {groomAvatar !== "/chu-re.JPG" && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setGroomAvatar("/chu-re.JPG");
-                      setHasUnsavedChanges(true);
-                    }}
+                    onClick={() => handleResetSingleField("groomAvatar", "/chu-re.JPG")}
                     className="w-full py-1.5 text-[11px] text-gray-500 hover:text-rose-600 font-medium transition cursor-pointer"
                   >
                     Khôi phục ảnh gốc (/chu-re.JPG)
@@ -623,10 +673,7 @@ export default function MediaStudioPage() {
                 {brideAvatar !== "/co-dau.JPG" && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setBrideAvatar("/co-dau.JPG");
-                      setHasUnsavedChanges(true);
-                    }}
+                    onClick={() => handleResetSingleField("brideAvatar", "/co-dau.JPG")}
                     className="w-full py-1.5 text-[11px] text-gray-500 hover:text-rose-600 font-medium transition cursor-pointer"
                   >
                     Khôi phục ảnh gốc (/co-dau.JPG)
@@ -689,10 +736,7 @@ export default function MediaStudioPage() {
                 {heroBg !== "/tach-nen.png" && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setHeroBg("/tach-nen.png");
-                      setHasUnsavedChanges(true);
-                    }}
+                    onClick={() => handleResetSingleField("heroBg", "/tach-nen.png")}
                     className="w-full py-1.5 text-[11px] text-gray-500 hover:text-amber-700 font-medium transition cursor-pointer"
                   >
                     Khôi phục ảnh gốc (/tach-nen.png)
@@ -984,10 +1028,7 @@ export default function MediaStudioPage() {
                   {qrCodeNhaTrai !== "/qr.jpeg" && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setQrCodeNhaTrai("/qr.jpeg");
-                        setHasUnsavedChanges(true);
-                      }}
+                      onClick={() => handleResetSingleField("qrCodeNhaTrai", "/qr.jpeg")}
                       className="py-2 px-3 rounded-xl border border-gray-200 text-gray-600 hover:text-rose-600 text-xs font-medium transition cursor-pointer"
                     >
                       Dùng /qr.jpeg
@@ -1056,10 +1097,7 @@ export default function MediaStudioPage() {
                   {qrCodeNhaGai !== "/qr.jpeg" && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setQrCodeNhaGai("/qr.jpeg");
-                        setHasUnsavedChanges(true);
-                      }}
+                      onClick={() => handleResetSingleField("qrCodeNhaGai", "/qr.jpeg")}
                       className="py-2 px-3 rounded-xl border border-gray-200 text-gray-600 hover:text-amber-700 text-xs font-medium transition cursor-pointer"
                     >
                       Dùng /qr.jpeg
@@ -1220,14 +1258,34 @@ export default function MediaStudioPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-full flex items-center justify-between px-3 py-2 text-white">
-              <h3 id="preview-modal-title" className="text-sm font-bold truncate">{previewModalImg.title}</h3>
-              <button
-                type="button"
-                onClick={() => setPreviewModalImg(null)}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2 truncate">
+                <h3 id="preview-modal-title" className="text-sm font-bold truncate">{previewModalImg.title}</h3>
+                {previewModalImg.src?.includes("res.cloudinary.com") && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                    Cloudinary CDN
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {previewModalImg.src && (
+                  <a
+                    href={previewModalImg.src}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1 transition"
+                  >
+                    <span>Mở link gốc</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setPreviewModalImg(null)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="relative w-full h-[65vh] sm:h-[75vh] flex items-center justify-center rounded-2xl overflow-hidden bg-black/40">
@@ -1238,6 +1296,20 @@ export default function MediaStudioPage() {
                 fill
                 className="object-contain"
               />
+            </div>
+
+            <div className="w-full mt-2 px-3 py-1.5 rounded-xl bg-white/5 text-[11px] font-mono text-gray-300 truncate flex items-center justify-between gap-2">
+              <span className="truncate">{previewModalImg.src}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(previewModalImg.src);
+                  alert("Đã sao chép link ảnh: " + previewModalImg.src);
+                }}
+                className="shrink-0 px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-white text-[10px] cursor-pointer"
+              >
+                Copy Link
+              </button>
             </div>
           </div>
         </div>

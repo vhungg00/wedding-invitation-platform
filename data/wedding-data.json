@@ -121,7 +121,8 @@
         "owner": "Chú rể Việt Hùng",
         "bankName": "MB Bank",
         "accountNumber": "Đang cập nhật",
-        "accountName": "TẠ VIỆT HÙNG"
+        "accountName": "TẠ VIỆT HÙNG",
+        "qrCodeUrl": "/qr.jpeg"
       }
     }
   },
