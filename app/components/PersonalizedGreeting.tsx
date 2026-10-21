@@ -28,7 +28,7 @@ function GreetingContent({
   };
 
   return (
-    <div data-aos="fade-down" className="max-w-2xl mx-auto my-6 px-4">
+    <div suppressHydrationWarning data-aos="fade-down" className="max-w-2xl mx-auto my-6 px-4">
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 border border-amber-200/80 shadow-lg p-5 sm:p-6 text-center">
         {/* Subtle decorative badges */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-medium tracking-wide uppercase mb-3">

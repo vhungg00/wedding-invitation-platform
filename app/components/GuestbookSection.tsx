@@ -108,7 +108,7 @@ export default function GuestbookSection({ currentSide = "nha-trai" }: Guestbook
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-12 px-4" data-aos="fade-up">
+    <div suppressHydrationWarning className="w-full max-w-4xl mx-auto my-12 px-4" data-aos="fade-up">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-50 text-rose-500 mb-3 shadow-inner">
           <MessageCircleHeart className="w-6 h-6" />

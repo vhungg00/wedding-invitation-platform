@@ -126,10 +126,19 @@ function GiftBoxContent({
   const currentAccount = activeSide === "nha-trai" ? nhaTraiAccount : nhaGaiAccount;
 
   // Form xác nhận gửi quà mừng
-  const [donorName, setDonorName] = useState(guest?.name || "");
-  const [donorPhone, setDonorPhone] = useState(guest?.phone || "");
+  const [donorName, setDonorName] = useState("");
+  const [donorPhone, setDonorPhone] = useState("");
   const [donorAmount, setDonorAmount] = useState("");
   const [donorNote, setDonorNote] = useState("");
+
+  useEffect(() => {
+    if (guest?.name && !donorName) {
+      setDonorName(guest.name);
+    }
+    if (guest?.phone && !donorPhone) {
+      setDonorPhone(guest.phone);
+    }
+  }, [guest]);
 
   // Chuẩn bị nội dung chuyển khoản động
   const guestCleanName = guest?.name
@@ -223,6 +232,7 @@ function GiftBoxContent({
   return (
     <section
       id="gift-box"
+      suppressHydrationWarning
       data-aos="fade-up"
       className="my-14 sm:my-20 px-3 sm:px-6 max-w-4xl mx-auto"
     >
@@ -291,7 +301,6 @@ function GiftBoxContent({
                     width={224}
                     height={224}
                     className="object-contain w-full h-full"
-                    priority
                     unoptimized
                   />
                 </div>
