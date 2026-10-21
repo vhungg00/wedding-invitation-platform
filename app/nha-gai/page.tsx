@@ -376,7 +376,7 @@ export default function NhaGaiPage() {
       {/* <GuestbookSection currentSide="nha-gai" /> */}
 
       {/* Gift Box Section */}
-      <GiftBoxSection defaultSide="nha-gai" />
+      <GiftBoxSection defaultSide="nha-gai" data={data} />
 
       {/* Thank You Banner */}
       <div className="relative w-full lg:h-[50vh] h-[40vh] overflow-hidden rounded-3xl my-8">

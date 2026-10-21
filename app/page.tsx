@@ -375,7 +375,7 @@ export default function Home() {
       {/* <GuestbookSection currentSide="nha-trai" /> */}
 
       {/* Gift Box Section */}
-      <GiftBoxSection defaultSide="nha-trai" />
+      <GiftBoxSection defaultSide="nha-trai" data={weddingData} />
 
       {/* Thank You Banner */}
       <div className="relative w-full lg:h-[50vh] h-[40vh] overflow-hidden rounded-3xl my-8">

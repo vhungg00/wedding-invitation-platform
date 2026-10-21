@@ -16,13 +16,6 @@ interface PhotoAlbumProps {
 }
 
 const PhotoAlbum: React.FC<PhotoAlbumProps> = ({ photos }) => {
-  useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
-  }, []);
-
   const displayPhotos =
     photos && photos.length > 0
       ? photos
