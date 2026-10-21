@@ -1,60 +1,25 @@
 "use client";
 import Image from "next/image";
-import { ImageWithFallback, ImgWithFallback } from "./components/ui/ImageWithFallback";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AOS from "aos";
 import Calendar from "./hooks/calender";
 import PhotoAlbum from "./components/PhotoAlbum";
 import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
-import GuestbookSection from "./components/GuestbookSection";
 import GiftBoxSection from "./components/GiftBoxSection";
-import defaultWeddingData from "@/data/wedding-data.json";
+import weddingData from "@/data/wedding-data.json";
 
 export default function Home() {
-  const [weddingData, setWeddingData] = useState<any>(defaultWeddingData);
-
   useEffect(() => {
-    try {
-      AOS.init({
-        duration: 2000, // thời gian animation (ms)
-        once: false,
-      });
-      const timer = setTimeout(() => {
-        try {
-          AOS.refresh();
-        } catch {}
-      }, 500);
-      return () => clearTimeout(timer);
-    } catch {
-      // Ignore AOS errors in webview environments
-    }
+    AOS.init({
+      duration: 2000, // thời gian animation (ms)
+      once: false,
+    });
   }, []);
-
-  useEffect(() => {
-    fetch("/api/invitation")
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.data) {
-          setWeddingData((prev: any) => ({ ...prev, ...json.data }));
-          setTimeout(() => {
-            try {
-              AOS.refresh();
-            } catch {}
-          }, 100);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    document.title = weddingData.nhaTrai?.title || weddingData.title;
-  }, [weddingData.nhaTrai?.title, weddingData.title]);
 
   // Events for Nhà Trai
   const nhaTraiData = weddingData.nhaTrai;
   const leThanhHon = nhaTraiData?.events?.[0] || weddingData.events?.[0];
-  // Tạm ẩn/comment giờ ăn riêng biệt vì tổ chức đám cưới ở quê (chỉ để 1 mốc thời gian chung)
   const tiecMung = nhaTraiData?.events?.[1];
 
   const heroDateText =
@@ -69,17 +34,14 @@ export default function Home() {
       ? `${leThanhHon.solarDate.day} . ${leThanhHon.solarDate.month} . ${leThanhHon.solarDate.year}`
       : weddingData.hero.dateFormatted);
 
-  const bankAccount = nhaTraiData?.donation?.bankAccount || weddingData.donation?.bankAccounts?.[0];
-
   return (
     <div className="py-2 container overflow-x-hidden max-w-full">
       {/* Hero Section */}
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[55%] w-[90%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
-          <ImgWithFallback
-            src={weddingData.hero?.backgroundImage || "/tach-nen.png"}
-            fallbackSrc="/tach-nen.png"
+          <img
+            src="/tach-nen.png"
             alt="Background"
             className="block w-full max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
       [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
@@ -179,22 +141,18 @@ export default function Home() {
         </div>
         <div className="flex justify-between items-center gap-2 sm:gap-2 md:gap-3 lg:gap-4 py-2 sm:py-2 md:py-3 lg:py-4 overflow-hidden">
           <div data-aos="fade-right" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <ImageWithFallback
-              src={weddingData.groom.avatar || "/chu-re.JPG"}
-              fallbackSrc="/chu-re.JPG"
+            <Image
+              src="/chu-re.JPG"
               alt="chu-re"
               fill
-              loading="eager"
               className="object-contain"
             />
           </div>
           <div data-aos="fade-left" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <ImageWithFallback
-              src={weddingData.bride.avatar || "/co-dau.JPG"}
-              fallbackSrc="/co-dau.JPG"
+            <Image
+              src="/co-dau.JPG"
               alt="co-dau"
               fill
-              loading="eager"
               className="object-contain"
             />
           </div>
@@ -214,39 +172,33 @@ export default function Home() {
       </div>
       <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 p-1 sm:p-2 overflow-hidden">
         <div data-aos="fade-right" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
-            src={weddingData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
-            fallbackSrc="/album/anh-phu-2.JPG"
+          <Image
+            src="/album/anh-phu-2.JPG"
             alt="thu-moi"
             width={200}
             height={400}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
         </div>
 
         <div data-aos="zoom-in" className="basis-[50%] sm:basis-[30%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
-            src={weddingData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
-            fallbackSrc="/album/anh-phu.JPG"
+          <Image
+            src="/album/anh-phu.JPG"
             alt="thu-moi"
             width={200}
             height={450}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
         </div>
 
         <div data-aos="fade-left" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
-            src={weddingData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
-            fallbackSrc="/album/anhphu-3.JPG"
+          <Image
+            src="/album/anhphu-3.JPG"
             alt="thu-moi"
             width={200}
             height={400}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
@@ -439,4 +391,3 @@ export default function Home() {
     </div>
   );
 }
-
