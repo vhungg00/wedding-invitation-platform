@@ -200,6 +200,9 @@ export default function GuestsMasterPage() {
         setGuests((prev) =>
           prev.map((g) => (g.id === guest.id ? { ...g, isSent: nextSent } : g))
         );
+        setTableGuests((prev) =>
+          prev.map((g) => (g.id === guest.id ? { ...g, isSent: nextSent } : g))
+        );
       }
     } catch {
       alert("Lỗi khi cập nhật trạng thái gửi!");
@@ -213,7 +216,20 @@ export default function GuestsMasterPage() {
       const res = await fetch(`/api/guests?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setGuests((prev) => prev.filter((g) => g.id !== id));
+        setTableGuests((prev) => prev.filter((g) => g.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
+        const newTotal = Math.max(0, totalTableGuests - 1);
+        setTotalTableGuests(newTotal);
+
+        const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+        if (currentPage > maxPage) {
+          setCurrentPage(maxPage);
+        } else {
+          fetchTableGuests();
+        }
+        fetchAllGuests();
+      } else {
+        alert("Không thể xóa khách mời!");
       }
     } catch {
       alert("Không thể xóa khách mời!");
@@ -230,6 +246,9 @@ export default function GuestsMasterPage() {
       });
       if (res.ok) {
         setGuests((prev) =>
+          prev.map((g) => (g.id === guestId ? { ...g, table: table || null } : g))
+        );
+        setTableGuests((prev) =>
           prev.map((g) => (g.id === guestId ? { ...g, table: table || null } : g))
         );
       }
@@ -273,8 +292,22 @@ export default function GuestsMasterPage() {
         body: JSON.stringify({ ids: selectedIds }),
       });
       if (res.ok) {
-        setGuests((prev) => prev.filter((g) => !selectedIds.includes(g.id)));
+        const deletedIds = [...selectedIds];
+        setGuests((prev) => prev.filter((g) => !deletedIds.includes(g.id)));
+        setTableGuests((prev) => prev.filter((g) => !deletedIds.includes(g.id)));
+        const newTotal = Math.max(0, totalTableGuests - deletedIds.length);
+        setTotalTableGuests(newTotal);
         setSelectedIds([]);
+
+        const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+        if (currentPage > maxPage) {
+          setCurrentPage(maxPage);
+        } else {
+          fetchTableGuests();
+        }
+        fetchAllGuests();
+      } else {
+        alert("Lỗi khi xóa hàng loạt!");
       }
     } catch {
       alert("Lỗi khi xóa hàng loạt!");

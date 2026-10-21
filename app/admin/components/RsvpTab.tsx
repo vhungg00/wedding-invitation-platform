@@ -11,7 +11,7 @@ import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
 
 interface RsvpTabProps {
   rsvps: RsvpItem[];
-  onDeleteRsvp: (id: string) => void;
+  onDeleteRsvp: (id: string) => Promise<boolean | void> | void;
 }
 
 export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
@@ -70,7 +70,7 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
     setCurrentPage(1);
   }, [searchTerm, filterSide, filterAttending]);
 
-  // Debounce tìm kiếm và gọi server khi filter, page, sort thay đổi
+  // Debounce tìm kiếm và gọi server khi filter, page, sort thay đổi hoặc khi cha cập nhật
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchFilteredRsvps(
@@ -93,14 +93,40 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
     pageSize,
     sortKey,
     sortType,
+    rsvps,
     fetchFilteredRsvps,
   ]);
 
   const handleDelete = async (id: string) => {
-    onDeleteRsvp(id);
+    const success = await onDeleteRsvp(id);
+    if (success === false) return;
+
+    // Cập nhật optimistic
     setItems((prev) => prev.filter((item) => item.id !== id));
-    setTotalCount((prev) => Math.max(0, prev - 1));
+    const newTotal = Math.max(0, totalCount - 1);
+    setTotalCount(newTotal);
+
+    // Tính toán trang mới nếu xóa item cuối cùng của trang hiện tại (> 1)
+    const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+    const targetPage = currentPage > maxPage ? maxPage : currentPage;
+    if (targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    } else {
+      // Call lại list từ server để đồng bộ và bù item từ trang sau lên trang hiện tại
+      fetchFilteredRsvps(
+        searchTerm,
+        filterSide,
+        filterAttending,
+        currentPage,
+        pageSize,
+        sortKey,
+        sortType
+      );
+    }
   };
+
+  const handleDeleteRef = useRef(handleDelete);
+  handleDeleteRef.current = handleDelete;
 
   // Xuất file Excel (.xlsx) chuẩn chỉnh, cột rộng rãi, có thống kê & tiêu đề
   const handleExportExcel = async () => {
@@ -298,7 +324,7 @@ export default function RsvpTab({ rsvps, onDeleteRsvp }: RsvpTabProps) {
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(r.id);
+              handleDeleteRef.current(r.id);
             }}
             style={{
               border: "none",
