@@ -52,7 +52,7 @@ export default function MusicPlayer() {
         src={weddingData.music?.audioUrl || "/xung-doi.mp3"}
         loop
         playsInline
-        autoPlay
+        preload="metadata"
         style={{ display: "none" }}
       />
 

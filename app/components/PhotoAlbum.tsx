@@ -32,10 +32,15 @@ const PhotoAlbum: React.FC<PhotoAlbumProps> = ({ photos }) => {
   const [dynamicPhotos, setDynamicPhotos] = useState<PhotoItem[] | null>(null);
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 1000,
+        once: true,
+        disable: "mobile",
+      });
+    } catch {
+      // Ignore AOS errors in webview environments
+    }
   }, []);
 
   useEffect(() => {

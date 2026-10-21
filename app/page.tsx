@@ -15,10 +15,15 @@ export default function Home() {
   const [weddingData, setWeddingData] = useState<any>(defaultWeddingData);
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 1000,
+        once: true,
+        disable: "mobile",
+      });
+    } catch {
+      // Ignore AOS errors in webview environments
+    }
   }, []);
 
   useEffect(() => {
@@ -251,15 +256,17 @@ export default function Home() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {leThanhHon.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leThanhHon.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {leThanhHon.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leThanhHon.solarDate.year}
             </span>
@@ -290,15 +297,17 @@ export default function Home() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {tiecMung.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecMung.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {tiecMung.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecMung.solarDate.year}
             </span>

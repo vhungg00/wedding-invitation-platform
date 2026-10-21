@@ -29,10 +29,15 @@ export default function NhaGaiPage() {
   const commonData = data;
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 1000,
+        once: true,
+        disable: "mobile",
+      });
+    } catch {
+      // Ignore AOS errors in webview environments
+    }
     document.title = nhaGaiData?.title || "Lễ Vu Quy - Thiệp Cưới Xuân Ly & Việt Hùng";
   }, [nhaGaiData?.title]);
 
@@ -249,15 +254,17 @@ export default function NhaGaiPage() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {tiecVuQuy.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecVuQuy.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {tiecVuQuy.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecVuQuy.solarDate.year}
             </span>
@@ -288,15 +295,17 @@ export default function NhaGaiPage() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {leVuQuy.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leVuQuy.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {leVuQuy.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leVuQuy.solarDate.year}
             </span>
@@ -326,7 +335,7 @@ export default function NhaGaiPage() {
         {tiecVuQuy && (
           <div data-aos="fade-right" className="flex items-center justify-center flex-col p-6">
             <div className="text-xl lg:text-2xl text-center">
-              <p className="font-imperial-script text-center ">{tiecVuQuy.title}</p>
+              <p className="text-center ">{tiecVuQuy.title}</p>
               <p className=" text-center ">
                 <span className=" font-imperial-script">{tiecVuQuy.time}</span> - <span className="text-base font-mono">{tiecVuQuy.venueName?.toLowerCase().startsWith('tại') ? tiecVuQuy.venueName : `tại ${tiecVuQuy.venueName}`}</span>
               </p>
@@ -340,7 +349,7 @@ export default function NhaGaiPage() {
         {leVuQuy && (
           <div data-aos="fade-left" className="flex items-center justify-center flex-col p-2">
             <div className="text-xl lg:text-2xl text-center">
-              <p className="font-imperial-script text-center ">{leVuQuy.title}</p>
+              <p className="text-center ">{leVuQuy.title}</p>
               <p className=" text-center ">
                 <span className=" font-imperial-script">{leVuQuy.time}</span> - <span className="text-base font-mono">{leVuQuy.venueName?.toLowerCase().startsWith('tại') ? leVuQuy.venueName : `tại ${leVuQuy.venueName}`}</span>
               </p>

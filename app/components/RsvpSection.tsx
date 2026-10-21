@@ -78,7 +78,7 @@ function RsvpFormInternal({ defaultSide = "nha-trai" }: RsvpSectionProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto my-12 px-4" data-aos="fade-up">
+    <div suppressHydrationWarning className="w-full max-w-2xl mx-auto my-12 px-4" data-aos="fade-up">
       <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border border-rose-100 relative overflow-hidden">
         {/* Decorative corner florals/accent */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-200/30 rounded-full blur-2xl pointer-events-none" />

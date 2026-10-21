@@ -100,16 +100,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="overflow-x-hidden">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-      </head>
+    <html lang="vi" suppressHydrationWarning className="overflow-x-hidden">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} ${monsieurLaDoulaise.variable} ${imperialScript.variable} antialiased overflow-x-hidden`}
       >
         {children}
         <MusicPlayer />
-        <script src="/scroll-animations.js" defer></script>
       </body>
     </html>
   );
