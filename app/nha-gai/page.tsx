@@ -254,15 +254,17 @@ export default function NhaGaiPage() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {tiecVuQuy.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecVuQuy.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {tiecVuQuy.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {tiecVuQuy.solarDate.year}
             </span>
@@ -293,15 +295,17 @@ export default function NhaGaiPage() {
           </div>
 
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+              {leVuQuy.solarDate.day}
+            </span>
+            <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leVuQuy.solarDate.month}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {leVuQuy.solarDate.day}
-            </span>
-            <span className="text-gray-500">|</span>
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
               {leVuQuy.solarDate.year}
             </span>
