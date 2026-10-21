@@ -55,7 +55,6 @@ const PhotoAlbum: React.FC<PhotoAlbumProps> = ({ photos }) => {
               key={photo.src || photo.url || `photo-${index}`}
               className="relative group cursor-pointer"
               data-aos={anim}
-              data-aos-once="true"
             >
               <div className="aspect-[3/4] relative overflow-hidden rounded-md sm:rounded-lg shadow-md sm:shadow-lg hover:shadow-lg sm:hover:shadow-xl transition-all duration-300 no-scrollbar">
                 <ImageWithFallback
