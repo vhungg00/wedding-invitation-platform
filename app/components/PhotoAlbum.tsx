@@ -31,35 +31,16 @@ const PUBLIC_FALLBACK_PHOTOS = [
 const PhotoAlbum: React.FC<PhotoAlbumProps> = ({ photos }) => {
   const [dynamicPhotos, setDynamicPhotos] = useState<PhotoItem[] | null>(null);
 
-  useEffect(() => {
-    try {
-      AOS.init({
-        duration: 1000,
-        once: true,
-        disable: "mobile",
-      });
-    } catch {
-      // Ignore AOS errors in webview environments
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!photos) {
-      fetch("/api/invitation")
-        .then((res) => res.json())
-        .then((json) => {
-          if (json?.data?.album && Array.isArray(json.data.album) && json.data.album.length > 0) {
-            setDynamicPhotos(json.data.album);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [photos]);
-
   const displayPhotos: PhotoItem[] =
     photos && photos.length > 0
       ? photos
       : dynamicPhotos || ((weddingData.album as PhotoItem[]) || []);
+
+  useEffect(() => {
+    try {
+      AOS.refresh();
+    } catch {}
+  }, [displayPhotos]);
 
   return (
     <div className="px-3 sm:px-4 py-3 sm:py-4 md:py-6 no-scrollbar">
@@ -70,13 +51,19 @@ const PhotoAlbum: React.FC<PhotoAlbumProps> = ({ photos }) => {
           const anim = photo.aos || photo.aosAnimation || "zoom-in";
 
           return (
-            <div key={index} className="relative group cursor-pointer" data-aos={anim}>
+            <div
+              key={photo.src || photo.url || `photo-${index}`}
+              className="relative group cursor-pointer"
+              data-aos={anim}
+              data-aos-once="true"
+            >
               <div className="aspect-[3/4] relative overflow-hidden rounded-md sm:rounded-lg shadow-md sm:shadow-lg hover:shadow-lg sm:hover:shadow-xl transition-all duration-300 no-scrollbar">
                 <ImageWithFallback
                   src={imgSrc}
                   fallbackSrc={fallback}
                   alt={photo.alt || "Ảnh cưới"}
                   fill
+                  loading="eager"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                 />

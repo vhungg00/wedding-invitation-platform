@@ -24,8 +24,10 @@ export function ImageWithFallback({
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    setImgSrc(src || fallbackSrc);
-    setHasError(false);
+    const next = src || fallbackSrc;
+    if (next !== imgSrc && !hasError) {
+      setImgSrc(next);
+    }
   }, [src, fallbackSrc]);
 
   const current = hasError ? fallbackSrc : imgSrc;
@@ -74,8 +76,9 @@ export function ImgWithFallback({
 
   useEffect(() => {
     const current = typeof src === "string" && src ? src : fallbackSrc;
-    setImgSrc(current);
-    setHasError(false);
+    if (current !== imgSrc && !hasError) {
+      setImgSrc(current);
+    }
   }, [src, fallbackSrc]);
 
   return (
