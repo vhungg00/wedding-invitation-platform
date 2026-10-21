@@ -7,7 +7,7 @@ import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
 
 interface WishesTabProps {
   wishes: WishItem[];
-  onDeleteWish: (id: string) => void;
+  onDeleteWish: (id: string) => Promise<boolean | void> | void;
 }
 
 export default function WishesTab({ wishes, onDeleteWish }: WishesTabProps) {
@@ -42,9 +42,20 @@ export default function WishesTab({ wishes, onDeleteWish }: WishesTabProps) {
   }, [currentPage, pageSize, wishes, fetchServerWishes]);
 
   const handleDelete = async (id: string) => {
-    onDeleteWish(id);
+    const success = await onDeleteWish(id);
+    if (success === false) return;
+
     setItems((prev) => prev.filter((item) => item.id !== id));
-    setTotalCount((prev) => Math.max(0, prev - 1));
+    const newTotal = Math.max(0, totalCount - 1);
+    setTotalCount(newTotal);
+
+    const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+    const targetPage = currentPage > maxPage ? maxPage : currentPage;
+    if (targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    } else {
+      fetchServerWishes(targetPage, pageSize);
+    }
   };
 
   return (

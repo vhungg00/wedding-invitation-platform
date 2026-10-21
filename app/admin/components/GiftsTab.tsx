@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import {
   Search,
   Plus,
@@ -254,6 +254,37 @@ export default function GiftsTab({
     fetchServerGifts,
   ]);
 
+  const handleDelete = async (record: GiftItem) => {
+    if (!confirm(`Bạn có chắc muốn xóa mừng cưới của ${record.guestName}?`)) return;
+    const ok = await onDeleteGift(record.id);
+    if (!ok) return;
+
+    setItems((prev) => prev.filter((item) => item.id !== record.id));
+    const newTotal = Math.max(0, totalCount - 1);
+    setTotalCount(newTotal);
+
+    const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+    const targetPage = currentPage > maxPage ? maxPage : currentPage;
+    if (targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    } else {
+      fetchServerGifts(
+        targetPage,
+        pageSize,
+        searchTerm,
+        filterSide,
+        filterStatus,
+        filterMethod,
+        sortKey,
+        sortType
+      );
+    }
+    onRefresh();
+  };
+
+  const handleDeleteRef = useRef(handleDelete);
+  handleDeleteRef.current = handleDelete;
+
   // Xuất file Excel (.xlsx) chuẩn chỉnh, chia cột và định dạng chuyên nghiệp
   const handleExportExcel = async () => {
     try {
@@ -432,11 +463,7 @@ export default function GiftsTab({
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (confirm(`Bạn có chắc muốn xóa mừng cưới của ${record.guestName}?`)) {
-                  onDeleteGift(record.id);
-                }
-              }}
+              onClick={() => handleDeleteRef.current(record)}
               title="Xóa"
               className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
             >

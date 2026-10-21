@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download } from "lucide-react";
 import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
@@ -17,7 +17,7 @@ interface GuestsTabProps {
     side: "nha-trai" | "nha-gai",
     phone: string
   ) => Promise<void>;
-  onDeleteGuest: (id: string) => void;
+  onDeleteGuest: (id: string) => Promise<boolean | void> | void;
 }
 
 export default function GuestsTab({
@@ -63,6 +63,8 @@ export default function GuestsTab({
       await onCreateGuest(newGuestName.trim(), newGuestSide, newGuestPhone.trim());
       setNewGuestName("");
       setNewGuestPhone("");
+      setCurrentPage(1);
+      fetchServerGuests(1, pageSize, searchTerm, sortKey, sortType);
     } finally {
       setSubmitting(false);
     }
@@ -131,6 +133,26 @@ export default function GuestsTab({
     guests,
     fetchServerGuests,
   ]);
+
+  const handleDelete = async (id: string) => {
+    const success = await onDeleteGuest(id);
+    if (success === false) return;
+
+    setItems((prev) => prev.filter((item) => item.id !== id));
+    const newTotal = Math.max(0, totalCount - 1);
+    setTotalCount(newTotal);
+
+    const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+    const targetPage = currentPage > maxPage ? maxPage : currentPage;
+    if (targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    } else {
+      fetchServerGuests(targetPage, pageSize, searchTerm, sortKey, sortType);
+    }
+  };
+
+  const handleDeleteRef = useRef(handleDelete);
+  handleDeleteRef.current = handleDelete;
 
   const columns = useMemo<TColumn<GuestItem>[]>(
     () => [
@@ -288,7 +310,7 @@ export default function GuestsTab({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeleteGuest(g.id);
+                  handleDeleteRef.current(g.id);
                 }}
                 style={{
                   border: "1px solid #ffccc7",

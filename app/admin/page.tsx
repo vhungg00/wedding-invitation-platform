@@ -85,29 +85,39 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteRsvp = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa phản hồi RSVP này?")) return;
+  const handleDeleteRsvp = async (id: string): Promise<boolean> => {
+    if (!confirm("Bạn có chắc chắn muốn xóa phản hồi RSVP này?")) return false;
     try {
       const res = await fetch(`/api/rsvp/${id}`, { method: "DELETE" });
       if (res.ok) {
         setRsvps((prev) => prev.filter((r) => r.id !== id));
         fetchData();
+        return true;
+      } else {
+        alert("Không thể xóa RSVP!");
+        return false;
       }
     } catch {
       alert("Không thể xóa RSVP!");
+      return false;
     }
   };
 
-  const handleDeleteWish = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa lời chúc này?")) return;
+  const handleDeleteWish = async (id: string): Promise<boolean> => {
+    if (!confirm("Bạn có chắc chắn muốn xóa lời chúc này?")) return false;
     try {
       const res = await fetch(`/api/wishes/${id}`, { method: "DELETE" });
       if (res.ok) {
         setWishes((prev) => prev.filter((w) => w.id !== id));
         fetchData();
+        return true;
+      } else {
+        alert("Không thể xóa lời chúc!");
+        return false;
       }
     } catch {
       alert("Không thể xóa lời chúc!");
+      return false;
     }
   };
 
@@ -139,16 +149,21 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteGuest = async (id: string) => {
-    if (!confirm("Xóa khách mời này khỏi danh sách?")) return;
+  const handleDeleteGuest = async (id: string): Promise<boolean> => {
+    if (!confirm("Xóa khách mời này khỏi danh sách?")) return false;
     try {
       const res = await fetch(`/api/guests?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setGuests((prev) => prev.filter((g) => g.id !== id));
         fetchData();
+        return true;
+      } else {
+        alert("Không thể xóa khách mời!");
+        return false;
       }
     } catch {
       alert("Không thể xóa khách mời!");
+      return false;
     }
   };
 
