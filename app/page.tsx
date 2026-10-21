@@ -87,29 +87,23 @@ export default function Home() {
         {/* Content nằm trên */}
         <div className="relative z-10 flex items-end justify-center md:h-full h-[70vh]">
           <div className="relative z-10 flex items-end justify-center ">
-            <div className="text-center px-3 sm:px-4 pb-4 sm:pb-6 md:pb-8 lg:pb-12 xl:pb-16">
-              <h1 data-aos="zoom-in" className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 md:mb-3 lg:mb-4 drop-shadow-lg">
+            <div className="text-center px-3 sm:px-4 pb-4 sm:pb-6 md:pb-8 lg:pb-12 xl:pb-16 animate-fade-in">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 md:mb-3 lg:mb-4 drop-shadow-lg">
                 <span className="font-imperial-script">{weddingData.groom.name}</span>
                 <span className="mx-1 sm:mx-2 md:mx-3">-</span>
                 <span className="font-imperial-script">{weddingData.bride.name}</span>
               </h1>
-              <p
-                data-aos="fade-left"
-                className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3"
-              >
+              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3">
                 {weddingData.hero.title}
               </p>
-              <hr data-aos="fade-right" className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
-              <p data-aos="fade-left" className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2">
+              <hr className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
+              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2">
                 {heroDateText}
               </p>
-              <p
-                data-aos="fade-right"
-                className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3"
-              >
+              <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl drop-shadow-md mb-1 sm:mb-2 md:mb-3">
                 {formattedDate}
               </p>
-              <hr data-aos="fade-left" className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
+              <hr className="my-1 sm:my-2 md:my-3 lg:my-4 border-black mx-auto w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20" />
             </div>
           </div>
         </div>
@@ -180,6 +174,7 @@ export default function Home() {
               fallbackSrc="/chu-re.JPG"
               alt="chu-re"
               fill
+              loading="eager"
               className="object-contain"
             />
           </div>
@@ -189,6 +184,7 @@ export default function Home() {
               fallbackSrc="/co-dau.JPG"
               alt="co-dau"
               fill
+              loading="eager"
               className="object-contain"
             />
           </div>
@@ -214,6 +210,7 @@ export default function Home() {
             alt="thu-moi"
             width={200}
             height={400}
+            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
@@ -226,6 +223,7 @@ export default function Home() {
             alt="thu-moi"
             width={200}
             height={450}
+            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
@@ -238,6 +236,7 @@ export default function Home() {
             alt="thu-moi"
             width={200}
             height={400}
+            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
