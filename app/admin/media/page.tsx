@@ -143,6 +143,16 @@ export default function MediaStudioPage() {
 
       const json = await res.json();
       if (json.success && json.url) {
+        // Xóa ảnh cũ trên Cloudinary nếu trước đó là ảnh đã upload
+        const oldUrl = invitationImages[index]?.url;
+        if (oldUrl && oldUrl.includes("res.cloudinary.com") && oldUrl !== json.url) {
+          fetch("/api/upload", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: oldUrl }),
+          }).catch(console.error);
+        }
+
         setInvitationImages((prev) => {
           const next = [...prev];
           next[index] = { ...next[index], url: json.url, alt: `thu-moi-${index + 1}` };

@@ -34,31 +34,49 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : process.env.VERCEL_URL
+  ? (process.env.VERCEL_URL.startsWith("http") ? process.env.VERCEL_URL : `https://${process.env.VERCEL_URL}`)
+  : "http://localhost:3000";
+const siteUrl = rawSiteUrl.replace(/\/$/, "");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: weddingData.nhaTrai?.title || weddingData.title,
   description: weddingData.nhaTrai?.description || weddingData.description,
-  icons: [
-    {
-      rel: "icon",
-      type: "image/png",
-      sizes: "32x32",
-      url: weddingData.faviconUrl || "/favicons/favicon-32x32.png",
-    },
-    {
-      rel: "icon",
-      type: "image/png",
-      sizes: "16x16",
-      url: weddingData.faviconUrl || "/favicons/favicon-16x16.png",
-    },
-    {
-      rel: "apple-touch-icon",
-      sizes: "180x180",
-      url: weddingData.faviconUrl || "/favicons/apple-touch-icon.png",
-    },
-  ],
+  icons: {
+    icon: [
+      {
+        url: "/favicons/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/favicons/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: "/favicons/favicon.ico",
+      },
+    ],
+    apple: [
+      {
+        url: "/favicons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  manifest: "/favicons/site.webmanifest",
   openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: siteUrl,
     title: weddingData.nhaTrai?.title || weddingData.title,
     description: weddingData.nhaTrai?.description || weddingData.description,
+    siteName: "Thiệp Cưới Việt Hùng & Xuân Ly",
     images: [
       {
         url: weddingData.ogImageUrl || "/album/anh-chinh.JPG",
@@ -67,6 +85,12 @@ export const metadata: Metadata = {
         alt: weddingData.nhaTrai?.title || weddingData.title,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: weddingData.nhaTrai?.title || weddingData.title,
+    description: weddingData.nhaTrai?.description || weddingData.description,
+    images: [weddingData.ogImageUrl || "/album/anh-chinh.JPG"],
   },
 };
 
