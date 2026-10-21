@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
+import { ImageWithFallback } from "./ui/ImageWithFallback";
 import {
   Gift,
   Copy,
@@ -74,10 +75,18 @@ function GiftBoxContent({
   // Lấy thông tin khách mời nếu vào bằng link cá nhân hóa
   const { guest } = useGuest();
 
+  interface BankAccountDisplay {
+    owner: string;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    qrCodeUrl?: string;
+  }
+
   // Dữ liệu tài khoản Nhà Trai & Nhà Gái
-  const nhaTraiAccount =
-    weddingData.nhaTrai?.donation?.bankAccount ||
-    weddingData.donation?.bankAccounts?.[0] || {
+  const nhaTraiAccount: BankAccountDisplay =
+    (weddingData.nhaTrai?.donation?.bankAccount as BankAccountDisplay) ||
+    (weddingData.donation?.bankAccounts?.[0] as BankAccountDisplay) || {
       owner: "Chú rể Việt Hùng",
       bankName: "MB Bank",
       accountNumber: "0988688888",
@@ -85,14 +94,34 @@ function GiftBoxContent({
       qrCodeUrl: "/qr.jpeg",
     };
 
-  const nhaGaiAccount =
-    weddingData.nhaGai?.donation?.bankAccount || {
+  const nhaGaiAccount: BankAccountDisplay =
+    (weddingData.nhaGai?.donation?.bankAccount as BankAccountDisplay) || {
       owner: "Cô dâu Xuân Ly",
       bankName: "MB Bank",
       accountNumber: "0988888888",
       accountName: "NGUYEN XUAN LY",
       qrCodeUrl: "/qr.jpeg",
     };
+
+  const [dynamicQrTrai, setDynamicQrTrai] = useState<string | null>(null);
+  const [dynamicQrGai, setDynamicQrGai] = useState<string | null>(null);
+
+  // Cập nhật QR code động từ Database khi admin đổi ảnh
+  useEffect(() => {
+    fetch("/api/invitation")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          if (res.data.qrCodeNhaTrai || res.data.nhaTrai?.donation?.bankAccount?.qrCodeUrl) {
+            setDynamicQrTrai(res.data.qrCodeNhaTrai || res.data.nhaTrai.donation.bankAccount.qrCodeUrl);
+          }
+          if (res.data.qrCodeNhaGai || res.data.nhaGai?.donation?.bankAccount?.qrCodeUrl) {
+            setDynamicQrGai(res.data.qrCodeNhaGai || res.data.nhaGai.donation.bankAccount.qrCodeUrl);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const currentAccount = activeSide === "nha-trai" ? nhaTraiAccount : nhaGaiAccount;
 
@@ -117,11 +146,15 @@ function GiftBoxContent({
     currentAccount.accountNumber &&
     currentAccount.accountNumber !== "Đang cập nhật";
 
+  const activeQrCode = activeSide === "nha-trai"
+    ? (dynamicQrTrai || currentAccount.qrCodeUrl || "/qr.jpeg")
+    : (dynamicQrGai || currentAccount.qrCodeUrl || "/qr.jpeg");
+
   const qrImageUrl = isValidAccountNo
     ? `https://img.vietqr.io/image/${bankCode}-${currentAccount.accountNumber}-compact2.png?accountName=${encodeURIComponent(
         currentAccount.accountName || ""
       )}&addInfo=${encodeURIComponent(transferContent)}`
-    : currentAccount.qrCodeUrl || "/qr.jpeg";
+    : activeQrCode;
 
   // Hàm copy vào clipboard
   const handleCopy = (text: string, fieldName: string) => {
@@ -251,8 +284,9 @@ function GiftBoxContent({
             <div className="flex flex-col items-center">
               <div className="relative p-3 bg-white rounded-2xl border-2 border-dashed border-rose-200 shadow-sm group">
                 <div className="relative w-48 h-48 sm:w-56 sm:h-56 overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center">
-                  <Image
+                  <ImageWithFallback
                     src={qrImageUrl}
+                    fallbackSrc="/qr.jpeg"
                     alt="VietQR Mừng Cưới"
                     width={224}
                     height={224}

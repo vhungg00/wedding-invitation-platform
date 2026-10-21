@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Users, MessageSquareHeart, Share2, Gift, Sparkles } from "lucide-react";
+import { Users, MessageSquareHeart, Share2, Gift, Sparkles, Image as ImageIcon, Calendar } from "lucide-react";
 import { RsvpItem, WishItem, GuestItem, GiftItem, StatsData } from "./types";
 import AdminHeader from "./components/AdminHeader";
 import AdminStats from "./components/AdminStats";
@@ -301,6 +301,22 @@ export default function AdminPage() {
             <Gift className="w-4 h-4" />
             <span>Mừng Cưới ({gifts.length})</span>
           </button>
+
+          <Link
+            href="/admin/media"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-rose-200 transition shrink-0 cursor-pointer"
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>Studio Ảnh & Mã QR →</span>
+          </Link>
+
+          <Link
+            href="/admin/info"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-rose-500 hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-blue-200 transition shrink-0 cursor-pointer"
+          >
+            <Calendar className="w-4 h-4" />
+            <span>Sửa Giờ, Ngày & Địa Chỉ →</span>
+          </Link>
 
           <Link
             href="/admin/guests"
