@@ -56,7 +56,7 @@ export default function Home() {
         {/* Background Image */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[55%] w-[90%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
           <img
-            src="/tach-nen.png"
+            src={weddingData.hero?.backgroundImage || "/tach-nen.png"}
             alt="Background"
             className="block w-full max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
       [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
@@ -157,7 +157,7 @@ export default function Home() {
         <div className="flex justify-between items-center gap-2 sm:gap-2 md:gap-3 lg:gap-4 py-2 sm:py-2 md:py-3 lg:py-4 overflow-hidden">
           <div data-aos="fade-right" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
             <Image
-              src="/chu-re.JPG"
+              src={weddingData.groom?.avatar || "/chu-re.JPG"}
               alt="chu-re"
               fill
               className="object-contain"
@@ -165,7 +165,7 @@ export default function Home() {
           </div>
           <div data-aos="fade-left" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
             <Image
-              src="/co-dau.JPG"
+              src={weddingData.bride?.avatar || "/co-dau.JPG"}
               alt="co-dau"
               fill
               className="object-contain"
@@ -188,7 +188,7 @@ export default function Home() {
       <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 p-1 sm:p-2 overflow-hidden">
         <div data-aos="fade-right" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
           <Image
-            src="/album/anh-phu-2.JPG"
+            src={weddingData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
             alt="thu-moi"
             width={200}
             height={400}
@@ -199,7 +199,7 @@ export default function Home() {
 
         <div data-aos="zoom-in" className="basis-[50%] sm:basis-[30%] min-w-0 no-scrollbar overflow-hidden">
           <Image
-            src="/album/anh-phu.JPG"
+            src={weddingData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
             alt="thu-moi"
             width={200}
             height={450}
@@ -210,7 +210,7 @@ export default function Home() {
 
         <div data-aos="fade-left" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
           <Image
-            src="/album/anhphu-3.JPG"
+            src={weddingData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
             alt="thu-moi"
             width={200}
             height={400}
