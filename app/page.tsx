@@ -1,20 +1,35 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos";
 import Calendar from "./hooks/calender";
 import PhotoAlbum from "./components/PhotoAlbum";
 import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
 import GiftBoxSection from "./components/GiftBoxSection";
-import weddingData from "@/data/wedding-data.json";
+import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function Home() {
+  const [weddingData, setWeddingData] = useState<any>(defaultWeddingData);
+
   useEffect(() => {
-    AOS.init({
-      duration: 2000, // thời gian animation (ms)
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 2000, // thời gian animation (ms)
+        once: false,
+      });
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/invitation")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setWeddingData((prev: any) => ({ ...prev, ...json.data }));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Events for Nhà Trai

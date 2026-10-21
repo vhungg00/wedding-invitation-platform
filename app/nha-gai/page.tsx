@@ -1,24 +1,39 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos";
 import PhotoAlbum from "../components/PhotoAlbum";
 import Calendar from "../hooks/calender";
 import PersonalizedGreeting from "../components/PersonalizedGreeting";
 import RsvpSection from "../components/RsvpSection";
 import GiftBoxSection from "../components/GiftBoxSection";
-import weddingData from "@/data/wedding-data.json";
+import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
-  const nhaGaiData = weddingData.nhaGai;
-  const commonData = weddingData;
+  const [data, setData] = useState<any>(defaultWeddingData);
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000, // thời gian animation (ms)
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 2000, // thời gian animation (ms)
+        once: false,
+      });
+    } catch {}
   }, []);
+
+  useEffect(() => {
+    fetch("/api/invitation")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setData((prev: any) => ({ ...prev, ...json.data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const nhaGaiData = data.nhaGai;
+  const commonData = data;
 
   const tiecVuQuy = nhaGaiData?.events?.[0];
   const leVuQuy = nhaGaiData?.events?.[1];
@@ -27,7 +42,7 @@ export default function NhaGaiPage() {
     nhaGaiData?.hero?.weddingDateText ||
     (tiecVuQuy
       ? `${tiecVuQuy.dayOfWeek.toUpperCase()} - ${tiecVuQuy.time}`
-      : "THỨ BẢY - 10H00");
+      : "THỨ BẢY - 10H30");
 
   const formattedDate =
     nhaGaiData?.hero?.dateFormatted ||
