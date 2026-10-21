@@ -335,7 +335,7 @@ export default function NhaGaiPage() {
         {tiecVuQuy && (
           <div data-aos="fade-right" className="flex items-center justify-center flex-col p-6">
             <div className="text-xl lg:text-2xl text-center">
-              <p className="font-imperial-script text-center ">{tiecVuQuy.title}</p>
+              <p className="text-center ">{tiecVuQuy.title}</p>
               <p className=" text-center ">
                 <span className=" font-imperial-script">{tiecVuQuy.time}</span> - <span className="text-base font-mono">{tiecVuQuy.venueName?.toLowerCase().startsWith('tại') ? tiecVuQuy.venueName : `tại ${tiecVuQuy.venueName}`}</span>
               </p>
@@ -349,7 +349,7 @@ export default function NhaGaiPage() {
         {leVuQuy && (
           <div data-aos="fade-left" className="flex items-center justify-center flex-col p-2">
             <div className="text-xl lg:text-2xl text-center">
-              <p className="font-imperial-script text-center ">{leVuQuy.title}</p>
+              <p className="text-center ">{leVuQuy.title}</p>
               <p className=" text-center ">
                 <span className=" font-imperial-script">{leVuQuy.time}</span> - <span className="text-base font-mono">{leVuQuy.venueName?.toLowerCase().startsWith('tại') ? leVuQuy.venueName : `tại ${leVuQuy.venueName}`}</span>
               </p>
