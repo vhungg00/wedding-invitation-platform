@@ -1,18 +1,25 @@
 "use client";
 import Image from "next/image";
-import { ImageWithFallback, ImgWithFallback } from "../components/ui/ImageWithFallback";
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import PhotoAlbum from "../components/PhotoAlbum";
 import Calendar from "../hooks/calender";
 import PersonalizedGreeting from "../components/PersonalizedGreeting";
 import RsvpSection from "../components/RsvpSection";
-import GuestbookSection from "../components/GuestbookSection";
 import GiftBoxSection from "../components/GiftBoxSection";
-import weddingData from "@/data/wedding-data.json";
+import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
-  const [data, setData] = useState<any>(weddingData);
+  const [data, setData] = useState<any>(defaultWeddingData);
+
+  useEffect(() => {
+    try {
+      AOS.init({
+        duration: 2000, // thời gian animation (ms)
+        once: false,
+      });
+    } catch {}
+  }, []);
 
   useEffect(() => {
     fetch("/api/invitation")
@@ -20,11 +27,6 @@ export default function NhaGaiPage() {
       .then((json) => {
         if (json?.data) {
           setData((prev: any) => ({ ...prev, ...json.data }));
-          setTimeout(() => {
-            try {
-              AOS.refresh();
-            } catch {}
-          }, 100);
         }
       })
       .catch(() => {});
@@ -33,33 +35,14 @@ export default function NhaGaiPage() {
   const nhaGaiData = data.nhaGai;
   const commonData = data;
 
-  useEffect(() => {
-    try {
-      AOS.init({
-        duration: 2000, // thời gian animation (ms)
-        once: false,
-      });
-      const timer = setTimeout(() => {
-        try {
-          AOS.refresh();
-        } catch {}
-      }, 500);
-      return () => clearTimeout(timer);
-    } catch {
-      // Ignore AOS errors in webview environments
-    }
-    document.title = nhaGaiData?.title || "Lễ Vu Quy - Thiệp Cưới Xuân Ly & Việt Hùng";
-  }, [nhaGaiData?.title]);
-
   const tiecVuQuy = nhaGaiData?.events?.[0];
-  // Tạm ẩn/comment sự kiện thứ 2 vì tổ chức đám cưới ở quê (chỉ để 1 mốc thời gian chung)
   const leVuQuy = nhaGaiData?.events?.[1];
 
   const heroDateText =
     nhaGaiData?.hero?.weddingDateText ||
     (tiecVuQuy
       ? `${tiecVuQuy.dayOfWeek.toUpperCase()} - ${tiecVuQuy.time}`
-      : "THỨ BẢY - 10H00");
+      : "THỨ BẢY - 10H30");
 
   const formattedDate =
     nhaGaiData?.hero?.dateFormatted ||
@@ -67,17 +50,14 @@ export default function NhaGaiPage() {
       ? `${tiecVuQuy.solarDate.day} . ${tiecVuQuy.solarDate.month} . ${tiecVuQuy.solarDate.year}`
       : "05 . 12 . 2026");
 
-  const bankAccount = nhaGaiData?.donation?.bankAccount;
-
   return (
     <div className="py-2 container overflow-x-hidden max-w-full">
       {/* Hero Section */}
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[55%] w-[90%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
-          <ImgWithFallback
+          <img
             src={nhaGaiData?.hero?.backgroundImage || commonData.hero?.backgroundImage || "/tach-nen.png"}
-            fallbackSrc="/tach-nen.png"
             alt="Background"
             className="block w-full max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
       [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
@@ -126,16 +106,16 @@ export default function NhaGaiPage() {
         <p className="drop-shadow-md font-imperial-script">{commonData.quotes.line2}</p>
       </div>
 
-      {/* Family Information Section - Nhà Gái hiển thị trước bên trái */}
+      {/* Family Information Section */}
       <div className="px-3 sm:px-4 py-3 sm:py-4 md:py-6 lg:py-8">
         <div className="grid grid-cols-2 text-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 ">
-          <div data-aos="fade-right" className="text-xs sm:text-base md:text-lg lg:text-lg xl:text-xl">
+          <div data-aos="fade-right" className="text-xs sm:text-base md:text-lg lg:text-lg xl:text-xl ">
             <p className="font-semibold mb-1 sm:mb-2 md:mb-3">NHÀ GÁI</p>
             <p className="mb-1 sm:mb-2 text-xs sm:text-base">{commonData.bride.fatherName}</p>
             <p className="mb-1 sm:mb-2 text-xs sm:text-base">{commonData.bride.motherName}</p>
             <p className="text-gray-600 text-xs sm:text-sm md:text-base">{commonData.bride.address}</p>
           </div>
-          <div data-aos="fade-left" className="text-xs sm:text-base md:text-lg lg:text-lg xl:text-xl ">
+          <div data-aos="fade-left" className="text-xs sm:text-base md:text-lg lg:text-lg xl:text-xl">
             <p className="font-semibold mb-1 sm:mb-2 md:mb-3">NHÀ TRAI</p>
             <p className="mb-1 sm:mb-2 text-xs sm:text-base">{commonData.groom.fatherName}</p>
             <p className="mb-1 sm:mb-2 text-xs sm:text-base">{commonData.groom.motherName}</p>
@@ -144,11 +124,11 @@ export default function NhaGaiPage() {
         </div>
       </div>
 
-      {/* Couple Section - Cô Dâu hiển thị trước bên trái */}
+      {/* Couple Section */}
       <div className="px-3 lg:px-20 py-3 sm:py-4 md:py-6 lg:py-8">
         <div className="flex justify-between items-center text-center pb-2 text-xl lg:text-4xl overflow-hidden h-auto">
           <div className="w-[40%] no-scrollbar">
-            <p data-aos="fade-down" className="font-semibold py-2">
+            <p data-aos="fade-down" className="font-semibold mb-1 sm:mb-2 md:mb-3 lg:mb-4 h-auto">
               Cô Dâu
             </p>
             <p data-aos="fade-up" className="font-imperial-script h-8 sm:h-10 md:h-12 lg:h-14 xl:h-16">
@@ -167,7 +147,7 @@ export default function NhaGaiPage() {
             </div>
           </div>
           <div className="w-[40%] no-scrollbar">
-            <p data-aos="fade-down" className="font-semibold mb-1 sm:mb-2 md:mb-3 lg:mb-4 h-auto">
+            <p data-aos="fade-down" className="font-semibold py-2">
               Chú Rể
             </p>
             <p data-aos="fade-up" className="font-imperial-script h-8 sm:h-10 md:h-12 lg:h-14 xl:h-16">
@@ -177,22 +157,18 @@ export default function NhaGaiPage() {
         </div>
         <div className="flex justify-between items-center gap-2 sm:gap-2 md:gap-3 lg:gap-4 py-2 sm:py-2 md:py-3 lg:py-4 overflow-hidden">
           <div data-aos="fade-right" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <ImageWithFallback
-              src={commonData.bride.avatar || "/co-dau.JPG"}
-              fallbackSrc="/co-dau.JPG"
+            <Image
+              src={commonData.bride?.avatar || "/co-dau.JPG"}
               alt="co-dau"
               fill
-              loading="eager"
               className="object-contain"
             />
           </div>
           <div data-aos="fade-left" className="w-[45%] h-[30vh] md:h-[65vh] lg:h-[70vh] relative no-scrollbar overflow-hidden">
-            <ImageWithFallback
-              src={commonData.groom.avatar || "/chu-re.JPG"}
-              fallbackSrc="/chu-re.JPG"
+            <Image
+              src={commonData.groom?.avatar || "/chu-re.JPG"}
               alt="chu-re"
               fill
-              loading="eager"
               className="object-contain"
             />
           </div>
@@ -212,46 +188,40 @@ export default function NhaGaiPage() {
       </div>
       <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 p-1 sm:p-2 overflow-hidden">
         <div data-aos="fade-right" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
+          <Image
             src={commonData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
-            fallbackSrc="/album/anh-phu-2.JPG"
             alt="thu-moi"
             width={200}
             height={400}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
         </div>
 
         <div data-aos="zoom-in" className="basis-[50%] sm:basis-[30%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
+          <Image
             src={commonData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
-            fallbackSrc="/album/anh-phu.JPG"
             alt="thu-moi"
             width={200}
             height={450}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
         </div>
 
         <div data-aos="fade-left" className="basis-[40%] sm:basis-[25%] min-w-0 no-scrollbar overflow-hidden">
-          <ImageWithFallback
+          <Image
             src={commonData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
-            fallbackSrc="/album/anhphu-3.JPG"
             alt="thu-moi"
             width={200}
             height={400}
-            loading="eager"
             style={{ width: "100%", height: "auto" }}
             className="block rounded-sm max-w-full"
           />
         </div>
       </div>
 
-      {/* Ngày cưới - Tiệc mừng Vu Quy */}
+      {/* Ngày cưới - Tiệc Vu Quy */}
       {tiecVuQuy && (
         <div data-aos="fade-up" className="text-center px-3 sm:px-4 py-3 sm:py-4 md:py-6 lg:py-8 xl:py-10">
           <h2 className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl font-semibold mb-2 sm:mb-3 md:mb-4 lg:mb-6 text-gray-800">
@@ -292,7 +262,7 @@ export default function NhaGaiPage() {
         </div>
       )}
 
-      {/* Lễ Vu Quy */}
+      {/* Ngày cưới - Lễ Vu Quy */}
       {leVuQuy && (
         <div data-aos="fade-up" className="text-center px-3 sm:px-4 py-3 sm:py-4 md:py-6 lg:py-8 xl:py-10">
           <h2 className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl font-semibold mb-2 sm:mb-3 md:mb-4 lg:mb-6 text-gray-800">
@@ -305,7 +275,7 @@ export default function NhaGaiPage() {
               {leVuQuy.time}
             </span>
             <span className="text-gray-500">|</span>
-            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">
+            <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700 uppercase">
               {leVuQuy.dayOfWeek}
             </span>
           </div>
@@ -406,7 +376,7 @@ export default function NhaGaiPage() {
       {/* <GuestbookSection currentSide="nha-gai" /> */}
 
       {/* Gift Box Section */}
-      <GiftBoxSection defaultSide="nha-gai" />
+      <GiftBoxSection defaultSide="nha-gai" data={data} />
 
       {/* Thank You Banner */}
       <div className="relative w-full lg:h-[50vh] h-[40vh] overflow-hidden rounded-3xl my-8">
@@ -439,4 +409,3 @@ export default function NhaGaiPage() {
     </div>
   );
 }
-

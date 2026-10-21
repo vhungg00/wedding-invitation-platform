@@ -61,11 +61,14 @@ const BANK_SHORT_NAMES: Record<string, string> = {
 
 interface GiftBoxSectionProps {
   defaultSide?: "nha-trai" | "nha-gai";
+  data?: any;
 }
 
 function GiftBoxContent({
   defaultSide = "nha-trai",
+  data: dataProp,
 }: GiftBoxSectionProps) {
+  const activeSideData = dataProp || weddingData;
   const [activeSide, setActiveSide] = useState<"nha-trai" | "nha-gai">(defaultSide);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showConfirmForm, setShowConfirmForm] = useState(false);
@@ -85,43 +88,23 @@ function GiftBoxContent({
 
   // Dữ liệu tài khoản Nhà Trai & Nhà Gái
   const nhaTraiAccount: BankAccountDisplay =
-    (weddingData.nhaTrai?.donation?.bankAccount as BankAccountDisplay) ||
-    (weddingData.donation?.bankAccounts?.[0] as BankAccountDisplay) || {
+    (activeSideData.nhaTrai?.donation?.bankAccount as BankAccountDisplay) ||
+    (activeSideData.donation?.bankAccounts?.[0] as BankAccountDisplay) || {
       owner: "Chú rể Việt Hùng",
       bankName: "MB Bank",
       accountNumber: "0988688888",
       accountName: "TA VIET HUNG",
-      qrCodeUrl: "/qr.jpeg",
+      qrCodeUrl: activeSideData.qrCodeNhaTrai || "/qr.jpeg",
     };
 
   const nhaGaiAccount: BankAccountDisplay =
-    (weddingData.nhaGai?.donation?.bankAccount as BankAccountDisplay) || {
+    (activeSideData.nhaGai?.donation?.bankAccount as BankAccountDisplay) || {
       owner: "Cô dâu Xuân Ly",
       bankName: "MB Bank",
       accountNumber: "0988888888",
       accountName: "NGUYEN XUAN LY",
-      qrCodeUrl: "/qr.jpeg",
+      qrCodeUrl: activeSideData.qrCodeNhaGai || "/qr.jpeg",
     };
-
-  const [dynamicQrTrai, setDynamicQrTrai] = useState<string | null>(null);
-  const [dynamicQrGai, setDynamicQrGai] = useState<string | null>(null);
-
-  // Cập nhật QR code động từ Database khi admin đổi ảnh
-  useEffect(() => {
-    fetch("/api/invitation")
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success && res.data) {
-          if (res.data.qrCodeNhaTrai || res.data.nhaTrai?.donation?.bankAccount?.qrCodeUrl) {
-            setDynamicQrTrai(res.data.qrCodeNhaTrai || res.data.nhaTrai.donation.bankAccount.qrCodeUrl);
-          }
-          if (res.data.qrCodeNhaGai || res.data.nhaGai?.donation?.bankAccount?.qrCodeUrl) {
-            setDynamicQrGai(res.data.qrCodeNhaGai || res.data.nhaGai.donation.bankAccount.qrCodeUrl);
-          }
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   const currentAccount = activeSide === "nha-trai" ? nhaTraiAccount : nhaGaiAccount;
 
@@ -156,8 +139,8 @@ function GiftBoxContent({
     currentAccount.accountNumber !== "Đang cập nhật";
 
   const activeQrCode = activeSide === "nha-trai"
-    ? (dynamicQrTrai || currentAccount.qrCodeUrl || "/qr.jpeg")
-    : (dynamicQrGai || currentAccount.qrCodeUrl || "/qr.jpeg");
+    ? (activeSideData.qrCodeNhaTrai || currentAccount.qrCodeUrl || "/qr.jpeg")
+    : (activeSideData.qrCodeNhaGai || currentAccount.qrCodeUrl || "/qr.jpeg");
 
   const qrImageUrl = isValidAccountNo
     ? `https://img.vietqr.io/image/${bankCode}-${currentAccount.accountNumber}-compact2.png?accountName=${encodeURIComponent(
@@ -532,10 +515,11 @@ function GiftBoxContent({
 
 export default function GiftBoxSection({
   defaultSide = "nha-trai",
+  data,
 }: GiftBoxSectionProps) {
   return (
     <Suspense fallback={null}>
-      <GiftBoxContent defaultSide={defaultSide} />
+      <GiftBoxContent defaultSide={defaultSide} data={data} />
     </Suspense>
   );
 }
