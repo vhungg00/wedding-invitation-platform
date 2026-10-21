@@ -761,3 +761,15 @@ svg {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Fix for AOS on mobile devices & in-app webviews (Zalo, Facebook, Messenger):
+   Never let AOS hide content with opacity: 0 if scroll/viewport calculation fails */
+@media (max-width: 768px) {
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    visibility: visible !important;
+  }
+}
+

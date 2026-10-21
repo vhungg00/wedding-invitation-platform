@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import weddingData from "@/data/wedding-data.json";
 
 interface CalendarProps {
@@ -15,6 +15,11 @@ const Calendar: React.FC<CalendarProps> = ({
   year = weddingData.calendar?.year || 2026,
   weddingDay = weddingData.calendar?.weddingDay || 6,
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Tạo lịch tháng 10/2025
   const getCalendarData = () => {
@@ -58,6 +63,7 @@ const Calendar: React.FC<CalendarProps> = ({
   const isCurrentMonth = (date: Date) => date.getMonth() === month - 1;
   const isWeddingDay = (date: Date) => date.getDate() === weddingDay && date.getMonth() === month - 1;
   const isToday = (date: Date) => {
+    if (!mounted) return false;
     const today = new Date();
     return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
   };

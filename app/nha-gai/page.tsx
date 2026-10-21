@@ -29,10 +29,15 @@ export default function NhaGaiPage() {
   const commonData = data;
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 1000,
+        once: true,
+        disable: "mobile",
+      });
+    } catch {
+      // Ignore AOS errors in webview environments
+    }
     document.title = nhaGaiData?.title || "Lễ Vu Quy - Thiệp Cưới Xuân Ly & Việt Hùng";
   }, [nhaGaiData?.title]);
 

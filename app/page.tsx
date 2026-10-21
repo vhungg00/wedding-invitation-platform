@@ -15,10 +15,15 @@ export default function Home() {
   const [weddingData, setWeddingData] = useState<any>(defaultWeddingData);
 
   useEffect(() => {
-    AOS.init({
-      duration: 2000,
-      once: false,
-    });
+    try {
+      AOS.init({
+        duration: 1000,
+        once: true,
+        disable: "mobile",
+      });
+    } catch {
+      // Ignore AOS errors in webview environments
+    }
   }, []);
 
   useEffect(() => {
