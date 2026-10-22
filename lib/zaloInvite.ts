@@ -1,17 +1,22 @@
 import { GuestItem } from "@/app/admin/types";
 
-export const getInvitationMessage = (guest: GuestItem, origin: string) => {
-  const path = guest.side === "nha-gai" ? "/nha-gai" : "";
+export const getInvitationMessage = (
+  guest: GuestItem,
+  origin: string,
+  customBrideName?: string
+) => {
+  const isNhaGai = guest.side === "nha-gai";
+  const path = isNhaGai ? "/nha-gai" : "";
   const guestUrl = `${origin}${path}?g=${guest.slug || encodeURIComponent(guest.name)}`;
-  const weddingDate =
-    guest.side === "nha-gai"
-      ? "Thứ Bảy, ngày 05.12.2026 (10h30)"
-      : "Chủ Nhật, ngày 06.12.2026 (10h00)";
-  const eventName = guest.side === "nha-gai" ? "Lễ Vu Quy" : "Lễ Thành Hôn";
+  const weddingDate = isNhaGai
+    ? "Thứ Bảy, ngày 05.12.2026 (10h30)"
+    : "Chủ Nhật, ngày 06.12.2026 (10h00)";
+  const eventName = isNhaGai ? "Lễ Vu Quy" : "Lễ Thành Hôn";
+  const brideName = customBrideName || (isNhaGai ? "Xuân Ly" : "Khánh Ly");
 
   return `Thân gửi ${guest.name},
 
-Hôn lễ của Việt Hùng & Xuân Ly (${eventName}) sẽ chính thức diễn ra vào ${weddingDate}.
+Hôn lễ của Việt Hùng & ${brideName} (${eventName}) sẽ chính thức diễn ra vào ${weddingDate}.
 
 Sự hiện diện của ${guest.name} là niềm vinh hạnh to lớn và trọn vẹn nhất cho ngày vui của hai đứa và gia đình chúng mình.
 
@@ -20,15 +25,16 @@ Chúng mình trân trọng gửi thiệp mời trực tiếp tới ${guest.name}
 
 Rất mong được đón tiếp ${guest.name} cùng chung vui!
 Thân ái,
-Việt Hùng & Xuân Ly ❤️`;
+Việt Hùng & ${brideName} ❤️`;
 };
 
 export const sendZaloOneClick = async (
   guest: GuestItem,
-  onSentUpdated?: (guestId: string) => void
+  onSentUpdated?: (guestId: string) => void,
+  customBrideName?: string
 ) => {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const message = getInvitationMessage(guest, origin);
+  const message = getInvitationMessage(guest, origin, customBrideName);
 
   // 1. Copy message to clipboard
   try {
