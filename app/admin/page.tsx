@@ -141,6 +141,7 @@ export default function AdminPage() {
       if (res.ok && data.success) {
         setGuests((prev) => [data.data, ...prev]);
         fetchData();
+        return data.data;
       } else {
         alert(data.message || "Không thể tạo khách mời!");
       }

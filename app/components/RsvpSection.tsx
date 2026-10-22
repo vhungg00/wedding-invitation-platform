@@ -7,6 +7,7 @@ import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
 import { TextareaCustom } from "@/app/components/ui/TextareaCustom";
 import { AppButton } from "@/app/components/ui/AppButton";
+import { triggerCelebration } from "@/app/utils/celebration";
 
 interface RsvpSectionProps {
   defaultSide?: "nha-trai" | "nha-gai";
@@ -67,6 +68,7 @@ function RsvpFormInternal({ defaultSide = "nha-trai" }: RsvpSectionProps) {
 
       if (response.ok && data.success) {
         setSubmitted(true);
+        triggerCelebration();
       } else {
         setErrorMessage(data.message || "Không thể gửi xác nhận, vui lòng thử lại sau.");
       }
@@ -92,7 +94,7 @@ function RsvpFormInternal({ defaultSide = "nha-trai" }: RsvpSectionProps) {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
             Xác Nhận Tham Dự
           </h2>
-          <p className="font-imperial-script text-3xl sm:text-4xl text-rose-500 mt-1">
+          <p className="text-xs sm:text-sm font-medium tracking-[0.25em] text-rose-500 uppercase mb-1">
             R.S.V.P
           </p>
           <p className="text-xs sm:text-sm text-gray-600 mt-2 max-w-md mx-auto">

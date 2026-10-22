@@ -41,6 +41,7 @@ import FloatingBulkBar from "./components/FloatingBulkBar";
 import SeatingPlannerView from "./components/SeatingPlannerView";
 import { exportGuestsToExcel } from "@/lib/exportExcel";
 import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
+import { sendZaloOneClick } from "@/lib/zaloInvite";
 
 export default function GuestsMasterPage() {
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function GuestsMasterPage() {
   const [editingGuest, setEditingGuest] = useState<GuestItem | null>(null);
   const [previewGuest, setPreviewGuest] = useState<GuestItem | null>(null);
   const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
+  const [zaloToast, setZaloToast] = useState<string | null>(null);
 
   // Form thêm 1 khách
   const [singleForm, setSingleForm] = useState({
@@ -335,6 +337,8 @@ export default function GuestsMasterPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setGuests((prev) => [data.data, ...prev]);
+        setTableGuests((prev) => [data.data, ...prev]);
+        setTotalTableGuests((c) => c + 1);
         setShowSingleAdd(false);
         setSingleForm({
           name: "",
@@ -344,6 +348,7 @@ export default function GuestsMasterPage() {
           table: "",
           note: "",
         });
+        fetchGuests();
       } else {
         alert(data.message || "Không thể thêm khách!");
       }
@@ -624,18 +629,34 @@ export default function GuestsMasterPage() {
       },
       {
         title: "Thao Tác",
-        width: 150,
+        width: 180,
         align: "center",
         render: (_: any, record: GuestItem) => (
           <div className="flex items-center justify-center gap-1.5">
-            {/* Nút gửi Zalo */}
+            {/* Nút gửi Zalo 1-Click */}
             <button
               type="button"
-              onClick={() => setZaloGuest(record)}
-              title="Gửi tin nhắn Zalo"
-              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+              onClick={async () => {
+                if (record.phone) {
+                  await sendZaloOneClick(record, (guestId) => {
+                    setTableGuests((prev) =>
+                      prev.map((g) => (g.id === guestId ? { ...g, isSent: true } : g))
+                    );
+                    setGuests((prev) =>
+                      prev.map((g) => (g.id === guestId ? { ...g, isSent: true } : g))
+                    );
+                  });
+                  setZaloToast(`Đã sao chép tin nhắn mời ${record.name}! Đang mở Zalo...`);
+                  setTimeout(() => setZaloToast(null), 3000);
+                } else {
+                  setZaloGuest(record);
+                }
+              }}
+              title="Gửi thiệp Zalo 1-Click (Tự động copy & mở Zalo)"
+              className="px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition cursor-pointer flex items-center gap-1 border border-blue-200"
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-3.5 h-3.5 text-blue-600" />
+              <span>Zalo</span>
             </button>
 
             {/* Nút Live Preview iPhone */}
@@ -1041,11 +1062,27 @@ export default function GuestsMasterPage() {
         onClose={() => setPreviewGuest(null)}
       />
 
+      {/* Toast thông báo 1-Click Zalo */}
+      {zaloToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm animate-bounce">
+          <MessageCircle className="w-5 h-5 shrink-0" />
+          <span>{zaloToast}</span>
+        </div>
+      )}
+
       {/* Modal Mẫu tin nhắn Zalo */}
       <ZaloMessageModal
         guest={zaloGuest}
         isOpen={Boolean(zaloGuest)}
         onClose={() => setZaloGuest(null)}
+        onSentUpdated={(guestId) => {
+          setTableGuests((prev) =>
+            prev.map((g) => (g.id === guestId ? { ...g, isSent: true } : g))
+          );
+          setGuests((prev) =>
+            prev.map((g) => (g.id === guestId ? { ...g, isSent: true } : g))
+          );
+        }}
       />
     </div>
   );

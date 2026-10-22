@@ -2,7 +2,13 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import AOS from "aos";
+import dynamic from "next/dynamic";
 import Calendar from "./hooks/calender";
+
+const CountdownTimer = dynamic(() => import("./components/CountdownTimer"), {
+  ssr: false,
+});
+import WaxSealEnvelope from "./components/WaxSealEnvelope";
 import PhotoAlbum from "./components/PhotoAlbum";
 import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
@@ -51,6 +57,13 @@ export default function Home() {
 
   return (
     <div className="py-2 container overflow-x-hidden max-w-full">
+      {/* Interactive Wax Seal Envelope Opening */}
+      <WaxSealEnvelope
+        groomName={weddingData.groom.name}
+        brideName={weddingData.bride.name}
+        weddingDate={formattedDate}
+      />
+
       {/* Hero Section */}
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
@@ -301,6 +314,16 @@ export default function Home() {
           </p>
         </div>
       )}
+
+      {/* Countdown Timer Section */}
+      <CountdownTimer
+        year={leThanhHon?.solarDate?.year || 2026}
+        month={leThanhHon?.solarDate?.month || 12}
+        day={leThanhHon?.solarDate?.day || 6}
+        time={leThanhHon?.time || "10h00"}
+        title="Đếm ngược ngày chung đôi"
+        subtitle="SAVE THE DATE"
+      />
 
       {/* Calendar Section */}
       <div data-aos="fade-up" className="px-3 sm:px-4 py-3 sm:py-4 md:py-6">

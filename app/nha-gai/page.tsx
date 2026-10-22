@@ -2,8 +2,14 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import AOS from "aos";
+import dynamic from "next/dynamic";
 import PhotoAlbum from "../components/PhotoAlbum";
 import Calendar from "../hooks/calender";
+
+const CountdownTimer = dynamic(() => import("../components/CountdownTimer"), {
+  ssr: false,
+});
+import WaxSealEnvelope from "../components/WaxSealEnvelope";
 import PersonalizedGreeting from "../components/PersonalizedGreeting";
 import RsvpSection from "../components/RsvpSection";
 import GiftBoxSection from "../components/GiftBoxSection";
@@ -52,6 +58,13 @@ export default function NhaGaiPage() {
 
   return (
     <div className="py-2 container overflow-x-hidden max-w-full">
+      {/* Interactive Wax Seal Envelope Opening */}
+      <WaxSealEnvelope
+        groomName={commonData.groom.name}
+        brideName={commonData.bride.name}
+        weddingDate={formattedDate}
+      />
+
       {/* Hero Section */}
       <div className="md:h-screen h-[70vh] relative overflow-hidden overflow-x-hidden">
         {/* Background Image */}
@@ -302,6 +315,16 @@ export default function NhaGaiPage() {
           </p>
         </div>
       )}
+
+      {/* Countdown Timer Section */}
+      <CountdownTimer
+        year={tiecVuQuy?.solarDate?.year || 2026}
+        month={tiecVuQuy?.solarDate?.month || 12}
+        day={tiecVuQuy?.solarDate?.day || 5}
+        time={tiecVuQuy?.time || "10h00"}
+        title="Đếm ngược ngày chung đôi"
+        subtitle="SAVE THE DATE"
+      />
 
       {/* Calendar Section */}
       <div data-aos="fade-up" className="px-3 sm:px-4 py-3 sm:py-4 md:py-6">

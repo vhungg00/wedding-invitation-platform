@@ -17,7 +17,7 @@
     "avatar": "/co-dau.JPG",
     "fatherName": "ÔNG NGUYỄN VĂN HƯNG",
     "motherName": "BÀ PHẠM THỊ KHUYÊN",
-    "address": "1003, Lê Thanh, Nam Cường"
+    "address": "1003 Lê Thanh, Phường Cam Đường,Tỉnh Lào Cai"
   },
   "quotes": {
     "line1": "Hôn nhân là chuyện cả đời",
@@ -119,10 +119,9 @@
       "thankYouMessage": "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi.",
       "bankAccount": {
         "owner": "Chú rể Việt Hùng",
-        "bankName": "MB Bank",
-        "accountNumber": "Đang cập nhật",
-        "accountName": "TẠ VIỆT HÙNG",
-        "qrCodeUrl": "/qr.jpeg"
+        "bankName": "ViettinBank",
+        "accountNumber": "105869255527",
+        "accountName": "TẠ VĂN HÙNG"
       }
     }
   },
@@ -131,14 +130,14 @@
     "description": "Thư mời tiệc mừng Lễ Vu Quy Xuân Ly & Việt Hùng - 05.12.2026",
     "hero": {
       "title": "THƯ MỜI TIỆC CƯỚI",
-      "weddingDateText": "THỨ BẢY - 10H00",
+      "weddingDateText": "THỨ BẢY - 10H30",
       "dateFormatted": "05 . 12 . 2026"
     },
     "events": [
       {
         "title": "LỄ VU QUY & TIỆC CƯỚI",
         "subtitle": "Tại gia đình nhà gái",
-        "time": "10h00",
+        "time": "10h30",
         "dayOfWeek": "Thứ Bảy",
         "solarDate": {
           "day": 5,
@@ -147,7 +146,7 @@
         },
         "lunarDate": "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
         "venueName": "Tại gia đình nhà gái",
-        "timeRange": "10H00",
+        "timeRange": "10H30",
         "address": "1003, Lê Thanh, Nam Cường",
         "mapUrl": "https://maps.google.com/maps?q=1003+Lê+Thanh,+Nam+Cường,+Lào+Cai&output=embed"
       }
@@ -156,10 +155,9 @@
       "thankYouMessage": "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi.",
       "bankAccount": {
         "owner": "Cô dâu Xuân Ly",
-        "bankName": "Ngân hàng",
-        "accountNumber": "Đang cập nhật",
-        "accountName": "NGUYỄN XUÂN LY",
-        "qrCodeUrl": "/qr.jpeg"
+        "bankName": "MBBank",
+        "accountNumber": "2625072003",
+        "accountName": "NGUYỄN XUÂN LY"
       }
     }
   },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download } from "lucide-react";
+import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download, MessageCircle } from "lucide-react";
 import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
@@ -9,6 +9,8 @@ import { AppButton } from "@/app/components/ui/AppButton";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
 import { exportGuestsToExcel } from "@/lib/exportExcel";
 import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
+import ZaloMessageModal from "../guests/components/ZaloMessageModal";
+import { sendZaloOneClick } from "@/lib/zaloInvite";
 
 interface GuestsTabProps {
   guests: GuestItem[];
@@ -16,7 +18,7 @@ interface GuestsTabProps {
     name: string,
     side: "nha-trai" | "nha-gai",
     phone: string
-  ) => Promise<void>;
+  ) => Promise<GuestItem | void>;
   onDeleteGuest: (id: string) => Promise<boolean | void> | void;
 }
 
@@ -33,6 +35,8 @@ export default function GuestsTab({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortKey, setSortKey] = useState<string | undefined>("name");
   const [sortType, setSortType] = useState<ESortType>(ESortType.ASC);
+  const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
+  const [zaloToast, setZaloToast] = useState<string | null>(null);
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +64,11 @@ export default function GuestsTab({
 
     setSubmitting(true);
     try {
-      await onCreateGuest(newGuestName.trim(), newGuestSide, newGuestPhone.trim());
+      const createdGuest = await onCreateGuest(newGuestName.trim(), newGuestSide, newGuestPhone.trim());
+      if (createdGuest && typeof createdGuest === "object") {
+        setItems((prev) => [createdGuest, ...prev]);
+        setTotalCount((c) => c + 1);
+      }
       setNewGuestName("");
       setNewGuestPhone("");
       setCurrentPage(1);
@@ -244,7 +252,7 @@ export default function GuestsTab({
       {
         title: "Hành động",
         key: "action",
-        width: 130,
+        width: 200,
         align: "center",
         resizable: false,
         render: (_, g) => {
@@ -259,6 +267,44 @@ export default function GuestsTab({
                 gap: 6,
               }}
             >
+              {/* Nút Gửi Zalo 1-Click */}
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (g.phone) {
+                    await sendZaloOneClick(g, (guestId) => {
+                      setItems((prev) =>
+                        prev.map((item) => (item.id === guestId ? { ...item, isSent: true } : item))
+                      );
+                    });
+                    setZaloToast(`Đã chép tin nhắn mời ${g.name}! Đang mở Zalo...`);
+                    setTimeout(() => setZaloToast(null), 3000);
+                  } else {
+                    setZaloGuest(g);
+                  }
+                }}
+                style={{
+                  border: "1px solid #91caff",
+                  background: "#e6f4ff",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  color: "#0958d9",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 4,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  transition: "all 0.2s",
+                }}
+                title="Gửi thiệp qua Zalo (1-Click)"
+              >
+                <MessageCircle style={{ width: 14, height: 14 }} />
+                <span>Zalo</span>
+              </button>
+
               <button
                 type="button"
                 onClick={(e) => {
@@ -483,6 +529,26 @@ export default function GuestsTab({
           itemUnitName="khách"
         />
       </div>
+
+      {/* Toast thông báo 1-Click Zalo */}
+      {zaloToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm animate-bounce">
+          <MessageCircle className="w-5 h-5 shrink-0" />
+          <span>{zaloToast}</span>
+        </div>
+      )}
+
+      {/* Modal Zalo khi khách chưa có SĐT */}
+      <ZaloMessageModal
+        guest={zaloGuest}
+        isOpen={Boolean(zaloGuest)}
+        onClose={() => setZaloGuest(null)}
+        onSentUpdated={(guestId) => {
+          setItems((prev) =>
+            prev.map((item) => (item.id === guestId ? { ...item, isSent: true } : item))
+          );
+        }}
+      />
     </div>
   );
 }
