@@ -35,12 +35,19 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const defaultSiteUrl = "https://damcuoihungly.vercel.app";
 const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? process.env.NEXT_PUBLIC_SITE_URL
+  : process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.VERCEL_URL
   ? (process.env.VERCEL_URL.startsWith("http") ? process.env.VERCEL_URL : `https://${process.env.VERCEL_URL}`)
-  : "http://localhost:3000";
+  : defaultSiteUrl;
 const siteUrl = rawSiteUrl.replace(/\/$/, "");
+
+const ogImageAbsolute = weddingData.ogImageUrl?.startsWith("http")
+  ? weddingData.ogImageUrl
+  : `${siteUrl}${weddingData.ogImageUrl || "/og-image.jpg"}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -80,7 +87,7 @@ export const metadata: Metadata = {
     siteName: "Thiệp Cưới Việt Hùng & Xuân Ly",
     images: [
       {
-        url: weddingData.ogImageUrl || "/album/anh-chinh.JPG",
+        url: ogImageAbsolute,
         width: 1200,
         height: 630,
         alt: weddingData.nhaTrai?.title || weddingData.title,
@@ -91,7 +98,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: weddingData.nhaTrai?.title || weddingData.title,
     description: weddingData.nhaTrai?.description || weddingData.description,
-    images: [weddingData.ogImageUrl || "/album/anh-chinh.JPG"],
+    images: [ogImageAbsolute],
   },
 };
 
