@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: weddingData.nhaTrai?.title || weddingData.title,
     description: weddingData.nhaTrai?.description || weddingData.description,
-    siteName: "Thiệp Cưới Việt Hùng & Xuân Ly",
+    siteName: "Thiệp Cưới Việt Hùng & Khánh Ly",
     images: [
       {
         url: ogImageAbsolute,

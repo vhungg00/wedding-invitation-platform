@@ -40,6 +40,8 @@ export default function Home() {
 
   // Events for Nhà Trai
   const nhaTraiData = weddingData.nhaTrai;
+  const brideName = nhaTraiData?.bride?.name || "Khánh Ly";
+  const brideShortName = nhaTraiData?.bride?.shortName || brideName;
   const leThanhHon = nhaTraiData?.events?.[0] || weddingData.events?.[0];
   const tiecMung = nhaTraiData?.events?.[1];
 
@@ -60,7 +62,7 @@ export default function Home() {
       {/* Interactive Wax Seal Envelope Opening */}
       <WaxSealEnvelope
         groomName={weddingData.groom.name}
-        brideName={weddingData.bride.name}
+        brideName={brideName}
         weddingDate={formattedDate}
       />
 
@@ -85,7 +87,7 @@ export default function Home() {
               <h1 data-aos="zoom-in" className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 md:mb-3 lg:mb-4 drop-shadow-lg">
                 <span className="font-imperial-script">{weddingData.groom.name}</span>
                 <span className="mx-1 sm:mx-2 md:mx-3">-</span>
-                <span className="font-imperial-script">{weddingData.bride.name}</span>
+                <span className="font-imperial-script">{brideName}</span>
               </h1>
               <p
                 data-aos="fade-left"
@@ -163,7 +165,7 @@ export default function Home() {
               Cô Dâu
             </p>
             <p data-aos="fade-up" className="font-imperial-script h-8 sm:h-10 md:h-12 lg:h-14 xl:h-16">
-              {weddingData.bride.name}
+              {brideName}
             </p>
           </div>
         </div>
@@ -419,7 +421,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="text-center py-8 text-xs text-gray-400 space-y-2">
-        <p>Hôn lễ của {weddingData.groom.shortName} & {weddingData.bride.shortName} • 2026</p>
+        <p>Hôn lễ của {weddingData.groom.shortName} & {brideShortName} • 2026</p>
         <p>
           <a href="/admin" className="text-gray-400 hover:text-rose-500 underline transition">
             Quản trị Platform (Admin)

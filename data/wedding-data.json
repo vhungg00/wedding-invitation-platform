@@ -90,8 +90,12 @@
     "autoPlay": true
   },
   "nhaTrai": {
-    "title": "Lễ Thành Hôn - Thiệp Cưới Việt Hùng & Xuân Ly",
-    "description": "Thư mời tiệc mừng Lễ Thành Hôn Việt Hùng & Xuân Ly - 06.12.2026",
+    "title": "Lễ Thành Hôn - Thiệp Cưới Việt Hùng & Khánh Ly",
+    "description": "Thư mời tiệc mừng Lễ Thành Hôn Việt Hùng & Khánh Ly - 06.12.2026",
+    "bride": {
+      "name": "Khánh Ly",
+      "shortName": "Khánh Ly"
+    },
     "hero": {
       "title": "THƯ MỜI TIỆC CƯỚI",
       "weddingDateText": "CHỦ NHẬT - 10H00",
