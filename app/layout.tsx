@@ -4,6 +4,7 @@ import { Monsieur_La_Doulaise } from "next/font/google";
 import "./globals.css";
 import "aos/dist/aos.css";
 import MusicPlayer from "./components/MusicPlayer";
+import FireworksCelebration from "./components/FireworksCelebration";
 import weddingData from "@/data/wedding-data.json";
 
 const geistSans = Geist({
@@ -107,6 +108,7 @@ export default function RootLayout({
       >
         {children}
         <MusicPlayer />
+        <FireworksCelebration />
       </body>
     </html>
   );
