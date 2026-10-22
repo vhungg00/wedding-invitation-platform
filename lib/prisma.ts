@@ -56,6 +56,8 @@ export interface WeddingSideData {
   hero?: WeddingHero;
   events?: WeddingEvent[];
   donation?: WeddingDonation;
+  bride?: WeddingPerson;
+  groom?: WeddingPerson;
 }
 
 export interface WeddingQuotes {

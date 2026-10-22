@@ -66,6 +66,7 @@ export default function WeddingInfoAdminPage() {
   const [groomAddress, setGroomAddress] = useState("");
 
   const [brideName, setBrideName] = useState("");
+  const [brideNhaTraiName, setBrideNhaTraiName] = useState("");
   const [brideFatherName, setBrideFatherName] = useState("");
   const [brideMotherName, setBrideMotherName] = useState("");
   const [brideAddress, setBrideAddress] = useState("");
@@ -125,6 +126,7 @@ export default function WeddingInfoAdminPage() {
       setGroomAddress(d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
 
       setBrideName(d.bride?.name || "Xuân Ly");
+      setBrideNhaTraiName(d.nhaTrai?.bride?.name || "Khánh Ly");
       setBrideFatherName(d.bride?.fatherName || "ÔNG NGUYỄN VĂN HƯNG");
       setBrideMotherName(d.bride?.motherName || "BÀ PHẠM THỊ KHUYÊN");
       setBrideAddress(d.bride?.address || "1003, Lê Thanh, Nam Cường");
@@ -195,6 +197,8 @@ export default function WeddingInfoAdminPage() {
     setStatusMessage(null);
 
     try {
+      const effectiveBrideTrai = brideNhaTraiName.trim() || brideName.trim();
+
       // Chuẩn bị payload đồng bộ
       const payload = {
         groom: {
@@ -212,8 +216,12 @@ export default function WeddingInfoAdminPage() {
           address: brideAddress,
         },
         nhaTrai: {
-          title: `Lễ Thành Hôn - Thiệp Cưới ${groomName} & ${brideName}`,
-          description: `Thư mời tiệc mừng Lễ Thành Hôn ${groomName} & ${brideName} - ${String(traiSolarDay).padStart(2, "0")}.${String(traiSolarMonth).padStart(2, "0")}.${traiSolarYear}`,
+          title: `Lễ Thành Hôn - Thiệp Cưới ${groomName} & ${effectiveBrideTrai}`,
+          description: `Thư mời tiệc mừng Lễ Thành Hôn ${groomName} & ${effectiveBrideTrai} - ${String(traiSolarDay).padStart(2, "0")}.${String(traiSolarMonth).padStart(2, "0")}.${traiSolarYear}`,
+          bride: {
+            name: effectiveBrideTrai,
+            shortName: effectiveBrideTrai,
+          },
           hero: {
             title: "THƯ MỜI TIỆC CƯỚI",
             weddingDateText: `${traiDayOfWeek.toUpperCase()} - ${traiTime.toUpperCase()}`,
@@ -352,6 +360,7 @@ export default function WeddingInfoAdminPage() {
       setGroomAddress(d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
 
       setBrideName(d.bride?.name || "Xuân Ly");
+      setBrideNhaTraiName(d.nhaTrai?.bride?.name || "Khánh Ly");
       setBrideFatherName(d.bride?.fatherName || "ÔNG NGUYỄN VĂN HƯNG");
       setBrideMotherName(d.bride?.motherName || "BÀ PHẠM THỊ KHUYÊN");
       setBrideAddress(d.bride?.address || "1003, Lê Thanh, Nam Cường");
@@ -986,7 +995,7 @@ export default function WeddingInfoAdminPage() {
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  Họ tên Cô Dâu
+                  Họ tên Cô Dâu (Nhà Gái)
                 </label>
                 <input
                   type="text"
@@ -998,6 +1007,30 @@ export default function WeddingInfoAdminPage() {
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-semibold outline-hidden transition"
                   placeholder="VD: Xuân Ly"
                 />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-gray-700">
+                    Tên Cô Dâu hiển thị bên Nhà Trai
+                  </label>
+                  <span className="text-[10px] text-amber-700 bg-amber-100/70 border border-amber-200 px-2 py-0.5 rounded-md font-semibold">
+                    Hiện tại: Khánh Ly
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={brideNhaTraiName}
+                  onChange={(e) => {
+                    setBrideNhaTraiName(e.target.value);
+                    markDirty();
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-semibold outline-hidden transition"
+                  placeholder="VD: Khánh Ly"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  💡 Thiệp Nhà Trai sẽ hiển thị tên này. Thiệp Nhà Gái sẽ hiển thị theo &quot;Họ tên Cô Dâu&quot; ở trên.
+                </p>
               </div>
 
               <div>

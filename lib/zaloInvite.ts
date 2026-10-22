@@ -1,6 +1,10 @@
 import { GuestItem } from "@/app/admin/types";
 
-export const getInvitationMessage = (guest: GuestItem, origin: string) => {
+export const getInvitationMessage = (
+  guest: GuestItem,
+  origin: string,
+  customBrideName?: string
+) => {
   const isNhaGai = guest.side === "nha-gai";
   const path = isNhaGai ? "/nha-gai" : "";
   const guestUrl = `${origin}${path}?g=${guest.slug || encodeURIComponent(guest.name)}`;
@@ -8,7 +12,7 @@ export const getInvitationMessage = (guest: GuestItem, origin: string) => {
     ? "Thứ Bảy, ngày 05.12.2026 (10h30)"
     : "Chủ Nhật, ngày 06.12.2026 (10h00)";
   const eventName = isNhaGai ? "Lễ Vu Quy" : "Lễ Thành Hôn";
-  const brideName = isNhaGai ? "Xuân Ly" : "Khánh Ly";
+  const brideName = customBrideName || (isNhaGai ? "Xuân Ly" : "Khánh Ly");
 
   return `Thân gửi ${guest.name},
 
@@ -26,10 +30,11 @@ Việt Hùng & ${brideName} ❤️`;
 
 export const sendZaloOneClick = async (
   guest: GuestItem,
-  onSentUpdated?: (guestId: string) => void
+  onSentUpdated?: (guestId: string) => void,
+  customBrideName?: string
 ) => {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const message = getInvitationMessage(guest, origin);
+  const message = getInvitationMessage(guest, origin, customBrideName);
 
   // 1. Copy message to clipboard
   try {
