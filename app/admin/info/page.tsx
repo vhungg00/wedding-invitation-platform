@@ -15,13 +15,121 @@ import {
   ExternalLink,
   Users,
   CreditCard,
-  Heart,
   Quote,
-  Sparkles,
   RotateCcw,
   Building,
 } from "lucide-react";
 import defaultWeddingData from "@/data/wedding-data.json";
+
+export interface WeddingFormData {
+  // 1. Nhà Trai (Lễ Thành Hôn)
+  traiTitle: string;
+  traiTime: string;
+  traiDayOfWeek: string;
+  traiSolarDay: number;
+  traiSolarMonth: number;
+  traiSolarYear: number;
+  traiLunarDate: string;
+  traiVenueName: string;
+  traiAddress: string;
+  traiMapUrl: string;
+
+  // 2. Nhà Gái (Lễ Vu Quy)
+  gaiTitle: string;
+  gaiTime: string;
+  gaiDayOfWeek: string;
+  gaiSolarDay: number;
+  gaiSolarMonth: number;
+  gaiSolarYear: number;
+  gaiLunarDate: string;
+  gaiVenueName: string;
+  gaiAddress: string;
+  gaiMapUrl: string;
+
+  // 3. Gia Đình & Cô Dâu - Chú Rể
+  groomName: string;
+  groomFatherName: string;
+  groomMotherName: string;
+  groomAddress: string;
+
+  brideName: string;
+  brideNhaTraiName: string;
+  brideFatherName: string;
+  brideMotherName: string;
+  brideAddress: string;
+
+  // 4. Tài khoản Ngân hàng
+  traiBankName: string;
+  traiAccountNo: string;
+  traiAccountName: string;
+
+  gaiBankName: string;
+  gaiAccountNo: string;
+  gaiAccountName: string;
+
+  // 5. Câu trích dẫn & Lời cảm ơn
+  quoteLine1: string;
+  quoteLine2: string;
+  thankYouMessage: string;
+}
+
+// Trích xuất dữ liệu thô từ API hoặc default JSON thành formData chuẩn
+const extractFormData = (d: any): WeddingFormData => {
+  const ntEvent = d.nhaTrai?.events?.[0] || d.events?.[0];
+  const ngEvent = d.nhaGai?.events?.[0];
+  const traiBank = d.nhaTrai?.donation?.bankAccount || d.donation?.bankAccounts?.[0];
+  const gaiBank = d.nhaGai?.donation?.bankAccount || d.donation?.bankAccounts?.[1];
+
+  return {
+    traiTitle: ntEvent?.title || "LỄ THÀNH HÔN & TIỆC CƯỚI",
+    traiTime: ntEvent?.time || "10h00",
+    traiDayOfWeek: ntEvent?.dayOfWeek || "Chủ Nhật",
+    traiSolarDay: ntEvent?.solarDate?.day ?? 6,
+    traiSolarMonth: ntEvent?.solarDate?.month ?? 12,
+    traiSolarYear: ntEvent?.solarDate?.year ?? 2026,
+    traiLunarDate: ntEvent?.lunarDate || "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
+    traiVenueName: ntEvent?.venueName || "Tại gia đình nhà trai",
+    traiAddress: ntEvent?.address || d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai",
+    traiMapUrl: ntEvent?.mapUrl || "",
+
+    gaiTitle: ngEvent?.title || "LỄ VU QUY & TIỆC CƯỚI",
+    gaiTime: ngEvent?.time || "10h00",
+    gaiDayOfWeek: ngEvent?.dayOfWeek || "Thứ Bảy",
+    gaiSolarDay: ngEvent?.solarDate?.day ?? 5,
+    gaiSolarMonth: ngEvent?.solarDate?.month ?? 12,
+    gaiSolarYear: ngEvent?.solarDate?.year ?? 2026,
+    gaiLunarDate: ngEvent?.lunarDate || "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
+    gaiVenueName: ngEvent?.venueName || "Tại gia đình nhà gái",
+    gaiAddress: ngEvent?.address || d.bride?.address || "1003, Lê Thanh, Nam Cường",
+    gaiMapUrl: ngEvent?.mapUrl || "",
+
+    groomName: d.groom?.name || "Việt Hùng",
+    groomFatherName: d.groom?.fatherName || "ÔNG TẠ VĂN VƯỢNG",
+    groomMotherName: d.groom?.motherName || "BÀ ĐẶNG THỊ XUÂN",
+    groomAddress: d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai",
+
+    brideName: d.bride?.name || "Xuân Ly",
+    brideNhaTraiName: d.nhaTrai?.bride?.name || "Khánh Ly",
+    brideFatherName: d.bride?.fatherName || "ÔNG NGUYỄN VĂN HƯNG",
+    brideMotherName: d.bride?.motherName || "BÀ PHẠM THỊ KHUYÊN",
+    brideAddress: d.bride?.address || "1003, Lê Thanh, Nam Cường",
+
+    traiBankName: traiBank?.bankName || "MB Bank",
+    traiAccountNo: traiBank?.accountNumber || "",
+    traiAccountName: traiBank?.accountName || "TẠ VIỆT HÙNG",
+
+    gaiBankName: gaiBank?.bankName || "MB Bank",
+    gaiAccountNo: gaiBank?.accountNumber || "",
+    gaiAccountName: gaiBank?.accountName || "NGUYỄN XUÂN LY",
+
+    quoteLine1: d.quotes?.line1 || "Hôn nhân là chuyện cả đời",
+    quoteLine2: d.quotes?.line2 || "Yêu người vừa ý, cưới người mình thương",
+    thankYouMessage:
+      d.nhaTrai?.donation?.thankYouMessage ||
+      d.donation?.thankYouMessage ||
+      "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi.",
+  };
+};
 
 export default function WeddingInfoAdminPage() {
   const router = useRouter();
@@ -34,56 +142,19 @@ export default function WeddingInfoAdminPage() {
     text: string;
   } | null>(null);
 
-  // Form State
-  // 1. Nhà Trai (Lễ Thành Hôn)
-  const [traiTitle, setTraiTitle] = useState("");
-  const [traiTime, setTraiTime] = useState("");
-  const [traiDayOfWeek, setTraiDayOfWeek] = useState("");
-  const [traiSolarDay, setTraiSolarDay] = useState<number>(6);
-  const [traiSolarMonth, setTraiSolarMonth] = useState<number>(12);
-  const [traiSolarYear, setTraiSolarYear] = useState<number>(2026);
-  const [traiLunarDate, setTraiLunarDate] = useState("");
-  const [traiVenueName, setTraiVenueName] = useState("");
-  const [traiAddress, setTraiAddress] = useState("");
-  const [traiMapUrl, setTraiMapUrl] = useState("");
+  // Toàn bộ form lưu trữ trong 1 object duy nhất
+  const [formData, setFormData] = useState<WeddingFormData>(() =>
+    extractFormData(defaultWeddingData)
+  );
 
-  // 2. Nhà Gái (Lễ Vu Quy)
-  const [gaiTitle, setGaiTitle] = useState("");
-  const [gaiTime, setGaiTime] = useState("");
-  const [gaiDayOfWeek, setGaiDayOfWeek] = useState("");
-  const [gaiSolarDay, setGaiSolarDay] = useState<number>(5);
-  const [gaiSolarMonth, setGaiSolarMonth] = useState<number>(12);
-  const [gaiSolarYear, setGaiSolarYear] = useState<number>(2026);
-  const [gaiLunarDate, setGaiLunarDate] = useState("");
-  const [gaiVenueName, setGaiVenueName] = useState("");
-  const [gaiAddress, setGaiAddress] = useState("");
-  const [gaiMapUrl, setGaiMapUrl] = useState("");
-
-  // 3. Gia Đình & Cô Dâu - Chú Rể
-  const [groomName, setGroomName] = useState("");
-  const [groomFatherName, setGroomFatherName] = useState("");
-  const [groomMotherName, setGroomMotherName] = useState("");
-  const [groomAddress, setGroomAddress] = useState("");
-
-  const [brideName, setBrideName] = useState("");
-  const [brideNhaTraiName, setBrideNhaTraiName] = useState("");
-  const [brideFatherName, setBrideFatherName] = useState("");
-  const [brideMotherName, setBrideMotherName] = useState("");
-  const [brideAddress, setBrideAddress] = useState("");
-
-  // 4. Tài khoản Ngân hàng
-  const [traiBankName, setTraiBankName] = useState("");
-  const [traiAccountNo, setTraiAccountNo] = useState("");
-  const [traiAccountName, setTraiAccountName] = useState("");
-
-  const [gaiBankName, setGaiBankName] = useState("");
-  const [gaiAccountNo, setGaiAccountNo] = useState("");
-  const [gaiAccountName, setGaiAccountName] = useState("");
-
-  // 5. Câu trích dẫn & Lời cảm ơn
-  const [quoteLine1, setQuoteLine1] = useState("");
-  const [quoteLine2, setQuoteLine2] = useState("");
-  const [thankYouMessage, setThankYouMessage] = useState("");
+  // Helper cập nhật từng trường và bật cờ unsaved changes
+  const handleChange = <K extends keyof WeddingFormData>(
+    field: K,
+    value: WeddingFormData[K]
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (!hasUnsavedChanges) setHasUnsavedChanges(true);
+  };
 
   // Tải dữ liệu từ API
   const loadData = async () => {
@@ -92,66 +163,7 @@ export default function WeddingInfoAdminPage() {
       const res = await fetch("/api/invitation");
       const json = await res.json();
       const d = json.data || defaultWeddingData;
-
-      // Nhà Trai
-      const ntEvent = d.nhaTrai?.events?.[0] || d.events?.[0];
-      setTraiTitle(ntEvent?.title || "LỄ THÀNH HÔN & TIỆC CƯỚI");
-      setTraiTime(ntEvent?.time || "10h00");
-      setTraiDayOfWeek(ntEvent?.dayOfWeek || "Chủ Nhật");
-      setTraiSolarDay(ntEvent?.solarDate?.day || 6);
-      setTraiSolarMonth(ntEvent?.solarDate?.month || 12);
-      setTraiSolarYear(ntEvent?.solarDate?.year || 2026);
-      setTraiLunarDate(ntEvent?.lunarDate || "Tức Ngày 28 Tháng 10 Năm Bính Ngọ");
-      setTraiVenueName(ntEvent?.venueName || "Tại gia đình nhà trai");
-      setTraiAddress(ntEvent?.address || d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
-      setTraiMapUrl(ntEvent?.mapUrl || "");
-
-      // Nhà Gái
-      const ngEvent = d.nhaGai?.events?.[0];
-      setGaiTitle(ngEvent?.title || "LỄ VU QUY & TIỆC CƯỚI");
-      setGaiTime(ngEvent?.time || "10h00");
-      setGaiDayOfWeek(ngEvent?.dayOfWeek || "Thứ Bảy");
-      setGaiSolarDay(ngEvent?.solarDate?.day || 5);
-      setGaiSolarMonth(ngEvent?.solarDate?.month || 12);
-      setGaiSolarYear(ngEvent?.solarDate?.year || 2026);
-      setGaiLunarDate(ngEvent?.lunarDate || "Tức Ngày 27 Tháng 10 Năm Bính Ngọ");
-      setGaiVenueName(ngEvent?.venueName || "Tại gia đình nhà gái");
-      setGaiAddress(ngEvent?.address || d.bride?.address || "1003, Lê Thanh, Nam Cường");
-      setGaiMapUrl(ngEvent?.mapUrl || "");
-
-      // Gia Đình
-      setGroomName(d.groom?.name || "Việt Hùng");
-      setGroomFatherName(d.groom?.fatherName || "ÔNG TẠ VĂN VƯỢNG");
-      setGroomMotherName(d.groom?.motherName || "BÀ ĐẶNG THỊ XUÂN");
-      setGroomAddress(d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
-
-      setBrideName(d.bride?.name || "Xuân Ly");
-      setBrideNhaTraiName(d.nhaTrai?.bride?.name || "Khánh Ly");
-      setBrideFatherName(d.bride?.fatherName || "ÔNG NGUYỄN VĂN HƯNG");
-      setBrideMotherName(d.bride?.motherName || "BÀ PHẠM THỊ KHUYÊN");
-      setBrideAddress(d.bride?.address || "1003, Lê Thanh, Nam Cường");
-
-      // Ngân hàng Nhà Trai
-      const traiBank = d.nhaTrai?.donation?.bankAccount || d.donation?.bankAccounts?.[0];
-      setTraiBankName(traiBank?.bankName || "MB Bank");
-      setTraiAccountNo(traiBank?.accountNumber || "");
-      setTraiAccountName(traiBank?.accountName || "TẠ VIỆT HÙNG");
-
-      // Ngân hàng Nhà Gái
-      const gaiBank = d.nhaGai?.donation?.bankAccount || d.donation?.bankAccounts?.[1];
-      setGaiBankName(gaiBank?.bankName || "MB Bank");
-      setGaiAccountNo(gaiBank?.accountNumber || "");
-      setGaiAccountName(gaiBank?.accountName || "NGUYỄN XUÂN LY");
-
-      // Quotes & Lời cảm ơn
-      setQuoteLine1(d.quotes?.line1 || "Hôn nhân là chuyện cả đời");
-      setQuoteLine2(d.quotes?.line2 || "Yêu người vừa ý, cưới người mình thương");
-      setThankYouMessage(
-        d.nhaTrai?.donation?.thankYouMessage ||
-          d.donation?.thankYouMessage ||
-          "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi."
-      );
-
+      setFormData(extractFormData(d));
       setHasUnsavedChanges(false);
     } catch (err) {
       console.error("Lỗi khi tải thông tin cưới:", err);
@@ -197,6 +209,47 @@ export default function WeddingInfoAdminPage() {
     setStatusMessage(null);
 
     try {
+      const {
+        traiTitle,
+        traiTime,
+        traiDayOfWeek,
+        traiSolarDay,
+        traiSolarMonth,
+        traiSolarYear,
+        traiLunarDate,
+        traiVenueName,
+        traiAddress,
+        traiMapUrl,
+        gaiTitle,
+        gaiTime,
+        gaiDayOfWeek,
+        gaiSolarDay,
+        gaiSolarMonth,
+        gaiSolarYear,
+        gaiLunarDate,
+        gaiVenueName,
+        gaiAddress,
+        gaiMapUrl,
+        groomName,
+        groomFatherName,
+        groomMotherName,
+        groomAddress,
+        brideName,
+        brideNhaTraiName,
+        brideFatherName,
+        brideMotherName,
+        brideAddress,
+        traiBankName,
+        traiAccountNo,
+        traiAccountName,
+        gaiBankName,
+        gaiAccountNo,
+        gaiAccountName,
+        quoteLine1,
+        quoteLine2,
+        thankYouMessage,
+      } = formData;
+
       const effectiveBrideTrai = brideNhaTraiName.trim() || brideName.trim();
 
       // Chuẩn bị payload đồng bộ
@@ -329,59 +382,13 @@ export default function WeddingInfoAdminPage() {
   // Khôi phục giá trị mặc định ban đầu
   const handleResetToDefault = () => {
     if (confirm("Bạn có chắc muốn khôi phục lại toàn bộ thông tin về mặc định ban đầu?")) {
-      const d = defaultWeddingData as any;
-      const ntEvent = d.nhaTrai?.events?.[0];
-      setTraiTitle(ntEvent?.title || "LỄ THÀNH HÔN & TIỆC CƯỚI");
-      setTraiTime(ntEvent?.time || "10h00");
-      setTraiDayOfWeek(ntEvent?.dayOfWeek || "Chủ Nhật");
-      setTraiSolarDay(ntEvent?.solarDate?.day || 6);
-      setTraiSolarMonth(ntEvent?.solarDate?.month || 12);
-      setTraiSolarYear(ntEvent?.solarDate?.year || 2026);
-      setTraiLunarDate(ntEvent?.lunarDate || "Tức Ngày 28 Tháng 10 Năm Bính Ngọ");
-      setTraiVenueName(ntEvent?.venueName || "Tại gia đình nhà trai");
-      setTraiAddress(ntEvent?.address || d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
-      setTraiMapUrl(ntEvent?.mapUrl || "");
-
-      const ngEvent = d.nhaGai?.events?.[0];
-      setGaiTitle(ngEvent?.title || "LỄ VU QUY & TIỆC CƯỚI");
-      setGaiTime(ngEvent?.time || "10h00");
-      setGaiDayOfWeek(ngEvent?.dayOfWeek || "Thứ Bảy");
-      setGaiSolarDay(ngEvent?.solarDate?.day || 5);
-      setGaiSolarMonth(ngEvent?.solarDate?.month || 12);
-      setGaiSolarYear(ngEvent?.solarDate?.year || 2026);
-      setGaiLunarDate(ngEvent?.lunarDate || "Tức Ngày 27 Tháng 10 Năm Bính Ngọ");
-      setGaiVenueName(ngEvent?.venueName || "Tại gia đình nhà gái");
-      setGaiAddress(ngEvent?.address || d.bride?.address || "1003, Lê Thanh, Nam Cường");
-      setGaiMapUrl(ngEvent?.mapUrl || "");
-
-      setGroomName(d.groom?.name || "Việt Hùng");
-      setGroomFatherName(d.groom?.fatherName || "ÔNG TẠ VĂN VƯỢNG");
-      setGroomMotherName(d.groom?.motherName || "BÀ ĐẶNG THỊ XUÂN");
-      setGroomAddress(d.groom?.address || "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai");
-
-      setBrideName(d.bride?.name || "Xuân Ly");
-      setBrideNhaTraiName(d.nhaTrai?.bride?.name || "Khánh Ly");
-      setBrideFatherName(d.bride?.fatherName || "ÔNG NGUYỄN VĂN HƯNG");
-      setBrideMotherName(d.bride?.motherName || "BÀ PHẠM THỊ KHUYÊN");
-      setBrideAddress(d.bride?.address || "1003, Lê Thanh, Nam Cường");
-
-      setQuoteLine1(d.quotes?.line1 || "Hôn nhân là chuyện cả đời");
-      setQuoteLine2(d.quotes?.line2 || "Yêu người vừa ý, cưới người mình thương");
-      setThankYouMessage(
-        d.nhaTrai?.donation?.thankYouMessage ||
-          "Chân thành cảm ơn quý vị – sự hiện diện của quý vị là niềm vinh hạnh lớn đối với chúng tôi."
-      );
-
+      setFormData(extractFormData(defaultWeddingData));
       setHasUnsavedChanges(true);
       setStatusMessage({
         type: "success",
         text: "Đã đưa thông tin về mặc định. Hãy bấm 'Lưu Thay Đổi' để cập nhật Database!",
       });
     }
-  };
-
-  const markDirty = () => {
-    if (!hasUnsavedChanges) setHasUnsavedChanges(true);
   };
 
   if (authChecking || loading) {
@@ -549,11 +556,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={traiTitle}
-                onChange={(e) => {
-                  setTraiTitle(e.target.value);
-                  markDirty();
-                }}
+                value={formData.traiTitle}
+                onChange={(e) => handleChange("traiTitle", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: LỄ THÀNH HÔN & TIỆC CƯỚI"
               />
@@ -567,11 +571,8 @@ export default function WeddingInfoAdminPage() {
                 <Clock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="text"
-                  value={traiTime}
-                  onChange={(e) => {
-                    setTraiTime(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.traiTime}
+                  onChange={(e) => handleChange("traiTime", e.target.value)}
                   className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: 10h00"
                 />
@@ -584,11 +585,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={traiDayOfWeek}
-                onChange={(e) => {
-                  setTraiDayOfWeek(e.target.value);
-                  markDirty();
-                }}
+                value={formData.traiDayOfWeek}
+                onChange={(e) => handleChange("traiDayOfWeek", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Chủ Nhật"
               />
@@ -604,11 +602,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="1"
                   max="31"
-                  value={traiSolarDay}
-                  onChange={(e) => {
-                    setTraiSolarDay(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.traiSolarDay}
+                  onChange={(e) => handleChange("traiSolarDay", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Ngày"
                 />
@@ -616,11 +611,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="1"
                   max="12"
-                  value={traiSolarMonth}
-                  onChange={(e) => {
-                    setTraiSolarMonth(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.traiSolarMonth}
+                  onChange={(e) => handleChange("traiSolarMonth", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Tháng"
                 />
@@ -628,11 +620,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="2024"
                   max="2030"
-                  value={traiSolarYear}
-                  onChange={(e) => {
-                    setTraiSolarYear(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.traiSolarYear}
+                  onChange={(e) => handleChange("traiSolarYear", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Năm"
                 />
@@ -645,11 +634,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={traiLunarDate}
-                onChange={(e) => {
-                  setTraiLunarDate(e.target.value);
-                  markDirty();
-                }}
+                value={formData.traiLunarDate}
+                onChange={(e) => handleChange("traiLunarDate", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Tức Ngày 28 Tháng 10 Năm Bính Ngọ"
               />
@@ -661,11 +647,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={traiVenueName}
-                onChange={(e) => {
-                  setTraiVenueName(e.target.value);
-                  markDirty();
-                }}
+                value={formData.traiVenueName}
+                onChange={(e) => handleChange("traiVenueName", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Tại gia đình nhà trai"
               />
@@ -679,11 +662,8 @@ export default function WeddingInfoAdminPage() {
                 <MapPin className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="text"
-                  value={traiAddress}
-                  onChange={(e) => {
-                    setTraiAddress(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.traiAddress}
+                  onChange={(e) => handleChange("traiAddress", e.target.value)}
                   className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai"
                 />
@@ -696,11 +676,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={traiMapUrl}
-                onChange={(e) => {
-                  setTraiMapUrl(e.target.value);
-                  markDirty();
-                }}
+                value={formData.traiMapUrl}
+                onChange={(e) => handleChange("traiMapUrl", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition font-mono"
                 placeholder="https://maps.google.com/maps?q=...&output=embed"
               />
@@ -736,11 +713,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={gaiTitle}
-                onChange={(e) => {
-                  setGaiTitle(e.target.value);
-                  markDirty();
-                }}
+                value={formData.gaiTitle}
+                onChange={(e) => handleChange("gaiTitle", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: LỄ VU QUY & TIỆC CƯỚI"
               />
@@ -754,11 +728,8 @@ export default function WeddingInfoAdminPage() {
                 <Clock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="text"
-                  value={gaiTime}
-                  onChange={(e) => {
-                    setGaiTime(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.gaiTime}
+                  onChange={(e) => handleChange("gaiTime", e.target.value)}
                   className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: 10h00"
                 />
@@ -771,11 +742,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={gaiDayOfWeek}
-                onChange={(e) => {
-                  setGaiDayOfWeek(e.target.value);
-                  markDirty();
-                }}
+                value={formData.gaiDayOfWeek}
+                onChange={(e) => handleChange("gaiDayOfWeek", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Thứ Bảy"
               />
@@ -791,11 +759,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="1"
                   max="31"
-                  value={gaiSolarDay}
-                  onChange={(e) => {
-                    setGaiSolarDay(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.gaiSolarDay}
+                  onChange={(e) => handleChange("gaiSolarDay", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Ngày"
                 />
@@ -803,11 +768,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="1"
                   max="12"
-                  value={gaiSolarMonth}
-                  onChange={(e) => {
-                    setGaiSolarMonth(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.gaiSolarMonth}
+                  onChange={(e) => handleChange("gaiSolarMonth", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Tháng"
                 />
@@ -815,11 +777,8 @@ export default function WeddingInfoAdminPage() {
                   type="number"
                   min="2024"
                   max="2030"
-                  value={gaiSolarYear}
-                  onChange={(e) => {
-                    setGaiSolarYear(Number(e.target.value));
-                    markDirty();
-                  }}
+                  value={formData.gaiSolarYear}
+                  onChange={(e) => handleChange("gaiSolarYear", Number(e.target.value))}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
                   placeholder="Năm"
                 />
@@ -832,11 +791,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={gaiLunarDate}
-                onChange={(e) => {
-                  setGaiLunarDate(e.target.value);
-                  markDirty();
-                }}
+                value={formData.gaiLunarDate}
+                onChange={(e) => handleChange("gaiLunarDate", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Tức Ngày 27 Tháng 10 Năm Bính Ngọ"
               />
@@ -848,11 +804,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={gaiVenueName}
-                onChange={(e) => {
-                  setGaiVenueName(e.target.value);
-                  markDirty();
-                }}
+                value={formData.gaiVenueName}
+                onChange={(e) => handleChange("gaiVenueName", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="VD: Tại gia đình nhà gái"
               />
@@ -866,11 +819,8 @@ export default function WeddingInfoAdminPage() {
                 <MapPin className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="text"
-                  value={gaiAddress}
-                  onChange={(e) => {
-                    setGaiAddress(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.gaiAddress}
+                  onChange={(e) => handleChange("gaiAddress", e.target.value)}
                   className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: 1003, Lê Thanh, Nam Cường"
                 />
@@ -883,11 +833,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={gaiMapUrl}
-                onChange={(e) => {
-                  setGaiMapUrl(e.target.value);
-                  markDirty();
-                }}
+                value={formData.gaiMapUrl}
+                onChange={(e) => handleChange("gaiMapUrl", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-gray-800 outline-hidden transition font-mono"
                 placeholder="https://maps.google.com/maps?q=...&output=embed"
               />
@@ -926,11 +873,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={groomName}
-                  onChange={(e) => {
-                    setGroomName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.groomName}
+                  onChange={(e) => handleChange("groomName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 text-xs text-gray-800 font-semibold outline-hidden transition"
                   placeholder="VD: Việt Hùng"
                 />
@@ -942,11 +886,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={groomFatherName}
-                  onChange={(e) => {
-                    setGroomFatherName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.groomFatherName}
+                  onChange={(e) => handleChange("groomFatherName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: ÔNG TẠ VĂN VƯỢNG"
                 />
@@ -958,11 +899,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={groomMotherName}
-                  onChange={(e) => {
-                    setGroomMotherName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.groomMotherName}
+                  onChange={(e) => handleChange("groomMotherName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: BÀ ĐẶNG THỊ XUÂN"
                 />
@@ -974,11 +912,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={groomAddress}
-                  onChange={(e) => {
-                    setGroomAddress(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.groomAddress}
+                  onChange={(e) => handleChange("groomAddress", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai"
                 />
@@ -999,11 +934,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={brideName}
-                  onChange={(e) => {
-                    setBrideName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.brideName}
+                  onChange={(e) => handleChange("brideName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-semibold outline-hidden transition"
                   placeholder="VD: Xuân Ly"
                 />
@@ -1020,11 +952,8 @@ export default function WeddingInfoAdminPage() {
                 </div>
                 <input
                   type="text"
-                  value={brideNhaTraiName}
-                  onChange={(e) => {
-                    setBrideNhaTraiName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.brideNhaTraiName}
+                  onChange={(e) => handleChange("brideNhaTraiName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-semibold outline-hidden transition"
                   placeholder="VD: Khánh Ly"
                 />
@@ -1039,11 +968,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={brideFatherName}
-                  onChange={(e) => {
-                    setBrideFatherName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.brideFatherName}
+                  onChange={(e) => handleChange("brideFatherName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: ÔNG NGUYỄN VĂN HƯNG"
                 />
@@ -1055,11 +981,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={brideMotherName}
-                  onChange={(e) => {
-                    setBrideMotherName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.brideMotherName}
+                  onChange={(e) => handleChange("brideMotherName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: BÀ PHẠM THỊ KHUYÊN"
                 />
@@ -1071,11 +994,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={brideAddress}
-                  onChange={(e) => {
-                    setBrideAddress(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.brideAddress}
+                  onChange={(e) => handleChange("brideAddress", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: 1003, Lê Thanh, Nam Cường"
                 />
@@ -1113,11 +1033,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={traiBankName}
-                  onChange={(e) => {
-                    setTraiBankName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.traiBankName}
+                  onChange={(e) => handleChange("traiBankName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: MB Bank, Vietcombank, TPBank,..."
                 />
@@ -1129,11 +1046,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={traiAccountNo}
-                  onChange={(e) => {
-                    setTraiAccountNo(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.traiAccountNo}
+                  onChange={(e) => handleChange("traiAccountNo", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-mono font-bold outline-hidden transition"
                   placeholder="VD: 0988688888"
                 />
@@ -1145,11 +1059,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={traiAccountName}
-                  onChange={(e) => {
-                    setTraiAccountName(e.target.value.toUpperCase());
-                    markDirty();
-                  }}
+                  value={formData.traiAccountName}
+                  onChange={(e) => handleChange("traiAccountName", e.target.value.toUpperCase())}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-bold uppercase outline-hidden transition"
                   placeholder="VD: TA VIET HUNG"
                 />
@@ -1168,11 +1079,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={gaiBankName}
-                  onChange={(e) => {
-                    setGaiBankName(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.gaiBankName}
+                  onChange={(e) => handleChange("gaiBankName", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                   placeholder="VD: MB Bank, Vietcombank, TPBank,..."
                 />
@@ -1184,11 +1092,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={gaiAccountNo}
-                  onChange={(e) => {
-                    setGaiAccountNo(e.target.value);
-                    markDirty();
-                  }}
+                  value={formData.gaiAccountNo}
+                  onChange={(e) => handleChange("gaiAccountNo", e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-mono font-bold outline-hidden transition"
                   placeholder="VD: 0988888888"
                 />
@@ -1200,11 +1105,8 @@ export default function WeddingInfoAdminPage() {
                 </label>
                 <input
                   type="text"
-                  value={gaiAccountName}
-                  onChange={(e) => {
-                    setGaiAccountName(e.target.value.toUpperCase());
-                    markDirty();
-                  }}
+                  value={formData.gaiAccountName}
+                  onChange={(e) => handleChange("gaiAccountName", e.target.value.toUpperCase())}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 font-bold uppercase outline-hidden transition"
                   placeholder="VD: NGUYEN XUAN LY"
                 />
@@ -1236,11 +1138,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={quoteLine1}
-                onChange={(e) => {
-                  setQuoteLine1(e.target.value);
-                  markDirty();
-                }}
+                value={formData.quoteLine1}
+                onChange={(e) => handleChange("quoteLine1", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="Hôn nhân là chuyện cả đời"
               />
@@ -1252,11 +1151,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <input
                 type="text"
-                value={quoteLine2}
-                onChange={(e) => {
-                  setQuoteLine2(e.target.value);
-                  markDirty();
-                }}
+                value={formData.quoteLine2}
+                onChange={(e) => handleChange("quoteLine2", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="Yêu người vừa ý, cưới người mình thương"
               />
@@ -1268,11 +1164,8 @@ export default function WeddingInfoAdminPage() {
               </label>
               <textarea
                 rows={2}
-                value={thankYouMessage}
-                onChange={(e) => {
-                  setThankYouMessage(e.target.value);
-                  markDirty();
-                }}
+                value={formData.thankYouMessage}
+                onChange={(e) => handleChange("thankYouMessage", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-gray-800 outline-hidden transition"
                 placeholder="Chân thành cảm ơn quý vị..."
               />
