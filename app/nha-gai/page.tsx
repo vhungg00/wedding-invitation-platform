@@ -53,7 +53,7 @@ export default function NhaGaiPage() {
   const formattedDate =
     nhaGaiData?.hero?.dateFormatted ||
     (tiecVuQuy
-      ? `${tiecVuQuy.solarDate.day} . ${tiecVuQuy.solarDate.month} . ${tiecVuQuy.solarDate.year}`
+      ? `${String(tiecVuQuy.solarDate.day).padStart(2, "0")} . ${String(tiecVuQuy.solarDate.month).padStart(2, "0")} . ${tiecVuQuy.solarDate.year}`
       : "05 . 12 . 2026");
 
   return (
@@ -255,12 +255,12 @@ export default function NhaGaiPage() {
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {tiecVuQuy.solarDate.day}
+              {String(tiecVuQuy.solarDate.day).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
-              {tiecVuQuy.solarDate.month}
+              {String(tiecVuQuy.solarDate.month).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
@@ -296,12 +296,12 @@ export default function NhaGaiPage() {
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {leVuQuy.solarDate.day}
+              {String(leVuQuy.solarDate.day).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
-              {leVuQuy.solarDate.month}
+              {String(leVuQuy.solarDate.month).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>

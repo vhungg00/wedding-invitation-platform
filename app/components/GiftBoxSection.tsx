@@ -47,6 +47,9 @@ const BANK_SHORT_NAMES: Record<string, string> = {
   "VPBANK": "VPB",
   "BIDV": "BIDV",
   "VIETINBANK": "ICB",
+  "VIETTINBANK": "ICB",
+  "VIETIN BANK": "ICB",
+  "VIETTIN BANK": "ICB",
   "ICB": "ICB",
   "ACB": "ACB",
   "AGRIBANK": "VBA",
@@ -71,6 +74,9 @@ function GiftBoxContent({
   const activeSideData = dataProp || weddingData;
   const [activeSide, setActiveSide] = useState<"nha-trai" | "nha-gai">(defaultSide);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [downloadingQr, setDownloadingQr] = useState(false);
+  const [downloadedQr, setDownloadedQr] = useState(false);
+  const [qrLoadError, setQrLoadError] = useState(false);
   const [showConfirmForm, setShowConfirmForm] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -142,11 +148,19 @@ function GiftBoxContent({
     ? (activeSideData.qrCodeNhaTrai || currentAccount.qrCodeUrl || "/qr.jpeg")
     : (activeSideData.qrCodeNhaGai || currentAccount.qrCodeUrl || "/qr.jpeg");
 
-  const qrImageUrl = isValidAccountNo
-    ? `https://img.vietqr.io/image/${bankCode}-${currentAccount.accountNumber}-compact2.png?accountName=${encodeURIComponent(
-        currentAccount.accountName || ""
-      )}&addInfo=${encodeURIComponent(transferContent)}`
+  const hasCustomUploadedQr = Boolean(activeQrCode && activeQrCode !== "/qr.jpeg");
+
+  const qrImageUrl = hasCustomUploadedQr
+    ? activeQrCode
+    : isValidAccountNo
+    ? `https://qr.sepay.vn/img?bank=${bankCode}&acc=${encodeURIComponent(
+        currentAccount.accountNumber
+      )}&template=compact&des=${encodeURIComponent(transferContent)}`
     : activeQrCode;
+
+  useEffect(() => {
+    setQrLoadError(false);
+  }, [activeSide, qrImageUrl]);
 
   // Hàm copy vào clipboard
   const handleCopy = (text: string, fieldName: string) => {
@@ -159,19 +173,55 @@ function GiftBoxContent({
 
   // Hàm tải ảnh QR
   const handleDownloadQr = async () => {
-    try {
-      const response = await fetch(qrImageUrl);
-      const blob = await response.blob();
+    if (downloadingQr) return;
+    setDownloadingQr(true);
+
+    const targetUrl = qrLoadError ? (activeQrCode || "/qr.jpeg") : qrImageUrl;
+    const filename = `vietqr-mung-cuoi-${activeSide}.png`;
+
+    const triggerBlobDownload = (blob: Blob, name: string) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `vietqr-mung-cuoi-${activeSide}.png`;
+      link.download = name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      setDownloadedQr(true);
+      setTimeout(() => setDownloadedQr(false), 2500);
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const response = await fetch(targetUrl, {
+        mode: "cors",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error("Fetch QR failed");
+      const blob = await response.blob();
+      triggerBlobDownload(blob, filename);
     } catch {
-      window.open(qrImageUrl, "_blank");
+      try {
+        // Fallback tải ảnh QR dự phòng từ server nội bộ (/qr.jpeg hoặc activeQrCode)
+        const fallbackRes = await fetch(activeQrCode || "/qr.jpeg");
+        const fallbackBlob = await fallbackRes.blob();
+        triggerBlobDownload(fallbackBlob, filename);
+      } catch {
+        const link = document.createElement("a");
+        link.href = targetUrl;
+        link.download = filename;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } finally {
+      setDownloadingQr(false);
     }
   };
 
@@ -279,12 +329,13 @@ function GiftBoxContent({
                 <div className="relative w-48 h-48 sm:w-56 sm:h-56 overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center">
                   <ImageWithFallback
                     src={qrImageUrl}
-                    fallbackSrc="/qr.jpeg"
+                    fallbackSrc={activeQrCode || "/qr.jpeg"}
                     alt="VietQR Mừng Cưới"
                     width={224}
                     height={224}
                     className="object-contain w-full h-full"
                     unoptimized
+                    onError={() => setQrLoadError(true)}
                   />
                 </div>
               </div>
@@ -293,10 +344,20 @@ function GiftBoxContent({
                 <button
                   type="button"
                   onClick={handleDownloadQr}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                  disabled={downloadingQr}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition cursor-pointer disabled:opacity-60"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Tải ảnh QR</span>
+                  {downloadedQr ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-semibold">Đã tải ảnh QR!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{downloadingQr ? "Đang tải..." : "Tải ảnh QR"}</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
