@@ -13,6 +13,7 @@ import PhotoAlbum from "./components/PhotoAlbum";
 import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
 import GiftBoxSection from "./components/GiftBoxSection";
+import FloatingWishes from "./components/FloatingWishes";
 import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function Home() {
@@ -398,6 +399,7 @@ export default function Home() {
 
       {/* Guestbook Wishes Section - Tạm ẩn theo yêu cầu */}
       {/* <GuestbookSection currentSide="nha-trai" /> */}
+      <FloatingWishes currentSide="nha-trai" />
 
       {/* Gift Box Section */}
       <GiftBoxSection defaultSide="nha-trai" data={weddingData} />
