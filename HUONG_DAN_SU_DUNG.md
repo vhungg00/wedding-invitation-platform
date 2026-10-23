@@ -145,3 +145,51 @@ Vercel sẽ tự động phát hiện commit mới, kích hoạt lệnh `"postin
 | `POST` | `/api/guests` | Tạo khách mời & sinh link thiệp | **Admin** |
 | `DELETE` | `/api/guests` | Xóa khách mời | **Admin** |
 | `GET` | `/api/stats` | Thống kê số lượng khách, lời chúc | Public |
+
+---
+
+## 🖼️ 7. Quy Trình Đổi Ảnh Đại Diện Khi Gửi Link (Zalo & Facebook Messenger)
+
+Để khi gửi link thiệp cưới qua **Facebook Messenger** và **Zalo** luôn hiện thẻ preview có ảnh cô dâu chú rể rõ nét:
+
+### 1. Quy chuẩn ảnh `public/og-image.jpg`
+* **Kích thước bắt buộc**: **`1200 × 630` px** (tỉ lệ ngang `1.91:1`).
+  * *Lưu ý quan trọng*: Nếu dùng ảnh dọc (ví dụ `800 × 1200`), Zalo vẫn hiển thị nhưng **Facebook Messenger sẽ tự động ẩn ảnh** và chỉ hiện khung chữ tiêu đề + mô tả.
+* **Định dạng & dung lượng**: `JPEG` (`image/jpeg`), hệ màu `sRGB`, không kèm EXIF nặng, dung lượng tối ưu **120KB – 200KB**.
+
+### 2. Lệnh cắt & nén ảnh chuẩn `1200×630` tự động bằng `sharp`
+Chạy lệnh sau tại thư mục gốc dự án (thay đường dẫn ảnh gốc và hệ số `top` cho khớp vị trí mặt cô dâu chú rể):
+
+```bash
+node -e '
+const sharp = require("sharp");
+async function makeOg() {
+  const input = "public/album/anh-chinh.JPG"; // Đường dẫn ảnh gốc
+  const meta = await sharp(input).metadata();
+  const cropHeight = Math.round(meta.width * 630 / 1200);
+  const top = Math.round(meta.height * 0.11); // Chỉnh 0.08 -> 0.20 tùy khung mặt
+  await sharp(input)
+    .extract({ left: 0, top, width: meta.width, height: cropHeight })
+    .resize(1200, 630)
+    .jpeg({ quality: 85, mozjpeg: true })
+    .toFile("public/og-image.jpg");
+  console.log("Đã xuất public/og-image.jpg chuẩn 1200x630!");
+}
+makeOg();
+'
+```
+
+### 3. Cập nhật mã phiên bản (`?v=N`) để xóa cache ảnh cũ
+Trong 2 file `app/layout.tsx` và `app/nha-gai/layout.tsx`, tăng tham số `?v=2` lên số mới (`?v=3`, `?v=4`...):
+```ts
+const ogImageAbsolute = weddingData.ogImageUrl?.startsWith("http")
+  ? weddingData.ogImageUrl
+  : `${siteUrl}${weddingData.ogImageUrl || "/og-image.jpg"}?v=3`;
+```
+
+### 4. Quét lại trên Facebook Sharing Debugger sau khi Deploy
+1. Commit và push code lên nhánh triển khai của Vercel.
+2. Sau khi Vercel báo deploy thành công, mở [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/).
+3. Dán link `https://damcuoihungly.vercel.app` (và `https://damcuoihungly.vercel.app/nha-gai`) vào bấm **Gỡ lỗi (Debug)** -> bấm **Thu thập lại (Scrape Again)** 1–2 lần.
+4. Khi gửi link trên **Messenger**, dán link vào ô chat và **chờ 2 giây** để thẻ ảnh hiện lên rồi bấm Gửi.
+
