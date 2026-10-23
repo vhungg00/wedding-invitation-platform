@@ -24,7 +24,7 @@ Khi người dùng yêu cầu đổi ảnh đại diện hiển thị khi chia s
    sharp("DUONG_DAN_ANH_GOC")
      .extract({ left: 0, top: Math.round(H * 0.11), width: W, height: Math.round(W * 630 / 1200) })
      .resize(1200, 630)
-     .jpeg({ quality: 85, mozjpeg: true })
+     .jpeg({ quality: 85, progressive: false, chromaSubsampling: "4:2:0" })
      .toFile("public/og-image.jpg")
      .then(() => console.log("Done 1200x630 og-image.jpg"));
    '
