@@ -26,9 +26,9 @@ export interface WeddingFormData {
   traiTitle: string;
   traiTime: string;
   traiDayOfWeek: string;
-  traiSolarDay: number;
-  traiSolarMonth: number;
-  traiSolarYear: number;
+  traiSolarDay: string | number;
+  traiSolarMonth: string | number;
+  traiSolarYear: string | number;
   traiLunarDate: string;
   traiVenueName: string;
   traiAddress: string;
@@ -38,9 +38,9 @@ export interface WeddingFormData {
   gaiTitle: string;
   gaiTime: string;
   gaiDayOfWeek: string;
-  gaiSolarDay: number;
-  gaiSolarMonth: number;
-  gaiSolarYear: number;
+  gaiSolarDay: string | number;
+  gaiSolarMonth: string | number;
+  gaiSolarYear: string | number;
   gaiLunarDate: string;
   gaiVenueName: string;
   gaiAddress: string;
@@ -84,8 +84,8 @@ const extractFormData = (d: any): WeddingFormData => {
     traiTitle: ntEvent?.title || "LỄ THÀNH HÔN & TIỆC CƯỚI",
     traiTime: ntEvent?.time || "10h00",
     traiDayOfWeek: ntEvent?.dayOfWeek || "Chủ Nhật",
-    traiSolarDay: ntEvent?.solarDate?.day ?? 6,
-    traiSolarMonth: ntEvent?.solarDate?.month ?? 12,
+    traiSolarDay: String(ntEvent?.solarDate?.day ?? 6).padStart(2, "0"),
+    traiSolarMonth: String(ntEvent?.solarDate?.month ?? 12).padStart(2, "0"),
     traiSolarYear: ntEvent?.solarDate?.year ?? 2026,
     traiLunarDate: ntEvent?.lunarDate || "Tức Ngày 28 Tháng 10 Năm Bính Ngọ",
     traiVenueName: ntEvent?.venueName || "Tại gia đình nhà trai",
@@ -95,8 +95,8 @@ const extractFormData = (d: any): WeddingFormData => {
     gaiTitle: ngEvent?.title || "LỄ VU QUY & TIỆC CƯỚI",
     gaiTime: ngEvent?.time || "10h00",
     gaiDayOfWeek: ngEvent?.dayOfWeek || "Thứ Bảy",
-    gaiSolarDay: ngEvent?.solarDate?.day ?? 5,
-    gaiSolarMonth: ngEvent?.solarDate?.month ?? 12,
+    gaiSolarDay: String(ngEvent?.solarDate?.day ?? 5).padStart(2, "0"),
+    gaiSolarMonth: String(ngEvent?.solarDate?.month ?? 12).padStart(2, "0"),
     gaiSolarYear: ngEvent?.solarDate?.year ?? 2026,
     gaiLunarDate: ngEvent?.lunarDate || "Tức Ngày 27 Tháng 10 Năm Bính Ngọ",
     gaiVenueName: ngEvent?.venueName || "Tại gia đình nhà gái",
@@ -599,22 +599,30 @@ export default function WeddingInfoAdminPage() {
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <input
-                  type="number"
-                  min="1"
-                  max="31"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
                   value={formData.traiSolarDay}
-                  onChange={(e) => handleChange("traiSolarDay", Number(e.target.value))}
+                  onChange={(e) => handleChange("traiSolarDay", e.target.value.replace(/\D/g, ""))}
+                  onBlur={() => {
+                    const num = Math.min(31, Math.max(1, Number(formData.traiSolarDay) || 6));
+                    handleChange("traiSolarDay", String(num).padStart(2, "0"));
+                  }}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
-                  placeholder="Ngày"
+                  placeholder="06"
                 />
                 <input
-                  type="number"
-                  min="1"
-                  max="12"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
                   value={formData.traiSolarMonth}
-                  onChange={(e) => handleChange("traiSolarMonth", Number(e.target.value))}
+                  onChange={(e) => handleChange("traiSolarMonth", e.target.value.replace(/\D/g, ""))}
+                  onBlur={() => {
+                    const num = Math.min(12, Math.max(1, Number(formData.traiSolarMonth) || 12));
+                    handleChange("traiSolarMonth", String(num).padStart(2, "0"));
+                  }}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
-                  placeholder="Tháng"
+                  placeholder="12"
                 />
                 <input
                   type="number"
@@ -756,22 +764,30 @@ export default function WeddingInfoAdminPage() {
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <input
-                  type="number"
-                  min="1"
-                  max="31"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
                   value={formData.gaiSolarDay}
-                  onChange={(e) => handleChange("gaiSolarDay", Number(e.target.value))}
+                  onChange={(e) => handleChange("gaiSolarDay", e.target.value.replace(/\D/g, ""))}
+                  onBlur={() => {
+                    const num = Math.min(31, Math.max(1, Number(formData.gaiSolarDay) || 5));
+                    handleChange("gaiSolarDay", String(num).padStart(2, "0"));
+                  }}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
-                  placeholder="Ngày"
+                  placeholder="05"
                 />
                 <input
-                  type="number"
-                  min="1"
-                  max="12"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
                   value={formData.gaiSolarMonth}
-                  onChange={(e) => handleChange("gaiSolarMonth", Number(e.target.value))}
+                  onChange={(e) => handleChange("gaiSolarMonth", e.target.value.replace(/\D/g, ""))}
+                  onBlur={() => {
+                    const num = Math.min(12, Math.max(1, Number(formData.gaiSolarMonth) || 12));
+                    handleChange("gaiSolarMonth", String(num).padStart(2, "0"));
+                  }}
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 text-xs text-center text-gray-800 font-bold outline-hidden transition"
-                  placeholder="Tháng"
+                  placeholder="12"
                 />
                 <input
                   type="number"

@@ -47,7 +47,7 @@ const siteUrl = rawSiteUrl.replace(/\/$/, "");
 
 const ogImageAbsolute = weddingData.ogImageUrl?.startsWith("http")
   ? weddingData.ogImageUrl
-  : `${siteUrl}${weddingData.ogImageUrl || "/og-image.jpg"}`;
+  : `${siteUrl}${weddingData.ogImageUrl || "/og-image.jpg"}?v=2`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -88,8 +88,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: ogImageAbsolute,
+        secureUrl: ogImageAbsolute,
         width: 1200,
         height: 630,
+        type: "image/jpeg",
         alt: weddingData.nhaTrai?.title || weddingData.title,
       },
     ],

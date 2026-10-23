@@ -54,7 +54,7 @@ export default function Home() {
   const formattedDate =
     nhaTraiData?.hero?.dateFormatted ||
     (leThanhHon
-      ? `${leThanhHon.solarDate.day} . ${leThanhHon.solarDate.month} . ${leThanhHon.solarDate.year}`
+      ? `${String(leThanhHon.solarDate.day).padStart(2, "0")} . ${String(leThanhHon.solarDate.month).padStart(2, "0")} . ${leThanhHon.solarDate.year}`
       : weddingData.hero.dateFormatted);
 
   return (
@@ -256,12 +256,12 @@ export default function Home() {
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {leThanhHon.solarDate.day}
+              {String(leThanhHon.solarDate.day).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
-              {leThanhHon.solarDate.month}
+              {String(leThanhHon.solarDate.month).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
@@ -297,12 +297,12 @@ export default function Home() {
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-2 sm:mb-3 md:mb-4">
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Ngày</span>
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
-              {tiecMung.solarDate.day}
+              {String(tiecMung.solarDate.day).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Tháng</span>
             <span className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">
-              {tiecMung.solarDate.month}
+              {String(tiecMung.solarDate.month).padStart(2, "0")}
             </span>
             <span className="text-gray-500">|</span>
             <span className="text-sm sm:text-sm md:text-base lg:text-lg text-gray-700">Năm</span>
