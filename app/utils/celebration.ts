@@ -3,13 +3,13 @@
  */
 import confetti from "canvas-confetti";
 
-export const triggerCelebration = (options?: { x?: number; y?: number }) => {
+export const triggerCelebration = (options?: { x?: number; y?: number; showToast?: boolean }) => {
   if (typeof window === "undefined") return;
 
   // 1. Dispatch custom event for FireworksCelebration listener
   window.dispatchEvent(
     new CustomEvent("wedding:celebrate", {
-      detail: { x: options?.x, y: options?.y },
+      detail: { x: options?.x, y: options?.y, showToast: options?.showToast },
     })
   );
 

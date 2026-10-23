@@ -193,3 +193,17 @@ const ogImageAbsolute = weddingData.ogImageUrl?.startsWith("http")
 3. Dán link `https://damcuoihungly.vercel.app` (và `https://damcuoihungly.vercel.app/nha-gai`) vào bấm **Gỡ lỗi (Debug)** -> bấm **Thu thập lại (Scrape Again)** 1–2 lần.
 4. Khi gửi link trên **Messenger**, dán link vào ô chat và **chờ 2 giây** để thẻ ảnh hiện lên rồi bấm Gửi.
 
+---
+
+## 💡 8. Danh Sách Các Tính Năng Nâng Cao Dự Kiến (`KE_HOACH_TINH_NANG_MOI.md`)
+
+Chi tiết thiết kế kỹ thuật và giao diện đã được lưu tại file [`KE_HOACH_TINH_NANG_MOI.md`](./KE_HOACH_TINH_NANG_MOI.md), bao gồm 6 tính năng có thể yêu cầu triển khai bất cứ lúc nào:
+
+1. **Nút "📍 Mở Google Maps Chỉ Đường"**: Mở thẳng ứng dụng Google Maps chỉ đường tới nhà trai / nhà gái trên điện thoại.
+2. **Nút "📅 Lưu lịch hẹn ngày cưới vào điện thoại"**: Thêm vào Google Calendar / Lịch iPhone (`.ics`) kèm báo thức nhắc trước 1 ngày.
+3. **Bong bóng Lời chúc nổi ở góc màn hình (Floating Wishes)**: Hiển thị lời chúc nhẹ nhàng góc dưới kèm popup gửi lời chúc mà không làm dài trang.
+4. **Thanh nút tắt nhanh (Floating Quick Actions)**: Nhảy mượt tới Mừng Cưới (QR), Xác Nhận Tham Dự (RSVP) và Bản Đồ.
+5. **Xem Album ảnh cưới toàn màn hình (Lightbox Gallery)**: Vuốt trái/phải qua từng ảnh trên điện thoại và phóng to.
+6. **Tạo & Tải "Ảnh Thiệp Mời In Tên Khách" trong Admin**: Tự động ghép tên khách mời và mã QR lên mẫu thiệp thành ảnh `.png` để gửi kèm qua Zalo / Messenger.
+
+

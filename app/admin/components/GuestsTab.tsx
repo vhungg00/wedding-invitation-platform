@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download, MessageCircle } from "lucide-react";
+import { Plus, Copy, Check, ExternalLink, Trash2, Search, Sparkles, Download, MessageCircle, Image as ImageIcon } from "lucide-react";
 import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
@@ -10,6 +10,7 @@ import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize
 import { exportGuestsToExcel } from "@/lib/exportExcel";
 import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
 import ZaloMessageModal from "../guests/components/ZaloMessageModal";
+import InvitationCardPreviewModal from "../guests/components/InvitationCardPreviewModal";
 import { sendZaloOneClick } from "@/lib/zaloInvite";
 
 interface GuestsTabProps {
@@ -36,6 +37,7 @@ export default function GuestsTab({
   const [sortKey, setSortKey] = useState<string | undefined>("name");
   const [sortType, setSortType] = useState<ESortType>(ESortType.ASC);
   const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
+  const [cardPreviewGuest, setCardPreviewGuest] = useState<GuestItem | null>(null);
   const [zaloToast, setZaloToast] = useState<string | null>(null);
 
   // Phân trang
@@ -252,7 +254,7 @@ export default function GuestsTab({
       {
         title: "Hành động",
         key: "action",
-        width: 200,
+        width: 245,
         align: "center",
         resizable: false,
         render: (_, g) => {
@@ -267,6 +269,34 @@ export default function GuestsTab({
                 gap: 6,
               }}
             >
+              {/* Nút Xem trước & Tải ảnh thiệp mời in tên khách */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCardPreviewGuest(g);
+                }}
+                style={{
+                  border: "1px solid #ffadd2",
+                  background: "#fff0f6",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  color: "#c41d7f",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 4,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  transition: "all 0.2s",
+                }}
+                title="🖼️ Xem trước & tải ảnh thiệp mời in tên khách"
+              >
+                <ImageIcon style={{ width: 14, height: 14 }} />
+                <span>Ảnh thiệp</span>
+              </button>
+
               {/* Nút Gửi Zalo 1-Click */}
               <button
                 type="button"
@@ -537,6 +567,13 @@ export default function GuestsTab({
           <span>{zaloToast}</span>
         </div>
       )}
+
+      {/* Modal Xem trước & Tải ảnh thiệp mời in tên khách */}
+      <InvitationCardPreviewModal
+        guest={cardPreviewGuest}
+        isOpen={Boolean(cardPreviewGuest)}
+        onClose={() => setCardPreviewGuest(null)}
+      />
 
       {/* Modal Zalo khi khách chưa có SĐT */}
       <ZaloMessageModal

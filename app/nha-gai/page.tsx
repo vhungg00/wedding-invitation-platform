@@ -13,6 +13,7 @@ import WaxSealEnvelope from "../components/WaxSealEnvelope";
 import PersonalizedGreeting from "../components/PersonalizedGreeting";
 import RsvpSection from "../components/RsvpSection";
 import GiftBoxSection from "../components/GiftBoxSection";
+import FloatingWishes from "../components/FloatingWishes";
 import defaultWeddingData from "@/data/wedding-data.json";
 
 export default function NhaGaiPage() {
@@ -397,6 +398,7 @@ export default function NhaGaiPage() {
 
       {/* Guestbook Wishes Section - Tạm ẩn theo yêu cầu */}
       {/* <GuestbookSection currentSide="nha-gai" /> */}
+      <FloatingWishes currentSide="nha-gai" />
 
       {/* Gift Box Section */}
       <GiftBoxSection defaultSide="nha-gai" data={data} />

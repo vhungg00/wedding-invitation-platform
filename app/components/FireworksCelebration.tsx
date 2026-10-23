@@ -112,23 +112,19 @@ export default function FireworksCelebration() {
 
       {/* Floating Celebration Toast */}
       {toastMessage && (
-        <div className="fixed bottom-20 left-4 z-50 animate-bounce bg-white/95 text-rose-600 font-medium px-4 py-2 rounded-2xl shadow-xl border border-rose-200 text-xs sm:text-sm backdrop-blur-sm">
+        <div className="fixed bottom-32 left-4 z-50 animate-bounce bg-white/95 text-rose-600 font-medium px-4 py-2 rounded-2xl shadow-xl border border-rose-200 text-xs sm:text-sm backdrop-blur-sm">
           {toastMessage}
         </div>
       )}
 
-      {/* Floating Celebrate / Firework Button */}
+      {/* Floating Celebrate / Firework Button (hidden trigger, controlled by FloatingWishes) */}
       <button
+        id="wedding-firework-trigger-btn"
         onClick={handleBurst}
-        className="fixed bottom-4 left-4 z-50 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white pl-3.5 pr-4 py-2.5 rounded-full shadow-lg shadow-rose-500/30 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all text-xs sm:text-sm font-semibold border border-white/20 group backdrop-blur-xs select-none"
-        title="Bắn pháo hoa chúc phúc cô dâu chú rể"
-      >
-        <span className="text-base sm:text-lg animate-pulse">🎆</span>
-        <span className="tracking-wide">Chúc phúc</span>
-        <span className="bg-white/25 text-white text-[11px] px-2 py-0.5 rounded-full font-mono">
-          {wishesCount}
-        </span>
-      </button>
+        className="fixed bottom-4 left-4 z-50 opacity-0 pointer-events-none w-1 h-1 overflow-hidden"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
     </>
   );
 }

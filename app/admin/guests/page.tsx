@@ -26,6 +26,7 @@ import {
   Table as TableIcon,
   RefreshCw,
   X,
+  Image as ImageIcon,
 } from "lucide-react";
 import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
@@ -37,6 +38,7 @@ import SmartPasteModal from "./components/SmartPasteModal";
 import EditGuestModal from "./components/EditGuestModal";
 import MobilePreviewDrawer from "./components/MobilePreviewDrawer";
 import ZaloMessageModal from "./components/ZaloMessageModal";
+import InvitationCardPreviewModal from "./components/InvitationCardPreviewModal";
 import FloatingBulkBar from "./components/FloatingBulkBar";
 import SeatingPlannerView from "./components/SeatingPlannerView";
 import { exportGuestsToExcel } from "@/lib/exportExcel";
@@ -74,6 +76,7 @@ export default function GuestsMasterPage() {
   const [showSingleAdd, setShowSingleAdd] = useState(false);
   const [editingGuest, setEditingGuest] = useState<GuestItem | null>(null);
   const [previewGuest, setPreviewGuest] = useState<GuestItem | null>(null);
+  const [cardPreviewGuest, setCardPreviewGuest] = useState<GuestItem | null>(null);
   const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
   const [zaloToast, setZaloToast] = useState<string | null>(null);
 
@@ -629,10 +632,21 @@ export default function GuestsMasterPage() {
       },
       {
         title: "Thao Tác",
-        width: 180,
+        width: 215,
         align: "center",
         render: (_: any, record: GuestItem) => (
           <div className="flex items-center justify-center gap-1.5">
+            {/* Nút xem trước & tải ảnh thiệp mời in tên khách */}
+            <button
+              type="button"
+              onClick={() => setCardPreviewGuest(record)}
+              title="🖼️ Xem trước & tải ảnh thiệp mời in tên khách"
+              className="px-2 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition cursor-pointer flex items-center gap-1 border border-rose-200"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-rose-600" />
+              <span>Ảnh</span>
+            </button>
+
             {/* Nút gửi Zalo 1-Click */}
             <button
               type="button"
@@ -1069,6 +1083,13 @@ export default function GuestsMasterPage() {
           <span>{zaloToast}</span>
         </div>
       )}
+
+      {/* Modal Xem trước & Tải ảnh thiệp mời in tên khách */}
+      <InvitationCardPreviewModal
+        guest={cardPreviewGuest}
+        isOpen={Boolean(cardPreviewGuest)}
+        onClose={() => setCardPreviewGuest(null)}
+      />
 
       {/* Modal Mẫu tin nhắn Zalo */}
       <ZaloMessageModal

@@ -1,8 +1,13 @@
 "use client";
-import React, { useState } from "react";
-import { X, MessageCircle, Copy, Check, ExternalLink, Phone, Send } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, MessageCircle, Copy, Check, Phone, Send, Image as ImageIcon, Download, Sparkles } from "lucide-react";
 import { GuestItem } from "../../types";
 import { getInvitationMessage, sendZaloOneClick } from "@/lib/zaloInvite";
+import {
+  generateInvitationCardBlob,
+  downloadInvitationCardImage,
+  copyInvitationCardImageToClipboard,
+} from "@/lib/generateInvitationCard";
 
 interface ZaloMessageModalProps {
   guest: GuestItem | null;
@@ -21,6 +26,39 @@ export default function ZaloMessageModal({
   const [phoneInput, setPhoneInput] = useState("");
   const [savingPhone, setSavingPhone] = useState(false);
 
+  // Trạng thái tạo ảnh thiệp mời in tên khách
+  const [cardPreviewUrl, setCardPreviewUrl] = useState<string | null>(null);
+  const [generatingCard, setGeneratingCard] = useState(false);
+  const [cardCopied, setCardCopied] = useState(false);
+  const [cardDownloaded, setCardDownloaded] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !guest) {
+      setCardPreviewUrl(null);
+      setCardCopied(false);
+      setCardDownloaded(false);
+      return;
+    }
+
+    let active = true;
+    setGeneratingCard(true);
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    generateInvitationCardBlob(guest, origin)
+      .then(({ dataUrl }) => {
+        if (active) setCardPreviewUrl(dataUrl);
+      })
+      .catch((err) => {
+        console.error("Lỗi tạo ảnh thiệp mời:", err);
+      })
+      .finally(() => {
+        if (active) setGeneratingCard(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isOpen, guest]);
+
   if (!isOpen || !guest) return null;
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -31,6 +69,26 @@ export default function ZaloMessageModal({
     navigator.clipboard.writeText(invitationMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleDownloadCard = async () => {
+    try {
+      await downloadInvitationCardImage(guest, origin);
+      setCardDownloaded(true);
+      setTimeout(() => setCardDownloaded(false), 2500);
+    } catch (err) {
+      console.error("Lỗi tải ảnh thiệp:", err);
+    }
+  };
+
+  const handleCopyCardImage = async () => {
+    try {
+      await copyInvitationCardImageToClipboard(guest, origin, invitationMessage);
+      setCardCopied(true);
+      setTimeout(() => setCardCopied(false), 2500);
+    } catch {
+      await handleDownloadCard();
+    }
   };
 
   const handleSendZalo = async () => {
@@ -66,11 +124,11 @@ export default function ZaloMessageModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in select-none"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in select-none overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative border border-gray-100"
+        className="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl relative border border-gray-100 my-auto max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -81,13 +139,13 @@ export default function ZaloMessageModal({
             </div>
             <div>
               <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
-                <span>Gửi Thiệp Mời Qua Zalo</span>
+                <span>Gửi Thiệp & Ảnh Thiệp Mời In Tên</span>
                 <span className="bg-blue-50 text-blue-600 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-blue-200">
                   1-Click
                 </span>
               </h3>
               <p className="text-xs text-gray-500 mt-0.5">
-                Gửi tới: <strong className="text-gray-900">{guest.name}</strong>
+                Khách mời: <strong className="text-gray-900">{guest.name}</strong>
                 {guest.phone && (
                   <span className="ml-1 text-blue-600 font-mono font-medium">({guest.phone})</span>
                 )}
@@ -122,6 +180,71 @@ export default function ZaloMessageModal({
           </div>
         )}
 
+        {/* Personalized Invitation Card Preview & Actions */}
+        <div className="mt-4 p-3.5 rounded-2xl bg-gradient-to-br from-amber-50/70 via-rose-50/40 to-amber-50/50 border border-amber-200/80">
+          <div className="flex items-center justify-between gap-2 mb-2.5">
+            <span className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>Ảnh Thiệp Mời In Tên Riêng (Đính kèm Zalo/Messenger)</span>
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleCopyCardImage}
+                disabled={generatingCard}
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-semibold flex items-center gap-1 shadow-2xs transition cursor-pointer disabled:opacity-50"
+                title="Copy ảnh vào bộ nhớ tạm để Ctrl+V dán thẳng vào Zalo/Messenger"
+              >
+                {cardCopied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700">Đã copy ảnh! (Ctrl+V)</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy Ảnh (Dán Zalo)</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadCard}
+                disabled={generatingCard}
+                className="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs transition cursor-pointer disabled:opacity-50"
+              >
+                {cardDownloaded ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Đã tải!</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-3.5 h-3.5" />
+                    <span>🖼️ Tải ảnh thiệp mời</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="relative rounded-xl overflow-hidden border border-amber-200 bg-white aspect-16/9 flex items-center justify-center shadow-inner">
+            {generatingCard || !cardPreviewUrl ? (
+              <div className="flex flex-col items-center gap-2 text-xs text-gray-400">
+                <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" />
+                <span>Đang vẽ thiệp mời cho {guest.name}...</span>
+              </div>
+            ) : (
+              <img
+                src={cardPreviewUrl}
+                alt={`Thiệp mời ${guest.name}`}
+                className="w-full h-full object-contain"
+              />
+            )}
+          </div>
+        </div>
+
         {/* Message Content Preview */}
         <div className="my-4">
           <div className="flex items-center justify-between mb-1.5 px-1">
@@ -129,10 +252,10 @@ export default function ZaloMessageModal({
               Nội dung tin nhắn tự động
             </span>
             <span className="text-[11px] text-gray-400 italic">
-              (Tự động copy vào bộ nhớ tạm)
+              (Tự động copy khi bấm gửi)
             </span>
           </div>
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/40 via-rose-50/20 to-amber-50/30 border border-blue-100 font-sans text-xs sm:text-sm text-gray-800 whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50/40 via-rose-50/20 to-amber-50/30 border border-blue-100 font-sans text-xs text-gray-800 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
             {invitationMessage}
           </div>
         </div>
