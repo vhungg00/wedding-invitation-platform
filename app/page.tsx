@@ -167,51 +167,44 @@ export default function Home() {
         </div>
 
         {/* Family Information Section - Luxury Card */}
-        <div className="px-3 sm:px-6 py-4 sm:py-8 max-w-4xl mx-auto">
+        <div className="px-2 sm:px-6 py-4 sm:py-8 max-w-4xl mx-auto">
           <div
             data-aos="fade-up"
-            className="relative rounded-3xl bg-white/85 backdrop-blur-md border border-[#E6D5B8] shadow-[0_12px_40px_rgba(139,109,63,0.08)] p-6 sm:p-10"
+            className="relative rounded-3xl bg-white/85 backdrop-blur-md border border-[#E6D5B8] shadow-[0_12px_40px_rgba(139,109,63,0.08)] p-4 sm:p-10"
           >
             {/* Inner Gold Frame */}
-            <div className="absolute inset-2.5 rounded-2xl border border-[#EFE3CE] pointer-events-none" />
+            <div className="absolute inset-2 sm:inset-2.5 rounded-2xl border border-[#EFE3CE] pointer-events-none" />
 
-            <div className="relative grid grid-cols-1 sm:grid-cols-2 text-center gap-6 sm:gap-8 items-start">
-              {/* Vertical divider on desktop */}
-              <div className="hidden sm:block absolute left-1/2 top-4 bottom-4 -translate-x-1/2 w-[1px] bg-gradient-to-b from-transparent via-[#D4AF37]/50 to-transparent" />
+            <div className="relative grid grid-cols-2 text-center gap-2 sm:gap-8 items-start">
+              {/* Vertical divider on both mobile & desktop */}
+              <div className="block absolute left-1/2 top-2 bottom-2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-transparent via-[#D4AF37]/50 to-transparent" />
 
-              <div data-aos="fade-right" className="space-y-2 px-2">
-                <p className="text-base sm:text-lg tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-2">
+              <div data-aos="fade-right" className="space-y-1.5 sm:space-y-2 px-1 sm:px-2">
+                <p className="text-sm sm:text-xl md:text-2xl tracking-[0.16em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
                   NHÀ TRAI
                 </p>
-                <p className="text-xl sm:text-2xl md:text-2xl font-bold text-[#2C221E] tracking-wide">
+                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
                   {weddingData.groom.fatherName}
                 </p>
-                <p className="text-xl sm:text-2xl md:text-2xl font-bold text-[#2C221E] tracking-wide">
+                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
                   {weddingData.groom.motherName}
                 </p>
-                <p className="text-[#5C4938] text-base sm:text-lg md:text-xl italic pt-1">
+                <p className="text-[#5C4938] text-xs sm:text-xl md:text-2xl italic pt-0.5 sm:pt-1">
                   {weddingData.groom.address}
                 </p>
               </div>
 
-              {/* Horizontal divider on mobile */}
-              <div className="sm:hidden flex items-center justify-center gap-2">
-                <span className="h-[1px] w-16 bg-[#E6D5B8]" />
-                <span className="text-[#C59B5F] text-xs">✦</span>
-                <span className="h-[1px] w-16 bg-[#E6D5B8]" />
-              </div>
-
-              <div data-aos="fade-left" className="space-y-2 px-2">
-                <p className="text-base sm:text-lg tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-2">
+              <div data-aos="fade-left" className="space-y-1.5 sm:space-y-2 px-1 sm:px-2">
+                <p className="text-sm sm:text-xl md:text-2xl tracking-[0.16em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
                   NHÀ GÁI
                 </p>
-                <p className="text-xl sm:text-2xl md:text-2xl font-bold text-[#2C221E] tracking-wide">
+                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
                   {weddingData.bride.fatherName}
                 </p>
-                <p className="text-xl sm:text-2xl md:text-2xl font-bold text-[#2C221E] tracking-wide">
+                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
                   {weddingData.bride.motherName}
                 </p>
-                <p className="text-[#5C4938] text-base sm:text-lg md:text-xl italic pt-1">
+                <p className="text-[#5C4938] text-xs sm:text-xl md:text-2xl italic pt-0.5 sm:pt-1">
                   {weddingData.bride.address}
                 </p>
               </div>
@@ -220,18 +213,18 @@ export default function Home() {
         </div>
 
         {/* Couple Section - Arch Portrait Frames */}
-        <div className="px-3 lg:px-16 py-6 sm:py-10 max-w-5xl mx-auto">
+        <div className="px-3 lg:px-12 py-6 sm:py-10 max-w-6xl mx-auto">
           <div className="flex justify-between items-center text-center pb-4 sm:pb-6">
-            <div className="w-[42%]">
+            <div className="w-[45%]">
               <p
                 data-aos="fade-down"
-                className="text-base sm:text-lg md:text-xl uppercase tracking-[0.22em] text-[#8C6D3F] font-bold mb-1"
+                className="text-xl sm:text-2xl md:text-3xl uppercase tracking-[0.22em] text-[#8C6D3F] font-bold mb-1"
               >
                 Chú Rể
               </p>
               <p
                 data-aos="fade-up"
-                className="font-imperial-script text-4xl sm:text-5xl lg:text-6xl text-[#7A1C24]"
+                className="font-imperial-script text-[3.25rem] sm:text-7xl md:text-8xl lg:text-[6.25rem] leading-tight text-[#7A1C24]"
               >
                 {weddingData.groom.name}
               </p>
@@ -249,16 +242,16 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="w-[42%]">
+            <div className="w-[45%]">
               <p
                 data-aos="fade-down"
-                className="text-base sm:text-lg md:text-xl uppercase tracking-[0.22em] text-[#8C6D3F] font-bold mb-1"
+                className="text-xl sm:text-2xl md:text-3xl uppercase tracking-[0.22em] text-[#8C6D3F] font-bold mb-1"
               >
                 Cô Dâu
               </p>
               <p
                 data-aos="fade-up"
-                className="font-imperial-script text-4xl sm:text-5xl lg:text-6xl text-[#7A1C24]"
+                className="font-imperial-script text-[3.25rem] sm:text-7xl md:text-8xl lg:text-[6.25rem] leading-tight text-[#7A1C24]"
               >
                 {brideName}
               </p>
@@ -397,20 +390,20 @@ export default function Home() {
               {/* Luxury Editorial Date Display */}
               <div className="grid grid-cols-3 items-center max-w-md mx-auto py-4 border-y border-[#E6D5B8]">
                 <div className="text-center">
-                  <span className="block text-sm sm:text-base uppercase tracking-[0.18em] text-[#8C6D3F] font-bold mb-1">
-                    Tháng
-                  </span>
-                  <span className="font-sans text-2xl sm:text-3xl font-extrabold text-[#2C221E]">
-                    {String(leThanhHon.solarDate.month).padStart(2, "0")}
-                  </span>
-                </div>
-
-                <div className="border-x border-[#E6D5B8] px-3">
                   <span className="block text-sm sm:text-base uppercase tracking-[0.18em] text-[#8B1E2F] font-bold mb-1">
                     Ngày
                   </span>
-                  <span className="font-sans text-4xl sm:text-5xl font-extrabold text-[#8B1E2F] leading-none">
+                  <span className="font-sans text-3xl sm:text-4xl font-extrabold text-[#8B1E2F] leading-none">
                     {String(leThanhHon.solarDate.day).padStart(2, "0")}
+                  </span>
+                </div>
+
+                <div className="border-x border-[#E6D5B8] px-3 text-center">
+                  <span className="block text-sm sm:text-base uppercase tracking-[0.18em] text-[#8C6D3F] font-bold mb-1">
+                    Tháng
+                  </span>
+                  <span className="font-sans text-3xl sm:text-4xl font-extrabold text-[#2C221E] leading-none">
+                    {String(leThanhHon.solarDate.month).padStart(2, "0")}
                   </span>
                 </div>
 
@@ -418,7 +411,7 @@ export default function Home() {
                   <span className="block text-sm sm:text-base uppercase tracking-[0.18em] text-[#8C6D3F] font-bold mb-1">
                     Năm
                   </span>
-                  <span className="font-sans text-2xl sm:text-3xl font-extrabold text-[#2C221E]">
+                  <span className="font-sans text-3xl sm:text-4xl font-extrabold text-[#2C221E] leading-none">
                     {leThanhHon.solarDate.year}
                   </span>
                 </div>
