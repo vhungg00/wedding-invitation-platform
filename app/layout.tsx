@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Imperial_Script } from "next/font/google";
+import { Geist, Geist_Mono, Imperial_Script, Cormorant_Garamond } from "next/font/google";
 import { Monsieur_La_Doulaise } from "next/font/google";
 import "./globals.css";
 import "aos/dist/aos.css";
@@ -25,8 +25,15 @@ const monsieurLaDoulaise = Monsieur_La_Doulaise({
 
 const imperialScript = Imperial_Script({
   variable: "--font-imperial-script",
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   weight: "400",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const viewport: Viewport = {
@@ -113,7 +120,7 @@ export default function RootLayout({
     <html lang="vi" suppressHydrationWarning className="overflow-x-hidden">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${monsieurLaDoulaise.variable} ${imperialScript.variable} antialiased overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${monsieurLaDoulaise.variable} ${imperialScript.variable} ${cormorantGaramond.variable} antialiased overflow-x-hidden`}
       >
         {children}
         <MusicPlayer />
