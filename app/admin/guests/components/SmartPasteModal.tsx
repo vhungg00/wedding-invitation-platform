@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { X, Sparkles, Check, AlertCircle, Users, Copy } from "lucide-react";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 
 interface SmartPasteModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export default function SmartPasteModal({
   onClose,
   onSuccess,
 }: SmartPasteModalProps) {
+  const snackbarRef = useRef<SnackbarRefs>(null);
   const [rawText, setRawText] = useState("");
   const [defaultSide, setDefaultSide] = useState<"nha-trai" | "nha-gai">("nha-trai");
   const [defaultGroup, setDefaultGroup] = useState<string>("Bạn bè");
@@ -86,7 +88,10 @@ export default function SmartPasteModal({
   // Submit tạo hàng loạt
   const handleSubmit = async () => {
     if (parsedGuests.length === 0) {
-      alert("Chưa có khách mời nào được bóc tách hợp lệ.");
+      snackbarRef.current?.showSnackbar({
+        message: "Chưa có khách mời nào được bóc tách hợp lệ.",
+        severity: "warning",
+      });
       return;
     }
 
@@ -100,15 +105,24 @@ export default function SmartPasteModal({
 
       const data = await res.json();
       if (res.ok && data.success) {
-        alert(`Đã thêm thành công ${parsedGuests.length} khách mời!`);
+        snackbarRef.current?.showSnackbar({
+          message: `Đã thêm thành công ${parsedGuests.length} khách mời!`,
+          severity: "success",
+        });
         setRawText("");
         onSuccess();
         onClose();
       } else {
-        alert(data.message || "Lỗi khi tạo danh sách hàng loạt!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Lỗi khi tạo danh sách hàng loạt!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Đã xảy ra lỗi kết nối khi tạo khách mời hàng loạt!");
+      snackbarRef.current?.showSnackbar({
+        message: "Đã xảy ra lỗi kết nối khi tạo khách mời hàng loạt!",
+        severity: "error",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -123,10 +137,12 @@ Nguyễn Hoàng Long
 Chị Mai Hương (Bạn Đại học)`);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) return <Snackbar ref={snackbarRef} />;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <>
+      <Snackbar ref={snackbarRef} />
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
       <div
         className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -293,6 +309,7 @@ Chị Mai Hương (Bạn Đại học)`);
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -9,6 +9,7 @@ import { AppButton } from "@/app/components/ui/AppButton";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
 import { exportGuestsToExcel } from "@/lib/exportExcel";
 import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 import ZaloMessageModal from "../guests/components/ZaloMessageModal";
 import InvitationCardPreviewModal from "../guests/components/InvitationCardPreviewModal";
 import { sendZaloOneClick } from "@/lib/zaloInvite";
@@ -38,7 +39,7 @@ export default function GuestsTab({
   const [sortType, setSortType] = useState<ESortType>(ESortType.ASC);
   const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
   const [cardPreviewGuest, setCardPreviewGuest] = useState<GuestItem | null>(null);
-  const [zaloToast, setZaloToast] = useState<string | null>(null);
+  const snackbarRef = useRef<SnackbarRefs>(null);
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -308,8 +309,10 @@ export default function GuestsTab({
                         prev.map((item) => (item.id === guestId ? { ...item, isSent: true } : item))
                       );
                     });
-                    setZaloToast(`Đã chép tin nhắn mời ${g.name}! Đang mở Zalo...`);
-                    setTimeout(() => setZaloToast(null), 3000);
+                    snackbarRef.current?.showSnackbar({
+                      message: `Đã chép tin nhắn mời ${g.name}! Đang mở Zalo...`,
+                      severity: "info",
+                    });
                   } else {
                     setZaloGuest(g);
                   }
@@ -560,14 +563,6 @@ export default function GuestsTab({
         />
       </div>
 
-      {/* Toast thông báo 1-Click Zalo */}
-      {zaloToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm animate-bounce">
-          <MessageCircle className="w-5 h-5 shrink-0" />
-          <span>{zaloToast}</span>
-        </div>
-      )}
-
       {/* Modal Xem trước & Tải ảnh thiệp mời in tên khách */}
       <InvitationCardPreviewModal
         guest={cardPreviewGuest}
@@ -586,6 +581,7 @@ export default function GuestsTab({
           );
         }}
       />
+      <Snackbar ref={snackbarRef} />
     </div>
   );
 }

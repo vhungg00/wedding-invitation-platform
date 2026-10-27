@@ -372,7 +372,7 @@ export default function NhaGaiPage() {
                 <span>Trân Trọng Báo Tin</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.1em] uppercase text-[#7A1C24] mb-5">
+              <h2 className="text-xl font-bold tracking-[0.1em] uppercase text-[#7A1C24] mb-5">
                 {tiecVuQuy.title}
               </h2>
 

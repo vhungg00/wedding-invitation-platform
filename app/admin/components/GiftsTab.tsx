@@ -23,6 +23,7 @@ import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
 import { exportGiftsToExcel } from "@/lib/exportExcel";
 import { PaginationCustom } from "@/app/components/ui/PaginationCustom";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 
 interface GiftsTabProps {
   gifts: GiftItem[];
@@ -39,6 +40,7 @@ export default function GiftsTab({
   onUpdateGift,
   onDeleteGift,
 }: GiftsTabProps) {
+  const snackbarRef = useRef<SnackbarRefs>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSide, setFilterSide] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -98,7 +100,10 @@ export default function GiftsTab({
   const handleSubmitModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalForm.guestName.trim()) {
-      alert("Vui lòng nhập tên người mừng cưới");
+      snackbarRef.current?.showSnackbar({
+        message: "Vui lòng nhập tên người mừng cưới",
+        severity: "warning",
+      });
       return;
     }
 
@@ -798,6 +803,7 @@ export default function GiftsTab({
           </div>
         </div>
       )}
+      <Snackbar ref={snackbarRef} />
     </div>
   );
 }

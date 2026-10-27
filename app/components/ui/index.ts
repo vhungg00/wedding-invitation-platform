@@ -15,3 +15,6 @@ export type { TableResizeProps, TColumn } from "./TableResize";
 
 export { PaginationCustom } from "./PaginationCustom";
 export type { PaginationCustomProps } from "./PaginationCustom";
+
+export { Snackbar } from "./Snackbar";
+export type { SnackbarProps, SnackbarRefs, AlertColor } from "./Snackbar";

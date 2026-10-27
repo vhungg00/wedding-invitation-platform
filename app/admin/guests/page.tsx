@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -32,6 +32,7 @@ import { GuestItem } from "../types";
 import { InputCustom } from "@/app/components/ui/InputCustom";
 import { DropdownCustom } from "@/app/components/ui/DropdownCustom";
 import { TableResize, TColumn, ESortType } from "@/app/components/ui/TableResize";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 
 import CateringCalculator from "./components/CateringCalculator";
 import SmartPasteModal from "./components/SmartPasteModal";
@@ -78,7 +79,7 @@ export default function GuestsMasterPage() {
   const [previewGuest, setPreviewGuest] = useState<GuestItem | null>(null);
   const [cardPreviewGuest, setCardPreviewGuest] = useState<GuestItem | null>(null);
   const [zaloGuest, setZaloGuest] = useState<GuestItem | null>(null);
-  const [zaloToast, setZaloToast] = useState<string | null>(null);
+  const snackbarRef = useRef<SnackbarRefs>(null);
 
   // Form thêm 1 khách
   const [singleForm, setSingleForm] = useState({
@@ -210,7 +211,10 @@ export default function GuestsMasterPage() {
         );
       }
     } catch {
-      alert("Lỗi khi cập nhật trạng thái gửi!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi cập nhật trạng thái gửi!",
+        severity: "error",
+      });
     }
   };
 
@@ -233,11 +237,21 @@ export default function GuestsMasterPage() {
           fetchTableGuests();
         }
         fetchAllGuests();
+        snackbarRef.current?.showSnackbar({
+          message: `Đã xóa khách mời "${name}"!`,
+          severity: "success",
+        });
       } else {
-        alert("Không thể xóa khách mời!");
+        snackbarRef.current?.showSnackbar({
+          message: "Không thể xóa khách mời!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Không thể xóa khách mời!");
+      snackbarRef.current?.showSnackbar({
+        message: "Không thể xóa khách mời!",
+        severity: "error",
+      });
     }
   };
 
@@ -256,9 +270,16 @@ export default function GuestsMasterPage() {
         setTableGuests((prev) =>
           prev.map((g) => (g.id === guestId ? { ...g, table: table || null } : g))
         );
+        snackbarRef.current?.showSnackbar({
+          message: "Đã cập nhật bàn tiệc!",
+          severity: "success",
+        });
       }
     } catch {
-      alert("Lỗi khi gán bàn tiệc!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi gán bàn tiệc!",
+        severity: "error",
+      });
     }
   };
 
@@ -278,11 +299,21 @@ export default function GuestsMasterPage() {
       if (res.ok && data.success) {
         fetchGuests();
         setSelectedIds([]);
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Đã cập nhật hàng loạt thành công!",
+          severity: "success",
+        });
       } else {
-        alert(data.message || "Lỗi cập nhật hàng loạt!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Lỗi cập nhật hàng loạt!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Lỗi khi gọi API cập nhật hàng loạt!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi gọi API cập nhật hàng loạt!",
+        severity: "error",
+      });
     }
   };
 
@@ -311,11 +342,21 @@ export default function GuestsMasterPage() {
           fetchTableGuests();
         }
         fetchAllGuests();
+        snackbarRef.current?.showSnackbar({
+          message: `Đã xóa ${deletedIds.length} khách mời!`,
+          severity: "success",
+        });
       } else {
-        alert("Lỗi khi xóa hàng loạt!");
+        snackbarRef.current?.showSnackbar({
+          message: "Lỗi khi xóa hàng loạt!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Lỗi khi xóa hàng loạt!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi xóa hàng loạt!",
+        severity: "error",
+      });
     }
   };
 
@@ -324,6 +365,10 @@ export default function GuestsMasterPage() {
     const selectedGuests = guests.filter((g) => selectedIds.includes(g.id));
     const lines = selectedGuests.map((g) => `${g.name}: ${getPersonalizedUrl(g)}`);
     navigator.clipboard.writeText(lines.join("\n"));
+    snackbarRef.current?.showSnackbar({
+      message: `Đã sao chép ${selectedGuests.length} link thiệp mời!`,
+      severity: "info",
+    });
   };
 
   // Submit thêm 1 khách
@@ -352,11 +397,21 @@ export default function GuestsMasterPage() {
           note: "",
         });
         fetchGuests();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã thêm khách mời thành công!",
+          severity: "success",
+        });
       } else {
-        alert(data.message || "Không thể thêm khách!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Không thể thêm khách!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Lỗi kết nối khi thêm khách!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi kết nối khi thêm khách!",
+        severity: "error",
+      });
     } finally {
       setAddingSingle(false);
     }
@@ -660,8 +715,10 @@ export default function GuestsMasterPage() {
                       prev.map((g) => (g.id === guestId ? { ...g, isSent: true } : g))
                     );
                   });
-                  setZaloToast(`Đã sao chép tin nhắn mời ${record.name}! Đang mở Zalo...`);
-                  setTimeout(() => setZaloToast(null), 3000);
+                  snackbarRef.current?.showSnackbar({
+                    message: `Đã sao chép tin nhắn mời ${record.name}! Đang mở Zalo...`,
+                    severity: "info",
+                  });
                 } else {
                   setZaloGuest(record);
                 }
@@ -1076,14 +1133,6 @@ export default function GuestsMasterPage() {
         onClose={() => setPreviewGuest(null)}
       />
 
-      {/* Toast thông báo 1-Click Zalo */}
-      {zaloToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm animate-bounce">
-          <MessageCircle className="w-5 h-5 shrink-0" />
-          <span>{zaloToast}</span>
-        </div>
-      )}
-
       {/* Modal Xem trước & Tải ảnh thiệp mời in tên khách */}
       <InvitationCardPreviewModal
         guest={cardPreviewGuest}
@@ -1105,6 +1154,7 @@ export default function GuestsMasterPage() {
           );
         }}
       />
+      <Snackbar ref={snackbarRef} />
     </div>
   );
 }

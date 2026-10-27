@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
+import { usePathname } from "next/navigation";
 import { useGuest } from "@/lib/useGuest";
 import { triggerCelebration } from "../utils/celebration";
 
@@ -14,24 +15,56 @@ function EnvelopeContent({
   brideName = "Xuân Ly",
   weddingDate = "06 . 12 . 2026",
 }: WaxSealEnvelopeProps) {
-  const { guest, rawParam } = useGuest();
+  const pathname = usePathname();
+  const isNhaGai = pathname?.startsWith("/nha-gai");
+  const primaryName = isNhaGai ? brideName : groomName;
+  const secondaryName = isNhaGai ? groomName : brideName;
+
+  const { guest, loading, rawParam } = useGuest();
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  const guestName = guest?.name || rawParam || "Quý khách & Gia đình";
+  const trimmedParam = rawParam?.trim() || "";
+  const isSlugFormat = /^[a-z0-9-]+$/i.test(trimmedParam) && trimmedParam.includes("-");
 
+  // Chỉ hiển thị tên thật từ DB hoặc tên truyền trực tiếp (không hiển thị chuỗi mã slug)
+  const guestName = loading
+    ? "..."
+    : guest?.isResolvedFromDb
+      ? guest.name
+      : !isSlugFormat && guest?.name
+        ? guest.name
+        : "Quý khách & Gia đình";
+
+  // Khóa cuộn trang chính khi modal phong bì đang hiển thị
   useEffect(() => {
-    setMounted(true);
     try {
-      const seen = sessionStorage.getItem("envelope_opened");
-      if (seen === "true") {
+      if (sessionStorage.getItem("envelope_opened") === "true") {
         setIsDismissed(true);
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        return;
       }
     } catch {}
-  }, []);
 
-  if (!mounted || isDismissed) {
+    if (isDismissed) {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      return;
+    }
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, [isDismissed]);
+
+  if (isDismissed) {
     return null;
   }
 
@@ -64,8 +97,9 @@ function EnvelopeContent({
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4 transition-all duration-1000 select-none ${
-        isOpen ? "opacity-0 pointer-events-none delay-[3200ms]" : "opacity-100"
+      suppressHydrationWarning
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 transition-all duration-1000 select-none touch-none overscroll-none ${
+        isOpen ? "opacity-0 delay-[3200ms]" : "opacity-100"
       }`}
       onClick={handleOpen}
     >
@@ -114,7 +148,7 @@ function EnvelopeContent({
               {/* Couple's Names - Large, Crisp, High Contrast */}
               <div className="my-1 sm:my-2">
                 <h3 className="font-imperial-script text-3xl sm:text-4xl md:text-5xl text-gray-900 font-bold leading-none drop-shadow-xs">
-                  {groomName} &amp; {brideName}
+                  {primaryName} &amp; {secondaryName}
                 </h3>
                 <p className="text-xs sm:text-sm font-serif text-gray-700 tracking-widest font-semibold mt-1">
                   {weddingDate}
@@ -296,7 +330,7 @@ function EnvelopeContent({
                   opacity="0.8"
                 />
 
-                {/* Monogram Text "H & L" with gold emboss */}
+                {/* Monogram Text with gold emboss */}
                 <text
                   x="50"
                   y="49"
@@ -308,7 +342,7 @@ function EnvelopeContent({
                   letterSpacing="1.5"
                   filter="url(#waxShadow)"
                 >
-                  H &amp; L
+                  {isNhaGai ? "L & H" : "H & L"}
                 </text>
 
                 {/* Tiny Heart underneath monogram */}
@@ -352,8 +386,15 @@ function EnvelopeContent({
 
 export default function WaxSealEnvelope(props: WaxSealEnvelopeProps) {
   return (
-    <Suspense fallback={null}>
-      <EnvelopeContent {...props} />
-    </Suspense>
+    <div id="wax-seal-envelope-wrapper" suppressHydrationWarning>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{if(sessionStorage.getItem("envelope_opened")==="true"){var el=document.getElementById("wax-seal-envelope-wrapper");if(el)el.style.display="none";}}catch(e){}`,
+        }}
+      />
+      <Suspense fallback={<div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md" />}>
+        <EnvelopeContent {...props} />
+      </Suspense>
+    </div>
   );
 }

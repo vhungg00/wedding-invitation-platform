@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { ImageWithFallback } from "./ui/ImageWithFallback";
+import { Snackbar, SnackbarRefs } from "./ui/Snackbar";
 import {
   Gift,
   Copy,
@@ -71,6 +72,7 @@ function GiftBoxContent({
   defaultSide = "nha-trai",
   data: dataProp,
 }: GiftBoxSectionProps) {
+  const snackbarRef = useRef<SnackbarRefs>(null);
   const activeSideData = dataProp || weddingData;
   const [activeSide, setActiveSide] = useState<"nha-trai" | "nha-gai">(defaultSide);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -229,7 +231,10 @@ function GiftBoxContent({
   const handleSubmitConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!donorName.trim()) {
-      alert("Vui lòng nhập tên của bạn");
+      snackbarRef.current?.showSnackbar({
+        message: "Vui lòng nhập tên của bạn",
+        severity: "warning",
+      });
       return;
     }
 
@@ -252,11 +257,21 @@ function GiftBoxContent({
       const data = await res.json();
       if (res.ok && data.success) {
         setFormSubmitted(true);
+        snackbarRef.current?.showSnackbar({
+          message: "Đã gửi xác nhận mừng cưới thành công!",
+          severity: "success",
+        });
       } else {
-        alert(data.message || "Không thể gửi xác nhận, vui lòng thử lại!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Không thể gửi xác nhận, vui lòng thử lại!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Đã xảy ra lỗi khi gửi xác nhận!");
+      snackbarRef.current?.showSnackbar({
+        message: "Đã xảy ra lỗi khi gửi xác nhận!",
+        severity: "error",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -570,6 +585,7 @@ function GiftBoxContent({
           )}
         </div>
       </div>
+      <Snackbar ref={snackbarRef} />
     </section>
   );
 }
