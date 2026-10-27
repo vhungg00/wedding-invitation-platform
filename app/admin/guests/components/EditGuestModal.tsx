@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, UserCheck } from "lucide-react";
 import { GuestItem } from "../../types";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 
 interface EditGuestModalProps {
   guest: GuestItem | null;
@@ -17,6 +18,7 @@ export default function EditGuestModal({
   onClose,
   onSuccess,
 }: EditGuestModalProps) {
+  const snackbarRef = useRef<SnackbarRefs>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [side, setSide] = useState<string>("nha-trai");
@@ -38,12 +40,15 @@ export default function EditGuestModal({
     }
   }, [guest]);
 
-  if (!isOpen || !guest) return null;
+  if (!isOpen || !guest) return <Snackbar ref={snackbarRef} />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      alert("Vui lòng nhập tên khách mời");
+      snackbarRef.current?.showSnackbar({
+        message: "Vui lòng nhập tên khách mời",
+        severity: "warning",
+      });
       return;
     }
 
@@ -66,20 +71,32 @@ export default function EditGuestModal({
 
       const data = await res.json();
       if (res.ok && data.success) {
+        snackbarRef.current?.showSnackbar({
+          message: "Đã cập nhật thông tin khách mời!",
+          severity: "success",
+        });
         onSuccess();
         onClose();
       } else {
-        alert(data.message || "Không thể cập nhật khách mời!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Không thể cập nhật khách mời!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Đã xảy ra lỗi khi cập nhật!");
+      snackbarRef.current?.showSnackbar({
+        message: "Đã xảy ra lỗi khi cập nhật!",
+        severity: "error",
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <>
+      <Snackbar ref={snackbarRef} />
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
       <div
         className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
@@ -212,5 +229,6 @@ export default function EditGuestModal({
         </form>
       </div>
     </div>
+    </>
   );
 }

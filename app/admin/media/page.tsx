@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -24,6 +24,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ui/ImageWithFallback";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 
 interface PhotoItem {
   src?: string;
@@ -39,6 +40,7 @@ interface InvitationImageItem {
 
 export default function MediaStudioPage() {
   const router = useRouter();
+  const snackbarRef = useRef<SnackbarRefs>(null);
   const [authChecking, setAuthChecking] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1314,7 +1316,10 @@ export default function MediaStudioPage() {
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(previewModalImg.src);
-                  alert("Đã sao chép link ảnh: " + previewModalImg.src);
+                  snackbarRef.current?.showSnackbar({
+                    message: "Đã sao chép link ảnh: " + previewModalImg.src,
+                    severity: "success",
+                  });
                 }}
                 className="shrink-0 px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-white text-[10px] cursor-pointer"
               >
@@ -1324,6 +1329,7 @@ export default function MediaStudioPage() {
           </div>
         </div>
       )}
+      <Snackbar ref={snackbarRef} />
     </div>
   );
 }

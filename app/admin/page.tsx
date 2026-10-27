@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Users, MessageSquareHeart, Share2, Gift, Sparkles, Image as ImageIcon, Calendar } from "lucide-react";
 import { RsvpItem, WishItem, GuestItem, GiftItem, StatsData } from "./types";
+import { Snackbar, SnackbarRefs } from "@/app/components/ui/Snackbar";
 import AdminHeader from "./components/AdminHeader";
 import AdminStats from "./components/AdminStats";
 import RsvpTab from "./components/RsvpTab";
@@ -23,6 +24,7 @@ export default function AdminPage() {
   const [guests, setGuests] = useState<GuestItem[]>([]);
   const [gifts, setGifts] = useState<GiftItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const snackbarRef = useRef<SnackbarRefs>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -92,13 +94,23 @@ export default function AdminPage() {
       if (res.ok) {
         setRsvps((prev) => prev.filter((r) => r.id !== id));
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã xóa phản hồi RSVP!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert("Không thể xóa RSVP!");
+        snackbarRef.current?.showSnackbar({
+          message: "Không thể xóa RSVP!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Không thể xóa RSVP!");
+      snackbarRef.current?.showSnackbar({
+        message: "Không thể xóa RSVP!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -110,13 +122,23 @@ export default function AdminPage() {
       if (res.ok) {
         setWishes((prev) => prev.filter((w) => w.id !== id));
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã xóa lời chúc!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert("Không thể xóa lời chúc!");
+        snackbarRef.current?.showSnackbar({
+          message: "Không thể xóa lời chúc!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Không thể xóa lời chúc!");
+      snackbarRef.current?.showSnackbar({
+        message: "Không thể xóa lời chúc!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -141,12 +163,22 @@ export default function AdminPage() {
       if (res.ok && data.success) {
         setGuests((prev) => [data.data, ...prev]);
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: `Đã tạo khách mời "${name}" thành công!`,
+          severity: "success",
+        });
         return data.data;
       } else {
-        alert(data.message || "Không thể tạo khách mời!");
+        snackbarRef.current?.showSnackbar({
+          message: data.message || "Không thể tạo khách mời!",
+          severity: "error",
+        });
       }
     } catch {
-      alert("Lỗi khi tạo khách mời!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi tạo khách mời!",
+        severity: "error",
+      });
     }
   };
 
@@ -157,13 +189,23 @@ export default function AdminPage() {
       if (res.ok) {
         setGuests((prev) => prev.filter((g) => g.id !== id));
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã xóa khách mời!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert("Không thể xóa khách mời!");
+        snackbarRef.current?.showSnackbar({
+          message: "Không thể xóa khách mời!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Không thể xóa khách mời!");
+      snackbarRef.current?.showSnackbar({
+        message: "Không thể xóa khách mời!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -179,13 +221,23 @@ export default function AdminPage() {
       if (res.ok && resData.success) {
         setGifts((prev) => [resData.data, ...prev]);
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã thêm bản ghi mừng cưới!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert(resData.message || "Không thể tạo mừng cưới!");
+        snackbarRef.current?.showSnackbar({
+          message: resData.message || "Không thể tạo mừng cưới!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Lỗi khi tạo mừng cưới!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi tạo mừng cưới!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -201,13 +253,23 @@ export default function AdminPage() {
       if (res.ok && resData.success) {
         setGifts((prev) => prev.map((g) => (g.id === id ? { ...g, ...resData.data } : g)));
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã cập nhật thông tin mừng cưới!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert(resData.message || "Không thể cập nhật mừng cưới!");
+        snackbarRef.current?.showSnackbar({
+          message: resData.message || "Không thể cập nhật mừng cưới!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Lỗi khi cập nhật mừng cưới!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi cập nhật mừng cưới!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -218,13 +280,23 @@ export default function AdminPage() {
       if (res.ok) {
         setGifts((prev) => prev.filter((g) => g.id !== id));
         fetchData();
+        snackbarRef.current?.showSnackbar({
+          message: "Đã xóa bản ghi mừng cưới!",
+          severity: "success",
+        });
         return true;
       } else {
-        alert("Không thể xóa mừng cưới!");
+        snackbarRef.current?.showSnackbar({
+          message: "Không thể xóa mừng cưới!",
+          severity: "error",
+        });
         return false;
       }
     } catch {
-      alert("Lỗi khi xóa mừng cưới!");
+      snackbarRef.current?.showSnackbar({
+        message: "Lỗi khi xóa mừng cưới!",
+        severity: "error",
+      });
       return false;
     }
   };
@@ -355,6 +427,7 @@ export default function AdminPage() {
           />
         )}
       </div>
+      <Snackbar ref={snackbarRef} />
     </div>
   );
 }
