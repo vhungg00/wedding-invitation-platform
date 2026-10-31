@@ -49,7 +49,7 @@ export default function MusicPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={weddingData.music?.audioUrl || "/xung-doi.mp3"}
+        src={weddingData.music?.audioUrl || "/may-man.mp3"}
         loop
         playsInline
         preload="metadata"

@@ -86,7 +86,7 @@ export default function Home() {
           {/* Background Image */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[56%] w-[92%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
             <img
-              src={weddingData.hero?.backgroundImage || "/tach-nen.png"}
+              src={weddingData.hero?.backgroundImage || "/tach-nen.jpg"}
               alt="Background"
               className="block w-full max-h-[78vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain 
         [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
