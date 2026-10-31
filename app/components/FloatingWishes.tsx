@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   MessageCircleHeart,
   Heart,
+  Send,
   X,
   PenLine,
+  Sparkles,
+  User,
+  Tag,
   CheckCircle2,
-  Lightbulb,
-  Smile,
 } from "lucide-react";
 import { useGuest } from "@/lib/useGuest";
 
@@ -25,88 +27,23 @@ interface WishItem {
 const FALLBACK_WISHES: WishItem[] = [
   {
     id: "fallback-1",
-    name: "Phương Thảo",
-    relationship: "Bạn cô dâu",
-    content:
-      "Thật vui vì cuối cùng ngày này cũng tới với bạn. Tôi thành tâm chúc hai bạn thật nhiều hạnh phúc và sống đời vui vẻ cùng nhau mãi mãi!",
+    name: "Gia đình hai bên",
+    relationship: "Người thân",
+    content: "Chúc hai con trăm năm tình viên mãn, bạc đầu nghĩa phu thê!",
     hearts: 9,
     side: "both",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date().toISOString(),
   },
   {
     id: "fallback-2",
-    name: "Hoài Nam",
-    relationship: "Bạn chú rể",
-    content:
-      "Chúc hai bạn sớm có con đàn cháu đống, cửa nhà lúc nào cũng đầm ấm, yên vui nhé!",
+    name: "Hội bạn thân",
+    relationship: "Bạn chung",
+    content: "Chúc Việt Hùng & Xuân Ly mãi hạnh phúc, sớm đón thiên thần nhỏ nhé! 💖",
     hearts: 6,
     side: "both",
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "fallback-3",
-    name: "Ngọc Linh",
-    relationship: "Bạn chung",
-    content:
-      "Chúc hai bạn ngày vui hạnh phúc. Hãy yêu thương nhau thật nhiều và sống thật hạnh phúc nha!",
-    hearts: 8,
-    side: "both",
-    createdAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "fallback-4",
-    name: "Quốc Bảo",
-    relationship: "Đồng nghiệp",
-    content:
-      "Chúc mừng hạnh phúc hai bạn. Chúc hai bạn bên nhau đầu bạc răng long, sớm có thiên thần nhỏ nhé!",
-    hearts: 5,
-    side: "both",
-    createdAt: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date().toISOString(),
   },
 ];
-
-const SUGGESTED_WISHES = [
-  "Chúc hai bạn trăm năm hạnh phúc, trọn vẹn yêu thương! 💖",
-  "Chúc mừng hạnh phúc hai bạn. Chúc hai bạn bên nhau đầu bạc răng long, sớm có thiên thần nhỏ nhé!",
-  "Thật vui vì cuối cùng ngày này cũng tới với bạn. Chúc hai bạn thật nhiều hạnh phúc và sống đời vui vẻ cùng nhau mãi mãi!",
-  "Chúc hai bạn ngày vui hạnh phúc. Hãy yêu thương nhau thật nhiều và sống thật hạnh phúc nha!",
-  "Trăm năm tình viên mãn, bạc đầu nghĩa phu thê! 🥂",
-];
-
-const QUICK_EMOJIS = ["💖", "🥂", "🎉", "💐", "💍", "🥰", "✨", "❤️"];
-
-const AVATAR_BG_COLORS = [
-  "#F2DCA6",
-  "#F6B0A8",
-  "#F1CBB5",
-  "#ECE2A8",
-  "#D8E5A7",
-];
-
-function formatRelativeTime(dateStr?: string): string {
-  if (!dateStr) return "vừa xong";
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return "vừa xong";
-
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffMinutes < 1) return "vừa xong";
-  if (diffMinutes < 60) return `${diffMinutes} phút trước`;
-  if (diffHours === 1) return "một giờ trước";
-  if (diffHours < 24) return `${diffHours} giờ trước`;
-  if (diffDays === 1) return "một ngày trước";
-  if (diffDays < 30) return `${diffDays} ngày trước`;
-  return date.toLocaleDateString("vi-VN");
-}
-
-function getInitialLetter(name: string): string {
-  const trimmed = (name || "").trim();
-  if (!trimmed) return "K";
-  return trimmed.charAt(0).toUpperCase();
-}
 
 interface FloatingWishesProps {
   currentSide?: "nha-trai" | "nha-gai";
@@ -140,25 +77,12 @@ function FloatingWishesContent({ currentSide = "nha-trai" }: FloatingWishesProps
 
   // Form gửi lời chúc
   const [name, setName] = useState("");
-  const [relationship] = useState(
+  const [relationship, setRelationship] = useState(
     currentSide === "nha-gai" ? "Bạn cô dâu" : "Bạn chú rể"
   );
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [successNotice, setSuccessNotice] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [showEmojis, setShowEmojis] = useState(false);
-  const listContainerRef = useRef<HTMLDivElement>(null);
-
-  // Khóa cuộn nền khi mở modal danh sách lời chúc
-  useEffect(() => {
-    if (!isModalOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isModalOpen]);
 
   // Tự động điền tên khách mời nếu vào từ link cá nhân hóa
   useEffect(() => {
@@ -235,16 +159,11 @@ function FloatingWishesContent({ currentSide = "nha-trai" }: FloatingWishesProps
         });
         setCurrentIndex(0);
         setContent("");
-        setShowSuggestions(false);
-        setShowEmojis(false);
         setSuccessNotice(true);
-        handleTriggerFireworks();
-        if (listContainerRef.current) {
-          listContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-        }
         setTimeout(() => {
           setSuccessNotice(false);
-        }, 2500);
+          setIsModalOpen(false);
+        }, 2000);
       }
     } catch (err) {
       console.error("Lỗi gửi lời chúc:", err);
@@ -321,10 +240,7 @@ function FloatingWishesContent({ currentSide = "nha-trai" }: FloatingWishesProps
                 </button>
               </div>
 
-              <p
-                onClick={() => setIsModalOpen(true)}
-                className="text-xs text-gray-700 leading-snug line-clamp-2 italic pl-5 cursor-pointer hover:text-rose-700 transition"
-              >
+              <p className="text-xs text-gray-700 leading-snug line-clamp-2 italic pl-5">
                 &ldquo;{activeWish.content}&rdquo;
               </p>
             </div>
@@ -357,13 +273,9 @@ function FloatingWishesContent({ currentSide = "nha-trai" }: FloatingWishesProps
 
               <div className="flex items-center gap-1">
                 {wishes.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="text-[10px] text-gray-400 hover:text-rose-600 font-mono cursor-pointer"
-                  >
+                  <span className="text-[10px] text-gray-400 font-mono hidden sm:inline">
                     {currentIndex + 1}/{wishes.length}
-                  </button>
+                  </span>
                 )}
                 <button
                   type="button"
@@ -379,203 +291,144 @@ function FloatingWishesContent({ currentSide = "nha-trai" }: FloatingWishesProps
         )}
       </div>
 
-      {/* Modal Fullscreen: Danh sách lời chúc cuộn phía trên + Bottom Sheet Gửi lời chúc trượt từ dưới lên */}
+      {/* Popup Gửi Lời Chúc & Xem Sổ Lưu Bút */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/45 backdrop-blur-md flex flex-col justify-between font-sans animate-fade-in"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setIsModalOpen(false)}
         >
-          {/* Danh sách lời chúc cuộn phía trên */}
           <div
-            ref={listContainerRef}
-            className="flex-1 overflow-y-auto px-3.5 sm:px-5 pt-5 pb-4 space-y-3.5 max-w-lg w-full mx-auto no-scrollbar"
+            className="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-rose-100 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {wishes.map((wish, idx) => {
-              const avatarBg = AVATAR_BG_COLORS[idx % AVATAR_BG_COLORS.length];
-              return (
-                <div
-                  key={wish.id}
-                  className="bg-[#FAF8F5]/95 backdrop-blur-sm rounded-2xl px-4 py-3.5 shadow-md border border-white/80 transition hover:bg-white"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        style={{ backgroundColor: avatarBg }}
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-gray-800 shrink-0"
-                      >
-                        {getInitialLetter(wish.name)}
-                      </div>
-                      <div className="flex items-center gap-1.5 min-w-0 truncate">
-                        <span className="font-bold text-gray-900 text-sm sm:text-[15px] truncate">
-                          {wish.name}
-                        </span>
-                        <span className="text-xs text-gray-400 shrink-0">
-                          • {formatRelativeTime(wish.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleLike(wish.id)}
-                      className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full transition cursor-pointer shrink-0 ${
-                        likedMap[wish.id]
-                          ? "bg-rose-100 text-rose-600 font-semibold"
-                          : "text-gray-400 hover:text-rose-500"
-                      }`}
-                    >
-                      <Heart
-                        className={`w-3.5 h-3.5 ${
-                          likedMap[wish.id] ? "fill-rose-500 text-rose-500" : ""
-                        }`}
-                      />
-                      {(wish.hearts || 0) > 0 && <span>{wish.hearts}</span>}
-                    </button>
-                  </div>
-
-                  <p className="mt-2 text-sm sm:text-[15px] text-gray-800 leading-relaxed break-words">
-                    {wish.content}
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-rose-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">
+                    Gửi Lời Chúc Mừng
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Lưu giữ kỷ niệm đẹp cùng cô dâu & chú rể
                   </p>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Bottom Sheet Gửi Lời Chúc đi từ dưới lên */}
-          <div
-            className="w-full max-w-lg mx-auto bg-[#FDF7F5] rounded-t-[28px] px-4 pt-4 pb-5 sm:px-6 sm:pt-5 sm:pb-6 shadow-[0_-10px_35px_rgba(0,0,0,0.22)] border-t border-rose-100 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header Bottom Sheet */}
-            <div className="relative flex items-center justify-center mb-3.5">
-              <div className="inline-flex items-center gap-2">
-                <Heart className="w-4 h-4 fill-[#7A1C24] text-[#7A1C24]" />
-                <h3 className="font-bold text-gray-900 text-base sm:text-lg">
-                  Gửi lời chúc
-                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-gray-500 hover:text-gray-800 hover:bg-black/5 transition cursor-pointer"
-                aria-label="Đóng"
+                className="p-1.5 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {successNotice && (
-              <div className="mb-3 px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Cảm ơn lời chúc tuyệt vời của bạn! 💖</span>
+            {successNotice ? (
+              <div className="py-8 text-center space-y-2 animate-fade-in">
+                <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
+                <h4 className="font-bold text-gray-800 text-base">
+                  Cảm ơn lời chúc thân thương của bạn! 💖
+                </h4>
+                <p className="text-xs text-gray-500">
+                  Lời chúc của bạn đã được hiển thị trên trang thiệp.
+                </p>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 text-xs sm:text-sm">
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">
+                    Tên của bạn <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Ví dụ: Anh Hoàng, Bạn Lan..."
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-rose-500 text-gray-900"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">
+                    Mối quan hệ
+                  </label>
+                  <div className="relative">
+                    <Tag className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <select
+                      value={relationship}
+                      onChange={(e) => setRelationship(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-rose-500 bg-white text-gray-900"
+                    >
+                      <option value="Bạn chú rể">Bạn Chú Rể</option>
+                      <option value="Bạn cô dâu">Bạn Cô Dâu</option>
+                      <option value="Bạn chung">Bạn Chung 2 Bên</option>
+                      <option value="Đồng nghiệp">Đồng Nghiệp</option>
+                      <option value="Gia đình & Họ hàng">Gia Đình & Họ Hàng</option>
+                      <option value="Người thân quý mến">Người Thân Quý Mến</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">
+                    Lời chúc của bạn <span className="text-rose-500">*</span>
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Chúc hai em trăm năm hạnh phúc, sớm sinh quý tử nhé!"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-rose-500 text-gray-900 resize-none"
+                  />
+                </div>
+
+                {/* Gợi ý lời chúc nhanh 1-chạm */}
+                <div className="space-y-1">
+                  <span className="text-[11px] text-gray-400">Gợi ý chọn nhanh:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      "Chúc hai bạn trăm năm hạnh phúc, trọn vẹn yêu thương! 💖",
+                      "Chúc mừng hạnh phúc hai em, sớm đón thiên thần nhỏ nhé!",
+                      "Trăm năm tình viên mãn, bạc đầu nghĩa phu thê! 🥂",
+                    ].map((sample, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setContent(sample)}
+                        className="text-[11px] text-left px-2.5 py-1 rounded-lg bg-rose-50/70 hover:bg-rose-100 text-rose-700 border border-rose-200/60 transition cursor-pointer"
+                      >
+                        {sample}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium cursor-pointer"
+                  >
+                    Đóng
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting || !name.trim() || !content.trim()}
+                    className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold inline-flex items-center gap-1.5 shadow-md shadow-rose-200 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{submitting ? "Đang gửi..." : "Gửi Lời Chúc"}</span>
+                  </button>
+                </div>
+              </form>
             )}
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Tên của bạn"
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-[#E6D0CE] focus:outline-none focus:border-[#7A1C24] text-sm sm:text-[15px] text-gray-900 placeholder:text-gray-400"
-                />
-              </div>
-
-              <div className="relative">
-                <textarea
-                  required
-                  rows={3}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Lời chúc của bạn"
-                  className="w-full pl-4 pr-14 py-3 rounded-2xl bg-white border border-[#E6D0CE] focus:outline-none focus:border-[#7A1C24] text-sm sm:text-[15px] text-gray-900 placeholder:text-gray-400 resize-none"
-                />
-
-                {/* Hai nút tiện ích góc phải ô nhập: Gợi ý (💡) & Emoji (😊) */}
-                <div className="absolute right-2.5 bottom-2.5 flex flex-col items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowSuggestions((prev) => !prev);
-                      setShowEmojis(false);
-                    }}
-                    title="Gợi ý lời chúc hay"
-                    className={`w-9 h-9 rounded-xl border flex items-center justify-center transition cursor-pointer ${
-                      showSuggestions
-                        ? "bg-[#7A1C24] text-white border-[#7A1C24]"
-                        : "bg-[#F9F1F0] text-[#7A1C24] border-[#C99FA2] hover:bg-rose-100"
-                    }`}
-                  >
-                    <Lightbulb className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowEmojis((prev) => !prev);
-                      setShowSuggestions(false);
-                    }}
-                    title="Chèn biểu tượng cảm xúc"
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition cursor-pointer ${
-                      showEmojis
-                        ? "bg-rose-100 text-[#7A1C24]"
-                        : "text-[#7A1C24] hover:bg-rose-50"
-                    }`}
-                  >
-                    <Smile className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Khay chọn nhanh lời chúc gợi ý khi ấn 💡 */}
-              {showSuggestions && (
-                <div className="p-2.5 rounded-2xl bg-white border border-rose-200/80 shadow-sm space-y-1.5 max-h-36 overflow-y-auto">
-                  <p className="text-[11px] font-semibold text-[#7A1C24] px-1">
-                    💡 Chọn nhanh lời chúc gợi ý:
-                  </p>
-                  {SUGGESTED_WISHES.map((sample, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        setContent(sample);
-                        setShowSuggestions(false);
-                      }}
-                      className="w-full text-left text-xs text-gray-700 hover:text-[#7A1C24] hover:bg-rose-50/80 px-2.5 py-1.5 rounded-xl transition cursor-pointer"
-                    >
-                      {sample}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Khay chọn nhanh Emoji khi ấn 😊 */}
-              {showEmojis && (
-                <div className="flex items-center justify-around px-3 py-2 rounded-2xl bg-white border border-rose-200/80 shadow-sm">
-                  {QUICK_EMOJIS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      onClick={() => setContent((prev) => `${prev}${emoji}`)}
-                      className="text-lg hover:scale-125 transition cursor-pointer px-1"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={submitting || !name.trim() || !content.trim()}
-                className="w-full py-3.5 rounded-2xl bg-[#6E1423] hover:bg-[#58101C] text-white font-bold text-sm sm:text-base shadow-md transition disabled:opacity-50 cursor-pointer"
-              >
-                {submitting ? "Đang gửi..." : "Gửi Lời Chúc"}
-              </button>
-            </form>
           </div>
         </div>
       )}
