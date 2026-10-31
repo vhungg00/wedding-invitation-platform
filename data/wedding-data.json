@@ -85,8 +85,8 @@
     }
   ],
   "music": {
-    "songTitle": "Xứng đôi",
-    "audioUrl": "/xung-doi.mp3",
+    "songTitle": "May Mắn",
+    "audioUrl": "/may-man.mp3",
     "autoPlay": true
   },
   "nhaTrai": {
@@ -167,7 +167,7 @@
   },
   "hero": {
     "title": "THƯ MỜI TIỆC CƯỚI",
-    "backgroundImage": "/tach-nen.png",
+    "backgroundImage": "/tach-nen.jpg",
     "weddingDateText": "CHỦ NHẬT - 10H00",
     "dateFormatted": "06 . 12 . 2026"
   },
