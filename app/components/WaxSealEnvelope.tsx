@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { useGuest } from "@/lib/useGuest";
 import { triggerCelebration } from "../utils/celebration";
@@ -36,8 +36,11 @@ function EnvelopeContent({
         ? guest.name
         : "Quý khách & Gia đình";
 
-  // Khóa cuộn trang chính khi modal phong bì đang hiển thị
-  useEffect(() => {
+  const useIsomorphicLayoutEffect =
+    typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+  // Kiểm tra sessionStorage và khóa cuộn trang chính trước khi trình duyệt vẽ (tránh nháy modal khi reload)
+  useIsomorphicLayoutEffect(() => {
     try {
       if (sessionStorage.getItem("envelope_opened") === "true") {
         setIsDismissed(true);
@@ -386,15 +389,8 @@ function EnvelopeContent({
 
 export default function WaxSealEnvelope(props: WaxSealEnvelopeProps) {
   return (
-    <div id="wax-seal-envelope-wrapper" suppressHydrationWarning>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `try{if(sessionStorage.getItem("envelope_opened")==="true"){var el=document.getElementById("wax-seal-envelope-wrapper");if(el)el.style.display="none";}}catch(e){}`,
-        }}
-      />
-      <Suspense fallback={<div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md" />}>
-        <EnvelopeContent {...props} />
-      </Suspense>
-    </div>
+    <Suspense fallback={null}>
+      <EnvelopeContent {...props} />
+    </Suspense>
   );
 }

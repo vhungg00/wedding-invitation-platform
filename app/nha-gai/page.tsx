@@ -111,7 +111,7 @@ export default function NhaGaiPage() {
 
               <h1
                 data-aos="zoom-in"
-                className="text-4xl sm:text-6xl lg:text-7xl font-normal text-[#7A1C24] mb-2 sm:mb-3 drop-shadow-sm"
+                className="text-4xl sm:text-5xl font-normal text-[#7A1C24] mb-2 sm:mb-3 drop-shadow-sm"
               >
                 <span className="font-imperial-script">{commonData.bride.name}</span>
                 <span className="mx-2 sm:mx-4 text-[#C59B5F] font-serif text-3xl sm:text-4xl">&amp;</span>
