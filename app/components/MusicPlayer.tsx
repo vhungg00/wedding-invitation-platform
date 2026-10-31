@@ -1,14 +1,36 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import weddingData from "@/data/wedding-data.json";
 
 export default function MusicPlayer() {
+  const pathname = usePathname();
+  const isNhaGai = pathname?.startsWith("/nha-gai");
+
+  const audioSrc = isNhaGai
+    ? "/yesIDo.mp3"
+    : weddingData.music?.audioUrl || "/may-man.mp3";
+  const songTitle = isNhaGai
+    ? "Yes I Do"
+    : weddingData.music?.songTitle || "May Mắn";
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   // Try autoplay muted (policy-friendly). If blocked, user can still click the button.
+
+  // Khi chuyển trang giữa Nhà Trai và Nhà Gái, cập nhật lại bài nhạc
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.load();
+    if (isPlaying) {
+      audio.play().catch(() => setIsPlaying(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioSrc]);
 
   const toggleMusic = async () => {
     const audio = audioRef.current;
@@ -49,7 +71,7 @@ export default function MusicPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={weddingData.music?.audioUrl || "/may-man.mp3"}
+        src={audioSrc}
         loop
         playsInline
         preload="metadata"
@@ -62,7 +84,7 @@ export default function MusicPlayer() {
         className={`fixed bottom-4 right-4 z-50 w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
           isPlaying ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-pink-500 hover:bg-pink-600"
         } ${!isLoaded ? "opacity-90" : ""}`}
-        title={isPlaying ? "Tắt nhạc" : `Bật nhạc - ${weddingData.music?.songTitle || "Vợ người ta"}`}
+        title={isPlaying ? "Tắt nhạc" : `Bật nhạc - ${songTitle}`}
       >
         <div className="flex items-center justify-center text-white text-xl">
           {isPlaying ? (
@@ -95,7 +117,7 @@ export default function MusicPlayer() {
 
         {/* Song title tooltip */}
         <div className="absolute -top-12 right-0 bg-black bg-opacity-80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity duration-300">
-          {weddingData.music?.songTitle || "Vợ người ta"}
+          {songTitle}
         </div>
       </button>
 
