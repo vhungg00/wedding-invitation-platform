@@ -78,12 +78,12 @@ export default function NhaGaiPage() {
 
       <div className="py-2 container overflow-x-hidden max-w-full">
         {/* Hero Section */}
-        <div className="md:h-screen h-[74vh] relative overflow-hidden">
+        <div className="md:h-screen h-[74vh] relative overflow-hidden -mx-2 sm:mx-0">
           {/* Soft radial luxury aura behind couple */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[520px] h-[340px] sm:h-[520px] rounded-full bg-radial from-amber-200/35 via-rose-200/15 to-transparent blur-3xl pointer-events-none z-0" />
 
           {/* Background Image */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[56%] w-[92%] sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[56%] w-full sm:w-3/4 md:w-2/3 lg:w-2/3 z-0">
             <img
               src={
                 nhaGaiData?.hero?.backgroundImage ||
@@ -170,42 +170,42 @@ export default function NhaGaiPage() {
         </div>
 
         {/* Family Information Section - Luxury Card */}
-        <div className="px-2 sm:px-6 py-4 sm:py-8 max-w-4xl mx-auto">
+        <div className="px-1 sm:px-6 py-4 sm:py-8 max-w-5xl mx-auto">
           <div
             data-aos="fade-up"
-            className="relative rounded-3xl bg-white/85 backdrop-blur-md border border-[#E6D5B8] shadow-[0_12px_40px_rgba(139,109,63,0.08)] p-4 sm:p-10"
+            className="relative rounded-3xl bg-white/85 backdrop-blur-md border border-[#E6D5B8] shadow-[0_12px_40px_rgba(139,109,63,0.08)] px-2.5 py-4 sm:p-8 md:p-10"
           >
-            <div className="absolute inset-2 sm:inset-2.5 rounded-2xl border border-[#EFE3CE] pointer-events-none" />
+            <div className="absolute inset-1.5 sm:inset-2.5 rounded-2xl border border-[#EFE3CE] pointer-events-none" />
 
-            <div className="relative grid grid-cols-2 text-center gap-2 sm:gap-8 items-start">
+            <div className="relative grid grid-cols-2 text-center gap-1.5 sm:gap-6 md:gap-8 items-start">
               <div className="block absolute left-1/2 top-2 bottom-2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-transparent via-[#D4AF37]/50 to-transparent" />
 
-              <div data-aos="fade-right" className="space-y-1.5 sm:space-y-2 px-1 sm:px-2">
-                <p className="text-sm sm:text-xl md:text-2xl tracking-[0.16em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
+              <div data-aos="fade-right" className="space-y-1 sm:space-y-2 px-0.5 sm:px-2 min-w-0">
+                <p className="text-xs sm:text-lg md:text-xl tracking-[0.14em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
                   NHÀ GÁI
                 </p>
-                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
+                <p className="text-[13px] sm:text-xl md:text-2xl font-bold text-[#2C221E] tracking-tight sm:tracking-wide whitespace-nowrap">
                   {commonData.bride.fatherName}
                 </p>
-                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
+                <p className="text-[13px] sm:text-xl md:text-2xl font-bold text-[#2C221E] tracking-tight sm:tracking-wide whitespace-nowrap">
                   {commonData.bride.motherName}
                 </p>
-                <p className="text-[#5C4938] text-xs sm:text-xl md:text-2xl italic pt-0.5 sm:pt-1">
+                <p className="text-[#5C4938] text-[11px] sm:text-base md:text-lg italic pt-0.5 sm:pt-1 leading-snug">
                   {commonData.bride.address}
                 </p>
               </div>
 
-              <div data-aos="fade-left" className="space-y-1.5 sm:space-y-2 px-1 sm:px-2">
-                <p className="text-sm sm:text-xl md:text-2xl tracking-[0.16em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
+              <div data-aos="fade-left" className="space-y-1 sm:space-y-2 px-0.5 sm:px-2 min-w-0">
+                <p className="text-xs sm:text-lg md:text-xl tracking-[0.14em] sm:tracking-[0.22em] uppercase text-[#8C6D3F] font-bold mb-1 sm:mb-2">
                   NHÀ TRAI
                 </p>
-                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
+                <p className="text-[13px] sm:text-xl md:text-2xl font-bold text-[#2C221E] tracking-tight sm:tracking-wide whitespace-nowrap">
                   {commonData.groom.fatherName}
                 </p>
-                <p className="text-base sm:text-3xl md:text-[1.75rem] font-bold text-[#2C221E] tracking-wide">
+                <p className="text-[13px] sm:text-xl md:text-2xl font-bold text-[#2C221E] tracking-tight sm:tracking-wide whitespace-nowrap">
                   {commonData.groom.motherName}
                 </p>
-                <p className="text-[#5C4938] text-xs sm:text-xl md:text-2xl italic pt-0.5 sm:pt-1">
+                <p className="text-[#5C4938] text-[11px] sm:text-base md:text-lg italic pt-0.5 sm:pt-1 leading-snug">
                   {commonData.groom.address}
                 </p>
               </div>
