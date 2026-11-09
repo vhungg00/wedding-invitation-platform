@@ -35,8 +35,20 @@ function getMergedData(dbRecord: any) {
     const c = dbRecord.content;
     if (c.groom) merged.groom = { ...merged.groom, ...c.groom };
     if (c.bride) merged.bride = { ...merged.bride, ...c.bride };
-    if (c.nhaTrai) merged.nhaTrai = { ...merged.nhaTrai, ...c.nhaTrai };
-    if (c.nhaGai) merged.nhaGai = { ...merged.nhaGai, ...c.nhaGai };
+    if (c.nhaTrai) {
+      merged.nhaTrai = {
+        ...merged.nhaTrai,
+        ...c.nhaTrai,
+        hero: { ...merged.nhaTrai?.hero, ...c.nhaTrai?.hero },
+      };
+    }
+    if (c.nhaGai) {
+      merged.nhaGai = {
+        ...merged.nhaGai,
+        ...c.nhaGai,
+        hero: { ...merged.nhaGai?.hero, ...c.nhaGai?.hero },
+      };
+    }
     if (c.quotes) merged.quotes = { ...merged.quotes, ...c.quotes };
     if (c.hero) merged.hero = { ...merged.hero, ...c.hero };
     if (c.calendar) merged.calendar = { ...merged.calendar, ...c.calendar };

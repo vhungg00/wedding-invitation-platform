@@ -13,7 +13,7 @@ import WaxSealEnvelope from "./components/WaxSealEnvelope";
 import PhotoAlbum from "./components/PhotoAlbum";
 import PersonalizedGreeting from "./components/PersonalizedGreeting";
 import RsvpSection from "./components/RsvpSection";
-import GiftBoxSection from "./components/GiftBoxSection";
+// import GiftBoxSection from "./components/GiftBoxSection";
 import FloatingWishes from "./components/FloatingWishes";
 import defaultWeddingData from "@/data/wedding-data.json";
 
@@ -265,7 +265,7 @@ export default function Home() {
             >
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#FAF6F0]">
                 <Image
-                  src={weddingData.groom?.avatar || "/chu-re.JPG"}
+                  src={weddingData.groom?.avatar || "/chu-re.jpg"}
                   alt="chu-re"
                   fill
                   className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
@@ -279,7 +279,7 @@ export default function Home() {
             >
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#FAF6F0]">
                 <Image
-                  src={weddingData.bride?.avatar || "/co-dau.JPG"}
+                  src={weddingData.bride?.avatar || "/co-dau.jpg"}
                   alt="co-dau"
                   fill
                   className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
@@ -319,7 +319,7 @@ export default function Home() {
             className="basis-[32%] min-w-0 rounded-2xl p-1 sm:p-1.5 bg-white border border-[#E6D5B8] shadow-md overflow-hidden"
           >
             <Image
-              src={weddingData.invitationImages?.[0]?.url || "/album/anh-phu-2.JPG"}
+              src={weddingData.invitationImages?.[0]?.url || "/album/anh-phu-2.jpg"}
               alt="thu-moi"
               width={260}
               height={420}
@@ -333,7 +333,7 @@ export default function Home() {
             className="basis-[36%] min-w-0 rounded-2xl p-1 sm:p-2 bg-white border-2 border-[#D4AF37]/60 shadow-xl -translate-y-2 overflow-hidden"
           >
             <Image
-              src={weddingData.invitationImages?.[1]?.url || "/album/anh-phu.JPG"}
+              src={weddingData.invitationImages?.[1]?.url || "/album/anh-phu.jpg"}
               alt="thu-moi"
               width={300}
               height={480}
@@ -347,7 +347,7 @@ export default function Home() {
             className="basis-[32%] min-w-0 rounded-2xl p-1 sm:p-1.5 bg-white border border-[#E6D5B8] shadow-md overflow-hidden"
           >
             <Image
-              src={weddingData.invitationImages?.[2]?.url || "/album/anhphu-3.JPG"}
+              src={weddingData.invitationImages?.[2]?.url || "/album/anhphu-3.jpg"}
               alt="thu-moi"
               width={260}
               height={420}
@@ -560,18 +560,11 @@ export default function Home() {
         <FloatingWishes currentSide="nha-trai" />
 
         {/* Gift Box Section */}
-        <GiftBoxSection defaultSide="nha-trai" data={weddingData} />
+        {/* <GiftBoxSection defaultSide="nha-trai" data={weddingData} /> */}
 
         {/* Thank You Banner */}
-        <div className="relative w-full lg:h-[48vh] h-[38vh] overflow-hidden rounded-3xl my-8 border border-[#E6D5B8] shadow-lg">
+        <div className="relative w-full py-8 overflow-hidden rounded-3xl my-8 border border-[#E6D5B8] shadow-lg">
           <div className="absolute inset-0 w-full h-full">
-            <Image
-              src="/album/anh-cuoi.JPG"
-              alt="anh-cuoi"
-              fill
-              className="object-cover object-top opacity-25"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/65 to-white/90" />
           </div>
           <div
             data-aos="fade-up"

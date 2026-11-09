@@ -6,7 +6,7 @@
   "groom": {
     "name": "Việt Hùng",
     "shortName": "Việt Hùng",
-    "avatar": "/chu-re.JPG",
+    "avatar": "https://res.cloudinary.com/hungf/image/upload/v1794201116/wedding_invitation/groomAvatar/gd6ioso1ivzfatfg3zz0.jpg",
     "fatherName": "ÔNG TẠ VĂN VƯỢNG",
     "motherName": "BÀ ĐẶNG THỊ XUÂN",
     "address": "Thôn Na Phả, Xã Bản Lầu, Tỉnh Lào Cai"
@@ -14,7 +14,7 @@
   "bride": {
     "name": "Xuân Ly",
     "shortName": "Xuân Ly",
-    "avatar": "/co-dau.JPG",
+    "avatar": "https://res.cloudinary.com/hungf/image/upload/v1794201114/wedding_invitation/brideAvatar/p6h09cvesbuymlvkavth.jpg",
     "fatherName": "ÔNG NGUYỄN VĂN HƯNG",
     "motherName": "BÀ PHẠM THỊ KHUYÊN",
     "address": "1003 Lê Thanh, Phường Cam Đường,Tỉnh Lào Cai"
@@ -25,15 +25,15 @@
   },
   "invitationImages": [
     {
-      "url": "/album/anh-phu-2.JPG",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794200573/wedding_invitation/invitation_images/wcxpw7ufrwgew1katxu0.jpg",
       "alt": "thu-moi-1"
     },
     {
-      "url": "/album/anh-phu.JPG",
+      "url": "/uploads/1794200496958-anh-phu.jpg",
       "alt": "thu-moi-2"
     },
     {
-      "url": "/album/anhphu-3.JPG",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794200563/wedding_invitation/invitation_images/zwlg5bxamirsrikc6faq.jpg",
       "alt": "thu-moi-3"
     }
   ],
@@ -44,44 +44,58 @@
   },
   "album": [
     {
-      "src": "/album/anh-chinh.JPG",
-      "alt": "Ảnh chính",
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201206/wedding_invitation/album/ht5camxtikyg9h1icnme.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201206/wedding_invitation/album/ht5camxtikyg9h1icnme.jpg",
+      "alt": "Ảnh cưới 8",
       "aos": "zoom-in"
     },
     {
-      "src": "/album/anh-cuoi.JPG",
-      "alt": "Ảnh cưới",
-      "aos": "fade-left"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201240/wedding_invitation/album/qs409plqxrsfghl7sp77.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201240/wedding_invitation/album/qs409plqxrsfghl7sp77.jpg",
+      "alt": "Ảnh cưới 2",
+      "aos": "zoom-in"
     },
     {
-      "src": "/album/anh-phu-2.JPG",
-      "alt": "Ảnh phụ 2",
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201242/wedding_invitation/album/zao2aovkxffp6rp5vq7w.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201242/wedding_invitation/album/zao2aovkxffp6rp5vq7w.jpg",
+      "alt": "Ảnh cưới 3",
       "aos": "fade-up"
     },
     {
-      "src": "/album/anh-phu.JPG",
-      "alt": "Ảnh phụ",
-      "aos": "fade-right"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201244/wedding_invitation/album/obdvmexfnwthybxcgebz.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201244/wedding_invitation/album/obdvmexfnwthybxcgebz.jpg",
+      "alt": "Ảnh cưới 4",
+      "aos": "zoom-in"
     },
     {
-      "src": "/album/anhphu-3.JPG",
-      "alt": "Ảnh phụ 3",
-      "aos": "zoom-out"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201246/wedding_invitation/album/vlc8yh5dkfhrlbhky4vc.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201246/wedding_invitation/album/vlc8yh5dkfhrlbhky4vc.jpg",
+      "alt": "Ảnh cưới 5",
+      "aos": "fade-up"
     },
     {
-      "src": "/album/anhphu-4.JPG",
-      "alt": "Ảnh phụ 4",
-      "aos": "slide-up"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201248/wedding_invitation/album/hudro529z5iztejcerii.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201248/wedding_invitation/album/hudro529z5iztejcerii.jpg",
+      "alt": "Ảnh cưới 6",
+      "aos": "zoom-in"
     },
     {
-      "src": "/album/anhphu-5.JPG",
-      "alt": "Ảnh phụ 5",
-      "aos": "flip-left"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201251/wedding_invitation/album/deyjuo0kqapvtajfxtru.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201251/wedding_invitation/album/deyjuo0kqapvtajfxtru.jpg",
+      "alt": "Ảnh cưới 7",
+      "aos": "fade-up"
     },
     {
-      "src": "/album/anhphu-6.JPG",
-      "alt": "Ảnh phụ 6",
-      "aos": "fade-down"
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201254/wedding_invitation/album/axmnngwgkekane8ycogx.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201254/wedding_invitation/album/axmnngwgkekane8ycogx.jpg",
+      "alt": "Ảnh cưới 8",
+      "aos": "zoom-in"
+    },
+    {
+      "src": "https://res.cloudinary.com/hungf/image/upload/v1794201867/wedding_invitation/album/cy2dkn2imzfvozoazfro.jpg",
+      "url": "https://res.cloudinary.com/hungf/image/upload/v1794201867/wedding_invitation/album/cy2dkn2imzfvozoazfro.jpg",
+      "alt": "Ảnh cưới 9",
+      "aos": "zoom-in"
     }
   ],
   "music": {
@@ -125,7 +139,8 @@
         "owner": "Chú rể Việt Hùng",
         "bankName": "ViettinBank",
         "accountNumber": "105869255527",
-        "accountName": "TẠ VĂN HÙNG"
+        "accountName": "TẠ VĂN HÙNG",
+        "qrCodeUrl": "/qr.jpeg"
       }
     }
   },
@@ -134,6 +149,7 @@
     "description": "Thư mời tiệc mừng Lễ Vu Quy Xuân Ly & Việt Hùng - 05.12.2026",
     "hero": {
       "title": "THƯ MỜI TIỆC CƯỚI",
+      "backgroundImage": "/album/anh-chinh.jpg",
       "weddingDateText": "THỨ BẢY - 10H30",
       "dateFormatted": "05 . 12 . 2026"
     },
@@ -161,7 +177,8 @@
         "owner": "Cô dâu Xuân Ly",
         "bankName": "MBBank",
         "accountNumber": "2625072003",
-        "accountName": "NGUYỄN XUÂN LY"
+        "accountName": "NGUYỄN XUÂN LY",
+        "qrCodeUrl": "/qr.jpeg"
       }
     }
   },
