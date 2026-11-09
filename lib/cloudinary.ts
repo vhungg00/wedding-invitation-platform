@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_NAME || "").trim();
 const apiKey = (process.env.CLOUDINARY_API_KEY || "").trim();
@@ -16,6 +17,57 @@ if (isCloudinaryConfigured) {
   });
 }
 
+// Giới hạn gói miễn phí của Cloudinary là 10MB (10,485,760 bytes).
+// Tự động tối ưu ảnh nếu vượt quá 4MB để đảm bảo luôn < 10MB và tải trang nhanh.
+const OPTIMIZE_THRESHOLD_BYTES = 4 * 1024 * 1024;
+const CLOUDINARY_MAX_BYTES = 9.5 * 1024 * 1024;
+
+async function optimizeImageBufferIfNeeded(buffer: Buffer): Promise<Buffer> {
+  if (buffer.length <= OPTIMIZE_THRESHOLD_BYTES) {
+    return buffer;
+  }
+
+  try {
+    const image = sharp(buffer, { failOn: "none" });
+    const metadata = await image.metadata();
+    const pipeline = image.rotate().resize({
+      width: 2800,
+      height: 2800,
+      fit: "inside",
+      withoutEnlargement: true,
+    });
+
+    // Giữ kênh trong suốt (alpha) nếu là ảnh tách nền PNG/WebP
+    if (metadata.hasAlpha) {
+      const webpBuffer = await pipeline.webp({ quality: 88 }).toBuffer();
+      if (webpBuffer.length < CLOUDINARY_MAX_BYTES) {
+        return webpBuffer;
+      }
+    }
+
+    let compressed = await pipeline
+      .jpeg({ quality: 88, mozjpeg: true })
+      .toBuffer();
+
+    // Nếu ảnh quá lớn vẫn > 9.5MB thì giảm nhẹ kích thước thêm 1 nấc
+    if (compressed.length >= CLOUDINARY_MAX_BYTES) {
+      compressed = await sharp(buffer, { failOn: "none" })
+        .rotate()
+        .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 82, mozjpeg: true })
+        .toBuffer();
+    }
+
+    console.log(
+      `>>> [Cloudinary] Đã tự động nén ảnh từ ${(buffer.length / 1024 / 1024).toFixed(2)}MB xuống ${(compressed.length / 1024 / 1024).toFixed(2)}MB`
+    );
+    return compressed;
+  } catch (err) {
+    console.warn("Không thể tối ưu ảnh bằng sharp, giữ nguyên buffer gốc:", err);
+    return buffer;
+  }
+}
+
 /**
  * Upload image buffer to Cloudinary (3rd party) with local public/uploads fallback
  */
@@ -24,6 +76,8 @@ export async function uploadBufferToStorage(
   originalName: string,
   folder = "wedding_invitation"
 ): Promise<string> {
+  const processedBuffer = await optimizeImageBufferIfNeeded(buffer);
+
   if (isCloudinaryConfigured) {
     try {
       return await new Promise<string>((resolve, reject) => {
@@ -39,7 +93,7 @@ export async function uploadBufferToStorage(
             resolve(result.secure_url);
           }
         );
-        stream.end(buffer);
+        stream.end(processedBuffer);
       });
     } catch (err) {
       console.warn("Upload Cloudinary không thành công, chuyển sang lưu nội bộ public/uploads:", err);
@@ -54,7 +108,7 @@ export async function uploadBufferToStorage(
 
   const cleanName = `${Date.now()}-${originalName.replace(/\s+/g, "_")}`;
   const filePath = path.join(uploadsDir, cleanName);
-  fs.writeFileSync(filePath, buffer);
+  fs.writeFileSync(filePath, processedBuffer);
 
   return `/uploads/${cleanName}`;
 }

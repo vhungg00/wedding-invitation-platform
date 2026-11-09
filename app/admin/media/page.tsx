@@ -125,15 +125,74 @@ export default function MediaStudioPage() {
     }
   };
 
+  // Tự động nén ảnh lớn (> 3.5MB) ngay trên trình duyệt trước khi gửi lên API
+  // giúp vượt qua giới hạn 4.5MB của Vercel Serverless và 10MB của Cloudinary
+  const compressFileIfNeeded = async (file: File): Promise<File> => {
+    const MAX_RAW_SIZE = 3.5 * 1024 * 1024;
+    if (file.size <= MAX_RAW_SIZE || !file.type.startsWith("image/")) {
+      return file;
+    }
+
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const MAX_DIMENSION = 2600;
+        let { width, height } = img;
+        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+          const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const outputType = file.type === "image/png" ? "image/webp" : "image/jpeg";
+        const ext = outputType === "image/webp" ? ".webp" : ".jpg";
+        const cleanBaseName = file.name.replace(/\.[^.]+$/, "");
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob || blob.size >= file.size) {
+              resolve(file);
+              return;
+            }
+            resolve(new File([blob], `${cleanBaseName}${ext}`, { type: outputType }));
+          },
+          outputType,
+          0.88
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+
+      img.src = objectUrl;
+    });
+  };
+
   // Upload 1 ảnh thiệp mời (invitationImages: index 0, 1, 2)
   const handleInvitationImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
 
     setUploadingField(`invitationImage_${index}`);
     setStatusMessage(null);
 
     try {
+      const file = await compressFileIfNeeded(rawFile);
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", `wedding_invitation/invitation_images`);
@@ -145,9 +204,9 @@ export default function MediaStudioPage() {
 
       const json = await res.json();
       if (json.success && json.url) {
-        // Xóa ảnh cũ trên Cloudinary nếu trước đó là ảnh đã upload
+        // Xóa ảnh cũ trên Cloudinary hoặc local /uploads nếu trước đó là ảnh đã upload
         const oldUrl = invitationImages[index]?.url;
-        if (oldUrl && oldUrl.includes("res.cloudinary.com") && oldUrl !== json.url) {
+        if (oldUrl && (oldUrl.includes("res.cloudinary.com") || oldUrl.startsWith("/uploads/")) && oldUrl !== json.url) {
           fetch("/api/upload", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -179,7 +238,7 @@ export default function MediaStudioPage() {
   // Khôi phục 1 ảnh thiệp mời về mặc định (đồng thời xóa ảnh Cloudinary cũ nếu có)
   const handleResetInvitationImage = async (index: number) => {
     const oldUrl = invitationImages[index]?.url;
-    if (oldUrl && oldUrl.includes("res.cloudinary.com")) {
+    if (oldUrl && (oldUrl.includes("res.cloudinary.com") || oldUrl.startsWith("/uploads/"))) {
       fetch("/api/upload", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -212,7 +271,7 @@ export default function MediaStudioPage() {
       field === "qrCodeNhaTrai" ? qrCodeNhaTrai :
       field === "qrCodeNhaGai" ? qrCodeNhaGai : null;
 
-    if (oldUrl && oldUrl.includes("res.cloudinary.com")) {
+    if (oldUrl && (oldUrl.includes("res.cloudinary.com") || oldUrl.startsWith("/uploads/"))) {
       fetch("/api/upload", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -230,13 +289,14 @@ export default function MediaStudioPage() {
 
   // Upload 1 ảnh đơn lẻ (Avatar, Hero, QR Nhà Trai, QR Nhà Gái)
   const handleSingleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
 
     setUploadingField(field);
     setStatusMessage(null);
 
     try {
+      const file = await compressFileIfNeeded(rawFile);
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", `wedding_invitation/${field}`);
@@ -248,7 +308,7 @@ export default function MediaStudioPage() {
 
       const json = await res.json();
       if (json.success && json.url) {
-        // Dọn dẹp ảnh cũ trên Cloudinary nếu đang ghi đè ảnh đã upload trước đó
+        // Dọn dẹp ảnh cũ trên Cloudinary hoặc local /uploads nếu đang ghi đè ảnh đã upload trước đó
         const oldUrl =
           field === "groomAvatar" ? groomAvatar :
           field === "brideAvatar" ? brideAvatar :
@@ -256,7 +316,7 @@ export default function MediaStudioPage() {
           field === "qrCodeNhaTrai" ? qrCodeNhaTrai :
           field === "qrCodeNhaGai" ? qrCodeNhaGai : null;
 
-        if (oldUrl && oldUrl.includes("res.cloudinary.com") && oldUrl !== json.url) {
+        if (oldUrl && (oldUrl.includes("res.cloudinary.com") || oldUrl.startsWith("/uploads/")) && oldUrl !== json.url) {
           fetch("/api/upload", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -306,7 +366,8 @@ export default function MediaStudioPage() {
     try {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]);
+        const optimized = await compressFileIfNeeded(files[i]);
+        formData.append("files", optimized);
       }
       formData.append("folder", "wedding_invitation/album");
 
