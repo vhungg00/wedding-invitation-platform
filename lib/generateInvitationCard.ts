@@ -3,7 +3,7 @@ import { GuestItem } from "@/app/admin/types";
 function slugifyName(name: string): string {
   return name
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
     .toLowerCase()
@@ -156,7 +156,7 @@ export async function generateInvitationCardBlob(
   ctx.restore();
 
   try {
-    const coupleImg = await loadImage("/album/anh-chinh.JPG");
+    const coupleImg = await loadImage("/album/anh-chinh.jpg");
     ctx.save();
     drawRoundedRect(ctx, photoX, photoY, photoW, photoH, 16);
     ctx.clip();
