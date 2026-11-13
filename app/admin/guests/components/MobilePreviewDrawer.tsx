@@ -31,13 +31,16 @@ export default function MobilePreviewDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs animate-fade-in flex justify-end">
+    <div
+      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs animate-fade-in flex justify-end"
+      onClick={onClose}
+    >
       <div
         className="w-full max-w-md sm:max-w-lg bg-white h-full shadow-2xl flex flex-col animate-slide-left relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/80 shrink-0">
           <div className="flex items-center gap-2">
             <Smartphone className="w-5 h-5 text-rose-600" />
             <div>
@@ -80,7 +83,7 @@ export default function MobilePreviewDrawer({
         </div>
 
         {/* Link bar & Quick Copy */}
-        <div className="p-3 bg-amber-50/60 border-b border-amber-100 flex items-center justify-between gap-2 text-xs">
+        <div className="p-3 bg-amber-50/60 border-b border-amber-100 flex items-center justify-between gap-2 text-xs shrink-0">
           <span className="font-mono text-gray-600 truncate text-[11px]" title={guestUrl}>
             {guestUrl}
           </span>
@@ -104,20 +107,32 @@ export default function MobilePreviewDrawer({
         </div>
 
         {/* Phone Mockup Body */}
-        <div className="flex-1 bg-gradient-to-b from-gray-100 to-gray-200 p-3 sm:p-5 flex items-center justify-center overflow-hidden">
-          <div className="relative w-full max-w-[340px] h-[95%] bg-black rounded-[44px] p-2.5 shadow-2xl border-4 border-gray-800 flex flex-col">
+        <div className="flex-1 min-h-0 bg-gradient-to-b from-gray-100 to-gray-200 p-3 sm:p-5 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-[395px] bg-black rounded-[44px] p-2.5 shadow-2xl border-4 border-gray-800 flex flex-col"
+            style={{ height: "100%", maxHeight: "820px" }}
+          >
             {/* Phone Speaker & Dynamic Island */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20 flex items-center justify-center">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20 flex items-center justify-center pointer-events-none">
               <div className="w-3 h-3 rounded-full bg-gray-900" />
             </div>
 
             {/* Screen Iframe */}
-            <div className="relative w-full h-full bg-white rounded-[34px] overflow-hidden">
+            <div
+              className="relative flex-1 min-h-0 w-full bg-white rounded-[34px] overflow-hidden"
+              style={{ height: "100%" }}
+            >
               <iframe
                 key={iframeKey}
                 src={guestUrl}
                 title={`Preview ${guest.name}`}
-                className="w-full h-full border-0"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  display: "block",
+                }}
+                allow="autoplay"
               />
             </div>
           </div>

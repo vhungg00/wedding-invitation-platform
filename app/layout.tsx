@@ -117,10 +117,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className="overflow-x-hidden">
+    <html lang="vi" suppressHydrationWarning className="overflow-x-clip">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${monsieurLaDoulaise.variable} ${imperialScript.variable} ${cormorantGaramond.variable} antialiased overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${monsieurLaDoulaise.variable} ${imperialScript.variable} ${cormorantGaramond.variable} antialiased overflow-x-clip`}
       >
         {children}
         <MusicPlayer />
